@@ -7,7 +7,7 @@
     "dev": "mintlify dev"
   },
   "devDependencies": {
-    "mintlify": "latest",
-    "nx": "latest"
+    "mintlify": "4.2.169",
+    "nx": "21.6.5"
   }
 }
