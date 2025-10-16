@@ -1,0 +1,91 @@
+name: Validate Mintlify Documentation
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/mintlify-validate.yml
+      - "**/*.mdx"
+      - "**/*.md"
+      - "docs.json"
+      - "mint.json"
+      - "**/openapi.yaml"
+      - "**/openapi.yml"
+      - "**/openapi.json"
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  validate:
+    name: Validate Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Mintlify CLI
+        run: npm install -g mintlify
+
+      - name: Check for broken links
+        id: broken-links
+        run: |
+          echo "::group::Checking for broken links"
+          mintlify broken-links
+          echo "::endgroup::"
+        continue-on-error: false
+
+      - name: Check accessibility
+        id: accessibility
+        run: |
+          echo "::group::Checking accessibility"
+          mintlify a11y
+          echo "::endgroup::"
+        continue-on-error: true # Set to false to make this blocking
+
+      - name: Validate OpenAPI specs
+        id: openapi
+        run: |
+          echo "::group::Validating OpenAPI specifications"
+          if [ -f "api-reference/openapi.json" ]; then
+            echo "Validating api-reference/openapi.json"
+            mintlify openapi-check api-reference/openapi.json
+          fi
+
+          # Check for any YAML OpenAPI specs
+          for file in $(find services -name "openapi.yaml" -o -name "openapi.yml" 2>/dev/null); do
+            echo "Validating $file"
+            mintlify openapi-check "$file"
+          done
+          echo "::endgroup::"
+        continue-on-error: true # Set to false to make this blocking
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.broken-links.outcome }}" == "success" ]; then
+            echo "✅ **Broken Links Check**: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Broken Links Check**: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ steps.accessibility.outcome }}" == "success" ]; then
+            echo "✅ **Accessibility Check**: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Accessibility Check**: Issues found (non-blocking)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ steps.openapi.outcome }}" == "success" ]; then
+            echo "✅ **OpenAPI Validation**: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **OpenAPI Validation**: Issues found (non-blocking)" >> $GITHUB_STEP_SUMMARY
+          fi
