@@ -2,12 +2,12 @@ name: Check Mintlify Schema Validity
 
 on:
   schedule:
-    # Run daily at 9:00 AM UTC
-    - cron: '0 9 * * *'
-  workflow_dispatch: # Allow manual trigger
+    - cron: "0 9 * * 1" # Run every Monday at 9:00 AM UTC
+  workflow_dispatch:
 
 env:
   NODE_VERSION: "20"
+  SCHEMA_FILE: "/tmp/mintlify.schema.json"
 
 jobs:
   check-schema:
@@ -20,34 +20,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Initialize project
+        run: npm init -y
+
       - name: Install dependencies
         run: npm install -g ajv-cli ajv-formats
 
+      - name: Download Mintlify schema
+        run: curl -sL https://mintlify.com/docs.json -o ${{ env.SCHEMA_FILE }}
+
       - name: Download and validate Mintlify schema
-        id: validate
-        run: |
-          curl -sL https://mintlify.com/docs.json -o /tmp/mintlify-schema.json
-          npx ajv-cli compile -s /tmp/mintlify-schema.json -c ajv-formats --spec=draft7
-        continue-on-error: true
-
-      - name: Report results
-        run: |
-          echo "## Mintlify Schema Validation" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          if [ "${{ steps.validate.outcome }}" == "success" ]; then
-            echo "✅ **Schema is now valid!**" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "The upstream Mintlify schema at https://mintlify.com/docs.json is now valid." >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Action Required:**" >> $GITHUB_STEP_SUMMARY
-            echo "You can now revert the local schema fixes and switch back to using the remote schema." >> $GITHUB_STEP_SUMMARY
-            exit 0
-          else
-            echo "❌ **Schema still invalid**" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "The upstream Mintlify schema at https://mintlify.com/docs.json still contains regex bugs." >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Continuing to use local fixed copy in \`mintlify.schema.json\`." >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
+        run: npx ajv-cli compile -s ${{ env.SCHEMA_FILE }} -c ajv-formats --spec=draft7
