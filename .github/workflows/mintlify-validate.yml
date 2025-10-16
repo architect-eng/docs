@@ -74,16 +74,19 @@ jobs:
       - name: Validate OpenAPI specs
         run: |
           echo "::group::Validating OpenAPI specifications"
-          if [ -f "api-reference/openapi.json" ]; then
-            echo "Validating api-reference/openapi.json"
-            npx mintlify@latest openapi-check api-reference/openapi.json
+
+          # Find all OpenAPI spec files (yaml, yml, json)
+          openapi_files=$(find . -type f \( -name "openapi.yaml" -o -name "openapi.yml" -o -name "openapi.json" \) 2>/dev/null)
+
+          if [ -z "$openapi_files" ]; then
+            echo "No OpenAPI spec files found"
+          else
+            for file in $openapi_files; do
+              echo "Validating $file"
+              npx mintlify@latest openapi-check "$file"
+            done
           fi
 
-          # Check for any YAML OpenAPI specs
-          for file in $(find services -name "openapi.yaml" -o -name "openapi.yml" 2>/dev/null); do
-            echo "Validating $file"
-            npx mintlify@latest openapi-check "$file"
-          done
           echo "::endgroup::"
 
   summary:
