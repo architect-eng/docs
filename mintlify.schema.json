@@ -777,7 +777,7 @@
                 "scriptSource": {
                   "type": "string",
                   "allOf": [
-                    { "pattern": "^https\\:\\/\\/cmp\\.osano\\.com\\/" },
+                    { "pattern": "^https:\\/\\/cmp\\.osano\\.com\\/" },
                     { "pattern": "\\/osano\\.js$" }
                   ]
                 }
@@ -794,7 +794,7 @@
             "posthog": {
               "type": "object",
               "properties": {
-                "apiKey": { "type": "string", "pattern": "^phc\\_" },
+                "apiKey": { "type": "string", "pattern": "^phc_" },
                 "apiHost": { "type": "string", "format": "uri" }
               },
               "required": ["apiKey"],
