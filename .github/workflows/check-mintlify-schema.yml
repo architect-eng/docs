@@ -1,0 +1,33 @@
+name: Check Mintlify Schema Validity
+
+on:
+  schedule:
+    - cron: "0 9 * * 1" # Run every Monday at 9:00 AM UTC
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "20"
+  SCHEMA_FILE: "/tmp/mintlify.schema.json"
+
+jobs:
+  check-schema:
+    name: Validate Upstream Mintlify Schema
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Initialize project
+        run: npm init -y
+
+      - name: Install dependencies
+        run: npm install -g ajv-cli ajv-formats
+
+      - name: Download Mintlify schema
+        run: curl -sL https://mintlify.com/docs.json -o ${{ env.SCHEMA_FILE }}
+
+      - name: Download and validate Mintlify schema
+        run: npx ajv-cli compile -s ${{ env.SCHEMA_FILE }} -c ajv-formats --spec=draft7

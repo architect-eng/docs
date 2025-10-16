@@ -1,0 +1,15 @@
+{
+  "name": "@architect/docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Architect documentation",
+  "scripts": {
+    "dev": "mintlify dev"
+  },
+  "devDependencies": {
+    "ajv-cli": "^5.0.0",
+    "ajv-formats": "^3.0.1",
+    "mintlify": "4.2.169",
+    "nx": "21.6.5"
+  }
+}

@@ -1,97 +1,88 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "External Actor Gateway API"
+description: "API documentation for third-party integrations with Architect"
 ---
 
-## Setting up
+The External Actor Gateway (EAG) provides a RESTful API for external systems to integrate with the Architect platform. This API enables third-party applications to programmatically manage brands, page groups, templates, and analytics.
 
-Get your documentation site up and running in minutes.
+## Getting Started
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+To begin using the API:
 
-## Make it yours
+1. **Obtain API credentials** - Contact your account manager to receive an API key
+2. **Authenticate requests** - Include your API key in the `x-api-key` header for all requests
+3. **Explore the API reference** - Browse the available endpoints in the API Reference tab
 
-Design a docs site that looks great and empowers your users.
+## Core Concepts
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+### Brands
+Brands represent your organization's visual identity and theme configuration. Each brand includes:
+- Name and company homepage
+- Theme customization (light and dark modes)
+- Color schemes and logo assets
+- Preferred appearance settings
 
-## Create beautiful pages
+### Page Groups
+Page groups are collections of related pages with shared configuration:
+- Template assignment
+- Business goals and objectives
+- URL slugs and titles
+- Publication status (draft, published, archived)
+- Custom scripts and tracking
 
-Everything you need to create world-class documentation.
+### Pages
+Individual page variants within a page group, each with:
+- Version history
+- Statistics and analytics
+- UTM parameter tracking
+- Session counts
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+### Templates
+Reusable page templates for consistent design:
+- System templates (provided by Architect)
+- Custom templates (created by your team)
+- Template duplication and customization
+- Version control
 
-## Need inspiration?
+## Authentication
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+All API requests require authentication using an API key:
+
+```bash
+curl -X GET 'https://app.tryarchitect.com/api/eag/v0/brands' \
+  -H 'x-api-key: YOUR_API_KEY'
+```
+
+## Rate Limiting
+
+The API implements rate limiting to ensure fair usage. If you exceed the rate limit, you'll receive a `429` error response with details about when you can retry.
+
+## Error Handling
+
+The API uses standard HTTP status codes and returns detailed error responses:
+
+```json
+{
+  "code": "VALIDATION_ERROR",
+  "message": "Validation failed",
+  "requestId": "req_01j5k9m7n8p9q2r3s4t5v6w7x8",
+  "details": {
+    "field": "name",
+    "reason": "Name is required"
+  }
+}
+```
+
+## Support
+
+For API support or questions:
+- Email: [eag-support@tryarchitect.com](mailto:eag-support@tryarchitect.com)
+- Website: [tryarchitect.com](https://tryarchitect.com)
+
+## API Environments
+
+The API is available in multiple environments:
+
+- **Production**: `https://app.tryarchitect.com/api/eag`
+- **Beta**: `https://app.beta.tryarchitect.com/api/eag`
+- **Local Development**: `http://localhost:25001`

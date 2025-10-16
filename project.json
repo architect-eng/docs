@@ -1,0 +1,52 @@
+{
+  "name": "docs",
+  "$schema": "https://raw.githubusercontent.com/nrwl/nx/refs/heads/master/packages/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": ".",
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mintlify dev"
+      }
+    },
+    "validate-broken-links": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "output=$(mintlify broken-links); echo \"$output\"; echo \"$output\" | grep -q 'found.*broken links' && exit 1 || exit 0"
+      }
+    },
+    "validate-accessibility": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mintlify a11y"
+      }
+    },
+    "validate-openapi": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "for file in $(find . -type f \\( -name 'openapi.yaml' -o -name 'openapi.yml' -o -name 'openapi.json' \\) 2>/dev/null); do mintlify openapi-check \"$file\"; done"
+        ]
+      }
+    },
+    "validate-schema": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ajv-cli test -s mintlify.schema.json -d docs.json -c ajv-formats --valid --strict=false"
+      }
+    },
+    "validate-all": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "validate-broken-links",
+        "validate-accessibility",
+        "validate-openapi",
+        "validate-schema"
+      ],
+      "options": {
+        "commands": ["echo 'All validations complete'"]
+      }
+    }
+  }
+}

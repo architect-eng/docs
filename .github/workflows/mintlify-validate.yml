@@ -16,76 +16,67 @@ on:
       - main
       - master
 
+env:
+  NODE_VERSION: "20"
+
 jobs:
   validate:
-    name: Validate Documentation
+    name: ${{ matrix.validation.name }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        validation:
+          - name: "Check Broken Links"
+            target: "validate-broken-links"
+          - name: "Check Accessibility"
+            target: "validate-accessibility"
+          - name: "Validate OpenAPI Specs"
+            target: "validate-openapi"
+          - name: "Validate Schema"
+            target: "validate-schema"
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
 
-      - name: Install Mintlify CLI
-        run: npm install -g mintlify
+      - name: Install dependencies
+        run: npm install
 
-      - name: Check for broken links
-        id: broken-links
-        run: |
-          echo "::group::Checking for broken links"
-          mintlify broken-links
-          echo "::endgroup::"
-        continue-on-error: false
+      - name: Cache Nx
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('**/nx.json', '**/project.json') }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-${{ hashFiles('**/nx.json', '**/project.json') }}-
+            nx-${{ runner.os }}-
 
-      - name: Check accessibility
-        id: accessibility
-        run: |
-          echo "::group::Checking accessibility"
-          mintlify a11y
-          echo "::endgroup::"
-        continue-on-error: true # Set to false to make this blocking
+      - name: Run validation
+        run: npx nx ${{ matrix.validation.target }}
 
-      - name: Validate OpenAPI specs
-        id: openapi
-        run: |
-          echo "::group::Validating OpenAPI specifications"
-          if [ -f "api-reference/openapi.json" ]; then
-            echo "Validating api-reference/openapi.json"
-            mintlify openapi-check api-reference/openapi.json
-          fi
+  summary:
+    name: Validation Summary
+    runs-on: ubuntu-latest
+    needs: [validate]
+    if: always()
 
-          # Check for any YAML OpenAPI specs
-          for file in $(find services -name "openapi.yaml" -o -name "openapi.yml" 2>/dev/null); do
-            echo "Validating $file"
-            mintlify openapi-check "$file"
-          done
-          echo "::endgroup::"
-        continue-on-error: true # Set to false to make this blocking
-
-      - name: Summary
-        if: always()
+    steps:
+      - name: Generate Summary
         run: |
           echo "## Validation Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          if [ "${{ steps.broken-links.outcome }}" == "success" ]; then
-            echo "✅ **Broken Links Check**: Passed" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.validate.result }}" == "success" ]; then
+            echo "✅ **All Validations**: Passed" >> $GITHUB_STEP_SUMMARY
           else
-            echo "❌ **Broken Links Check**: Failed" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          if [ "${{ steps.accessibility.outcome }}" == "success" ]; then
-            echo "✅ **Accessibility Check**: Passed" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ **Accessibility Check**: Issues found (non-blocking)" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          if [ "${{ steps.openapi.outcome }}" == "success" ]; then
-            echo "✅ **OpenAPI Validation**: Passed" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ **OpenAPI Validation**: Issues found (non-blocking)" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **Some Validations**: Failed" >> $GITHUB_STEP_SUMMARY
           fi

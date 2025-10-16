@@ -1,34 +1,57 @@
+# AI Agent Guidelines for Documentation
+
+This guide provides standards and conventions for AI coding assistants working with Architect documentation using Mintlify.
+
+## Configuration
+
+AI tools can be configured to follow these guidelines through:
+- Project-specific rules files in your editor or IDE
+- Custom instructions in chat interfaces
+- System prompts for API integrations
+- Context provided at the start of coding sessions
+
+Reference this document when configuring your AI assistant for documentation work.
+
 ---
-title: "Cursor setup"
-description: "Configure Cursor for your documentation workflow"
-icon: "arrow-pointer"
+
+## Documentation Standards
+
+### Working Relationship
+
+- Push back on ideas when it leads to better documentation - cite sources and explain reasoning
+- ALWAYS ask for clarification rather than making assumptions
+- NEVER lie, guess, or make up information
+
+### Project Context
+
+- Format: MDX files with YAML frontmatter
+- Configuration: `docs.json` for navigation, theme, and settings
+- Components: Mintlify custom components
+- Build: Mintlify platform
+
+### Content Strategy
+
+- Document just enough for user success - not too much, not too little
+- Prioritize accuracy and usability of information
+- Make content evergreen when possible
+- Search for existing information before adding new content - avoid duplication unless strategic
+- Check existing patterns for consistency
+- Start by making the smallest reasonable changes
+
+### Required Page Structure
+
+Every documentation page must begin with YAML frontmatter:
+
+```yaml
 ---
-
-Use Cursor to help write and maintain your documentation. This guide shows how to configure Cursor for better results on technical writing tasks and using Mintlify components.
-
-## Prerequisites
-
-- Cursor editor installed
-- Access to your documentation repository
-
-## Project rules
-
-Create project rules that all team members can use. In your documentation repository root:
-
-```bash
-mkdir -p .cursor
+title: "Clear, specific, keyword-rich title"
+description: "Concise description explaining page purpose and value"
+---
 ```
 
-Create `.cursor/rules.md`:
+### Core Writing Principles
 
-````markdown
-# Mintlify technical writing rule
-
-You are an AI writing assistant specialized in creating exceptional technical documentation using Mintlify components and following industry-leading technical writing practices.
-
-## Core writing principles
-
-### Language and style requirements
+#### Language and Style
 
 - Use clear, direct language appropriate for technical audiences
 - Write in second person ("you") for instructions and procedures
@@ -39,7 +62,7 @@ You are an AI writing assistant specialized in creating exceptional technical do
 - Keep sentences concise while providing necessary context
 - Use parallel structure in lists, headings, and procedures
 
-### Content organization standards
+#### Content Organization
 
 - Lead with the most important information (inverted pyramid structure)
 - Use progressive disclosure: basic concepts before advanced ones
@@ -49,7 +72,7 @@ You are an AI writing assistant specialized in creating exceptional technical do
 - Use descriptive, keyword-rich headings for navigation and SEO
 - Group related information logically with clear section breaks
 
-### User-centered approach
+#### User-Centered Approach
 
 - Focus on user goals and outcomes rather than system features
 - Anticipate common questions and address them proactively
@@ -57,46 +80,49 @@ You are an AI writing assistant specialized in creating exceptional technical do
 - Write for scannability with clear headings, lists, and white space
 - Include verification steps to confirm success
 
-## Mintlify component reference
+### Mintlify Components
 
-### Callout components
+#### Callout Components
 
-#### Note - Additional helpful information
-
+**Note** - Additional helpful information:
+```mdx
 <Note>
 Supplementary information that supports the main content without interrupting flow
 </Note>
+```
 
-#### Tip - Best practices and pro tips
-
+**Tip** - Best practices and pro tips:
+```mdx
 <Tip>
 Expert advice, shortcuts, or best practices that enhance user success
 </Tip>
+```
 
-#### Warning - Important cautions
-
+**Warning** - Important cautions:
+```mdx
 <Warning>
 Critical information about potential issues, breaking changes, or destructive actions
 </Warning>
+```
 
-#### Info - Neutral contextual information
-
+**Info** - Neutral contextual information:
+```mdx
 <Info>
 Background information, context, or neutral announcements
 </Info>
+```
 
-#### Check - Success confirmations
-
+**Check** - Success confirmations:
+```mdx
 <Check>
 Positive confirmations, successful completions, or achievement indicators
 </Check>
+```
 
-### Code components
+#### Code Components
 
-#### Single code block
-
-Example of a single code block:
-
+**Single code block:**
+````mdx
 ```javascript config.js
 const apiConfig = {
   baseURL: 'https://api.example.com',
@@ -106,11 +132,10 @@ const apiConfig = {
   }
 };
 ```
+````
 
-#### Code group with multiple languages
-
-Example of a code group:
-
+**Code group with multiple languages:**
+````mdx
 <CodeGroup>
 ```javascript Node.js
 const response = await fetch('/api/endpoint', {
@@ -120,7 +145,7 @@ const response = await fetch('/api/endpoint', {
 
 ```python Python
 import requests
-response = requests.get('/api/endpoint', 
+response = requests.get('/api/endpoint',
   headers={'Authorization': f'Bearer {api_key}'})
 ```
 
@@ -129,11 +154,10 @@ curl -X GET '/api/endpoint' \
   -H 'Authorization: Bearer YOUR_API_KEY'
 ```
 </CodeGroup>
+````
 
-#### Request/response examples
-
-Example of request/response documentation:
-
+**Request/response examples:**
+````mdx
 <RequestExample>
 ```bash cURL
 curl -X POST 'https://api.example.com/users' \
@@ -146,23 +170,22 @@ curl -X POST 'https://api.example.com/users' \
 ```json Success
 {
   "id": "user_123",
-  "name": "John Doe", 
+  "name": "John Doe",
   "email": "john@example.com",
   "created_at": "2024-01-15T10:30:00Z"
 }
 ```
 </ResponseExample>
+````
 
-### Structural components
+#### Structural Components
 
-#### Steps for procedures
-
-Example of step-by-step instructions:
-
+**Steps for procedures:**
+```mdx
 <Steps>
 <Step title="Install dependencies">
   Run `npm install` to install required packages.
-  
+
   <Check>
   Verify installation by running `npm list`.
   </Check>
@@ -170,21 +193,20 @@ Example of step-by-step instructions:
 
 <Step title="Configure environment">
   Create a `.env` file with your API credentials.
-  
+
   ```bash
   API_KEY=your_api_key_here
   ```
-  
+
   <Warning>
   Never commit API keys to version control.
   </Warning>
 </Step>
 </Steps>
+```
 
-#### Tabs for alternative content
-
-Example of tabbed content:
-
+**Tabs for alternative content:**
+```mdx
 <Tabs>
 <Tab title="macOS">
   ```bash
@@ -207,11 +229,10 @@ Example of tabbed content:
   ```
 </Tab>
 </Tabs>
+```
 
-#### Accordions for collapsible content
-
-Example of accordion groups:
-
+**Accordions for collapsible content:**
+```mdx
 <AccordionGroup>
 <Accordion title="Troubleshooting connection issues">
   - **Firewall blocking**: Ensure ports 80 and 443 are open
@@ -228,15 +249,19 @@ Example of accordion groups:
   ```
 </Accordion>
 </AccordionGroup>
+```
 
-### Cards and columns for emphasizing information
+#### Cards and Columns
 
-Example of cards and card groups:
-
+**Single card:**
+```mdx
 <Card title="Getting started guide" icon="rocket" href="/quickstart">
 Complete walkthrough from installation to your first API call in under 10 minutes.
 </Card>
+```
 
+**Card group:**
+```mdx
 <CardGroup cols={2}>
 <Card title="Authentication" icon="key" href="/auth">
   Learn how to authenticate requests using API keys or JWT tokens.
@@ -246,13 +271,12 @@ Complete walkthrough from installation to your first API call in under 10 minute
   Understand rate limits and best practices for high-volume usage.
 </Card>
 </CardGroup>
+```
 
-### API documentation components
+#### API Documentation Components
 
-#### Parameter fields
-
-Example of parameter documentation:
-
+**Parameter fields:**
+```mdx
 <ParamField path="user_id" type="string" required>
 Unique identifier for the user. Must be a valid UUID v4 format.
 </ParamField>
@@ -268,11 +292,10 @@ Maximum number of results to return. Range: 1-100.
 <ParamField header="Authorization" type="string" required>
 Bearer token for API authentication. Format: `Bearer YOUR_API_KEY`
 </ParamField>
+```
 
-#### Response fields
-
-Example of response field documentation:
-
+**Response fields:**
+```mdx
 <ResponseField name="user_id" type="string" required>
 Unique identifier assigned to the newly created user.
 </ResponseField>
@@ -284,23 +307,22 @@ ISO 8601 formatted timestamp of when the user was created.
 <ResponseField name="permissions" type="array">
 List of permission strings assigned to this user.
 </ResponseField>
+```
 
-#### Expandable nested fields
-
-Example of nested field documentation:
-
+**Expandable nested fields:**
+```mdx
 <ResponseField name="user" type="object">
 Complete user object with all associated data.
 
 <Expandable title="User properties">
   <ResponseField name="profile" type="object">
   User profile information including personal details.
-  
+
   <Expandable title="Profile details">
     <ResponseField name="first_name" type="string">
     User's first name as entered during registration.
     </ResponseField>
-    
+
     <ResponseField name="avatar_url" type="string | null">
     URL to user's profile picture. Returns null if no avatar is set.
     </ResponseField>
@@ -308,13 +330,12 @@ Complete user object with all associated data.
   </ResponseField>
 </Expandable>
 </ResponseField>
+```
 
-### Media and advanced components
+#### Media Components
 
-#### Frames for images
-
-Wrap all images in frames:
-
+**Frames for images:**
+```mdx
 <Frame>
 <img src="/images/dashboard.png" alt="Main dashboard showing analytics overview" />
 </Frame>
@@ -322,40 +343,37 @@ Wrap all images in frames:
 <Frame caption="The analytics dashboard provides real-time insights">
 <img src="/images/analytics.png" alt="Analytics dashboard with charts" />
 </Frame>
+```
 
-#### Videos
-
-Use the HTML video element for self-hosted video content:
-
+**Videos:**
+```mdx
+<!-- Self-hosted video -->
 <video
   controls
   className="w-full aspect-video rounded-xl"
   src="link-to-your-video.com"
 ></video>
 
-Embed YouTube videos using iframe elements:
-
+<!-- YouTube embed -->
 <iframe
   className="w-full aspect-video rounded-xl"
-  src="https://www.youtube.com/embed/4KzFe50RQkQ"
+  src="https://www.youtube.com/embed/VIDEO_ID"
   title="YouTube video player"
   frameBorder="0"
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
   allowFullScreen
 ></iframe>
+```
 
-#### Tooltips
-
-Example of tooltip usage:
-
+**Tooltips:**
+```mdx
 <Tooltip tip="Application Programming Interface - protocols for building software">
 API
 </Tooltip>
+```
 
-#### Updates
-
-Use updates for changelogs:
-
+**Updates for changelogs:**
+```mdx
 <Update label="Version 2.1.0" description="Released March 15, 2024">
 ## New features
 - Added bulk user import functionality
@@ -365,21 +383,20 @@ Use updates for changelogs:
 - Fixed pagination issue with large datasets
 - Resolved authentication timeout problems
 </Update>
-
-## Required page structure
-
-Every documentation page must begin with YAML frontmatter:
-
-```yaml
----
-title: "Clear, specific, keyword-rich title"
-description: "Concise description explaining page purpose and value"
----
 ```
 
-## Content quality standards
+### Component Selection Logic
 
-### Code examples requirements
+- Use **Steps** for procedures and sequential instructions
+- Use **Tabs** for platform-specific content or alternative approaches
+- Use **CodeGroup** when showing the same concept in multiple programming languages
+- Use **Accordions** for progressive disclosure of information
+- Use **RequestExample/ResponseExample** specifically for API endpoint documentation
+- Use **ParamField** for API parameters, **ResponseField** for API responses
+- Use **Expandable** for nested object properties or hierarchical information
+- Use **Cards** and **CardGroup** for highlighting related content or navigation
+
+### Code Examples Requirements
 
 - Always include complete, runnable examples that users can copy and execute
 - Show proper error handling and edge case management
@@ -390,7 +407,7 @@ description: "Concise description explaining page purpose and value"
 - Add explanatory comments for complex logic
 - Never include real API keys or secrets in code examples
 
-### API documentation requirements
+### API Documentation Requirements
 
 - Document all parameters including optional ones with clear descriptions
 - Show both success and error response examples with realistic data
@@ -399,7 +416,7 @@ description: "Concise description explaining page purpose and value"
 - Explain all HTTP status codes and error handling
 - Cover complete request/response cycles
 
-### Accessibility requirements
+### Accessibility Requirements
 
 - Include descriptive alt text for all images and diagrams
 - Use specific, actionable link text instead of "click here"
@@ -407,14 +424,20 @@ description: "Concise description explaining page purpose and value"
 - Provide keyboard navigation considerations
 - Use sufficient color contrast in examples and visuals
 - Structure content for easy scanning with headers and lists
+- Language tags on all code blocks
+- Relative paths for internal links
 
-## Component selection logic
+### Git Workflow
 
-- Use **Steps** for procedures and sequential instructions
-- Use **Tabs** for platform-specific content or alternative approaches
-- Use **CodeGroup** when showing the same concept in multiple programming languages
-- Use **Accordions** for progressive disclosure of information
-- Use **RequestExample/ResponseExample** specifically for API endpoint documentation
-- Use **ParamField** for API parameters, **ResponseField** for API responses
-- Use **Expandable** for nested object properties or hierarchical information
-````
+- NEVER use `--no-verify` when committing
+- Ask how to handle uncommitted changes before starting
+- Create a new branch when no clear branch exists for changes
+- Commit frequently throughout development
+- NEVER skip or disable pre-commit hooks
+
+### Do Not
+
+- Skip frontmatter on any MDX file
+- Use absolute URLs for internal links
+- Include untested code examples
+- Make assumptions - always ask for clarification
