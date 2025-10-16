@@ -1,7 +1,7 @@
 # Nx
 .nx/cache
 .nx/workspace-data
-.nx/installation
 
-# Node modules (if installed)
+# Node
 node_modules/
+package-lock.json

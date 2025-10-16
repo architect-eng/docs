@@ -1,0 +1,10 @@
+{
+  "name": "@architect/docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Architect documentation",
+  "devDependencies": {
+    "mintlify": "latest",
+    "nx": "latest"
+  }
+}

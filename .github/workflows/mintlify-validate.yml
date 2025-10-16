@@ -44,25 +44,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
 
-      - name: Cache npm global packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-global-${{ runner.os }}-${{ env.NODE_VERSION }}
-          restore-keys: |
-            npm-global-${{ runner.os }}-
+      - name: Install dependencies
+        run: npm install
 
       - name: Cache Nx
         uses: actions/cache@v4
         with:
           path: .nx/cache
-          key: nx-${{ runner.os }}-${{ hashFiles('**/nx.json', '**/project.json') }}
+          key: nx-${{ runner.os }}-${{ hashFiles('**/nx.json', '**/project.json') }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
+            nx-${{ runner.os }}-${{ hashFiles('**/nx.json', '**/project.json') }}-
             nx-${{ runner.os }}-
 
       - name: Run validation
-        run: npx nx@latest ${{ matrix.validation.target }}
+        run: npx nx ${{ matrix.validation.target }}
 
   summary:
     name: Validation Summary
