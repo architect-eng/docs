@@ -12,6 +12,10 @@
       "{projectRoot}/**/openapi.json",
       "{projectRoot}/**/openapi.yaml",
       "{projectRoot}/**/openapi.yml"
+    ],
+    "schema": [
+      "{projectRoot}/docs.json",
+      "{projectRoot}/mintlify.schema.json"
     ]
   },
   "targetDefaults": {
@@ -26,6 +30,10 @@
     "validate-openapi": {
       "cache": true,
       "inputs": ["openapi"]
+    },
+    "validate-schema": {
+      "cache": true,
+      "inputs": ["schema"]
     }
   },
   "cacheDirectory": ".nx/cache",
