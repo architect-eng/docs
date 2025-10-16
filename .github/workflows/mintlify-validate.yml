@@ -39,7 +39,6 @@ jobs:
           echo "::group::Checking for broken links"
           mintlify broken-links
           echo "::endgroup::"
-        continue-on-error: false
 
       - name: Check accessibility
         id: accessibility
@@ -47,7 +46,6 @@ jobs:
           echo "::group::Checking accessibility"
           mintlify a11y
           echo "::endgroup::"
-        continue-on-error: true # Set to false to make this blocking
 
       - name: Validate OpenAPI specs
         id: openapi
@@ -64,7 +62,6 @@ jobs:
             mintlify openapi-check "$file"
           done
           echo "::endgroup::"
-        continue-on-error: true # Set to false to make this blocking
 
       - name: Summary
         if: always()
