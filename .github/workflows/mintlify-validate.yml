@@ -20,9 +20,19 @@ env:
   NODE_VERSION: "20"
 
 jobs:
-  broken-links:
-    name: Check Broken Links
+  validate:
+    name: ${{ matrix.validation.name }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        validation:
+          - name: "Check Broken Links"
+            target: "validate-broken-links"
+          - name: "Check Accessibility"
+            target: "validate-accessibility"
+          - name: "Validate OpenAPI Specs"
+            target: "validate-openapi"
 
     steps:
       - name: Checkout code
@@ -44,76 +54,13 @@ jobs:
           restore-keys: |
             nx-${{ runner.os }}-
 
-      - name: Check for broken links
-        run: |
-          echo "::group::Checking for broken links"
-          npx nx@latest validate-broken-links
-          echo "::endgroup::"
-
-  accessibility:
-    name: Check Accessibility
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: Cache Nx
-        uses: actions/cache@v4
-        with:
-          path: .nx/cache
-          key: nx-${{ runner.os }}-${{ hashFiles('**/nx.json', '**/project.json') }}
-          restore-keys: |
-            nx-${{ runner.os }}-
-
-      - name: Check accessibility
-        run: |
-          echo "::group::Checking accessibility"
-          npx nx@latest validate-accessibility
-          echo "::endgroup::"
-
-  openapi:
-    name: Validate OpenAPI Specs
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: Cache Nx
-        uses: actions/cache@v4
-        with:
-          path: .nx/cache
-          key: nx-${{ runner.os }}-${{ hashFiles('**/nx.json', '**/project.json') }}
-          restore-keys: |
-            nx-${{ runner.os }}-
-
-      - name: Validate OpenAPI specs
-        run: |
-          echo "::group::Validating OpenAPI specifications"
-          npx nx@latest validate-openapi
-          echo "::endgroup::"
+      - name: Run validation
+        run: npx nx@latest ${{ matrix.validation.target }}
 
   summary:
     name: Validation Summary
     runs-on: ubuntu-latest
-    needs: [broken-links, accessibility, openapi]
+    needs: [validate]
     if: always()
 
     steps:
@@ -122,20 +69,8 @@ jobs:
           echo "## Validation Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          if [ "${{ needs.broken-links.result }}" == "success" ]; then
-            echo "✅ **Broken Links Check**: Passed" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.validate.result }}" == "success" ]; then
+            echo "✅ **All Validations**: Passed" >> $GITHUB_STEP_SUMMARY
           else
-            echo "❌ **Broken Links Check**: Failed" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          if [ "${{ needs.accessibility.result }}" == "success" ]; then
-            echo "✅ **Accessibility Check**: Passed" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ **Accessibility Check**: Failed" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          if [ "${{ needs.openapi.result }}" == "success" ]; then
-            echo "✅ **OpenAPI Validation**: Passed" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ **OpenAPI Validation**: Failed" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **Some Validations**: Failed" >> $GITHUB_STEP_SUMMARY
           fi
