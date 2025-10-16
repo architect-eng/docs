@@ -30,12 +30,19 @@
         ]
       }
     },
+    "validate-schema": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ajv-cli test -s mintlify.schema.json -d docs.json -c ajv-formats --valid --strict=false"
+      }
+    },
     "validate-all": {
       "executor": "nx:run-commands",
       "dependsOn": [
         "validate-broken-links",
         "validate-accessibility",
-        "validate-openapi"
+        "validate-openapi",
+        "validate-schema"
       ],
       "options": {
         "commands": ["echo 'All validations complete'"]
