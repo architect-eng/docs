@@ -7,7 +7,7 @@
     "validate-broken-links": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "mintlify broken-links"
+        "command": "output=$(mintlify broken-links); echo \"$output\"; echo \"$output\" | grep -q 'found.*broken links' && exit 1 || exit 0"
       }
     },
     "validate-accessibility": {
