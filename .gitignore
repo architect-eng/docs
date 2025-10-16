@@ -1,6 +1,7 @@
-# Nx cache
+# Nx
 .nx/cache
 .nx/workspace-data
+.nx/installation
 
 # Node modules (if installed)
 node_modules/

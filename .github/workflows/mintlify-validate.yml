@@ -45,6 +45,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Cache Nx installation
+        uses: actions/cache@v4
+        id: nx-installation-cache
+        with:
+          path: .nx/installation
+          key: nx-installation-${{ runner.os }}-${{ hashFiles('**/nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-installation-${{ runner.os }}-
+
       - name: Cache npm global packages
         uses: actions/cache@v4
         with:
@@ -61,8 +70,12 @@ jobs:
           restore-keys: |
             nx-${{ runner.os }}-
 
+      - name: Initialize Nx
+        if: steps.nx-installation-cache.outputs.cache-hit != 'true'
+        run: npx nx@latest init --nxCloud=skip
+
       - name: Run validation
-        run: npx nx@latest ${{ matrix.validation.target }}
+        run: ./nx ${{ matrix.validation.target }}
 
   summary:
     name: Validation Summary
