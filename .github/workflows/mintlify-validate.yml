@@ -17,8 +17,8 @@ on:
       - master
 
 jobs:
-  validate:
-    name: Validate Documentation
+  broken-links:
+    name: Check Broken Links
     runs-on: ubuntu-latest
 
     steps:
@@ -29,60 +29,89 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-
-      - name: Install Mintlify CLI
-        run: npm install -g mintlify
+          cache: "npm"
 
       - name: Check for broken links
-        id: broken-links
         run: |
           echo "::group::Checking for broken links"
-          mintlify broken-links
+          npx mintlify@latest broken-links
           echo "::endgroup::"
+
+  accessibility:
+    name: Check Accessibility
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
 
       - name: Check accessibility
-        id: accessibility
         run: |
           echo "::group::Checking accessibility"
-          mintlify a11y
+          npx mintlify@latest a11y
           echo "::endgroup::"
 
+  openapi:
+    name: Validate OpenAPI Specs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
       - name: Validate OpenAPI specs
-        id: openapi
         run: |
           echo "::group::Validating OpenAPI specifications"
           if [ -f "api-reference/openapi.json" ]; then
             echo "Validating api-reference/openapi.json"
-            mintlify openapi-check api-reference/openapi.json
+            npx mintlify@latest openapi-check api-reference/openapi.json
           fi
 
           # Check for any YAML OpenAPI specs
           for file in $(find services -name "openapi.yaml" -o -name "openapi.yml" 2>/dev/null); do
             echo "Validating $file"
-            mintlify openapi-check "$file"
+            npx mintlify@latest openapi-check "$file"
           done
           echo "::endgroup::"
 
-      - name: Summary
-        if: always()
+  summary:
+    name: Validation Summary
+    runs-on: ubuntu-latest
+    needs: [broken-links, accessibility, openapi]
+    if: always()
+
+    steps:
+      - name: Generate Summary
         run: |
           echo "## Validation Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          if [ "${{ steps.broken-links.outcome }}" == "success" ]; then
+          if [ "${{ needs.broken-links.result }}" == "success" ]; then
             echo "✅ **Broken Links Check**: Passed" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **Broken Links Check**: Failed" >> $GITHUB_STEP_SUMMARY
           fi
 
-          if [ "${{ steps.accessibility.outcome }}" == "success" ]; then
+          if [ "${{ needs.accessibility.result }}" == "success" ]; then
             echo "✅ **Accessibility Check**: Passed" >> $GITHUB_STEP_SUMMARY
           else
-            echo "⚠️ **Accessibility Check**: Issues found (non-blocking)" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **Accessibility Check**: Failed" >> $GITHUB_STEP_SUMMARY
           fi
 
-          if [ "${{ steps.openapi.outcome }}" == "success" ]; then
+          if [ "${{ needs.openapi.result }}" == "success" ]; then
             echo "✅ **OpenAPI Validation**: Passed" >> $GITHUB_STEP_SUMMARY
           else
-            echo "⚠️ **OpenAPI Validation**: Issues found (non-blocking)" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **OpenAPI Validation**: Failed" >> $GITHUB_STEP_SUMMARY
           fi
