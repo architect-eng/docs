@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,10 +36,18 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
+      - name: Cache Nx
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('**/nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
       - name: Check for broken links
         run: |
           echo "::group::Checking for broken links"
-          npx mintlify@latest broken-links
+          npx nx@latest validate-broken-links
           echo "::endgroup::"
 
   accessibility:
@@ -47,6 +57,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -54,10 +66,18 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
+      - name: Cache Nx
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('**/nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
       - name: Check accessibility
         run: |
           echo "::group::Checking accessibility"
-          npx mintlify@latest a11y
+          npx nx@latest validate-accessibility
           echo "::endgroup::"
 
   openapi:
@@ -67,6 +87,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -74,22 +96,18 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
+      - name: Cache Nx
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('**/nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
       - name: Validate OpenAPI specs
         run: |
           echo "::group::Validating OpenAPI specifications"
-
-          # Find all OpenAPI spec files (yaml, yml, json)
-          openapi_files=$(find . -type f \( -name "openapi.yaml" -o -name "openapi.yml" -o -name "openapi.json" \) 2>/dev/null)
-
-          if [ -z "$openapi_files" ]; then
-            echo "No OpenAPI spec files found"
-          else
-            for file in $openapi_files; do
-              echo "Validating $file"
-              npx mintlify@latest openapi-check "$file"
-            done
-          fi
-
+          npx nx@latest validate-openapi
           echo "::endgroup::"
 
   summary:

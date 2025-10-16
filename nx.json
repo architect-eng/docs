@@ -1,0 +1,33 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nrwl/nx/refs/heads/master/packages/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"],
+    "documentation": [
+      "{projectRoot}/**/*.mdx",
+      "{projectRoot}/**/*.md",
+      "{projectRoot}/docs.json",
+      "{projectRoot}/mint.json"
+    ],
+    "openapi": [
+      "{projectRoot}/**/openapi.json",
+      "{projectRoot}/**/openapi.yaml",
+      "{projectRoot}/**/openapi.yml"
+    ]
+  },
+  "targetDefaults": {
+    "validate-broken-links": {
+      "cache": true,
+      "inputs": ["documentation"]
+    },
+    "validate-accessibility": {
+      "cache": true,
+      "inputs": ["documentation"]
+    },
+    "validate-openapi": {
+      "cache": true,
+      "inputs": ["openapi"]
+    }
+  },
+  "cacheDirectory": ".nx/cache",
+  "defaultBase": "master"
+}

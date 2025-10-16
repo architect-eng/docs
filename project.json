@@ -1,0 +1,39 @@
+{
+  "name": "docs",
+  "$schema": "https://raw.githubusercontent.com/nrwl/nx/refs/heads/master/packages/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": ".",
+  "targets": {
+    "validate-broken-links": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mintlify broken-links"
+      }
+    },
+    "validate-accessibility": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mintlify a11y"
+      }
+    },
+    "validate-openapi": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "for file in $(find . -type f \\( -name 'openapi.yaml' -o -name 'openapi.yml' -o -name 'openapi.json' \\) 2>/dev/null); do mintlify openapi-check \"$file\"; done"
+        ]
+      }
+    },
+    "validate-all": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "validate-broken-links",
+        "validate-accessibility",
+        "validate-openapi"
+      ],
+      "options": {
+        "commands": ["echo 'All validations complete'"]
+      }
+    }
+  }
+}
