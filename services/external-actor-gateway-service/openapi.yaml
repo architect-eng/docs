@@ -297,7 +297,7 @@ components:
             - Q4 Campaign
           type: string
           minLength: 1
-        pageGoal:
+        context:
           type: string
         pageTemplateId:
           $ref: "#/components/schemas/PageTemplateId"
@@ -315,6 +315,12 @@ components:
       properties:
         pageTemplateId:
           $ref: "#/components/schemas/PageTemplateId"
+        supplementaryContext:
+          description: Optional supplementary context added to page group context
+          examples:
+            - Target enterprise buyers. Emphasize security, compliance, and ROI.
+          type: string
+          minLength: 1
       additionalProperties: false
     CreateTemplateRequest:
       type: object
@@ -814,6 +820,13 @@ components:
           pattern: ^pagevar_[0-9a-z]{26}$
         pageTemplateId:
           $ref: "#/components/schemas/PageTemplateId1"
+        supplementaryContext:
+          nullable: true
+          description: Optional supplementary context added to page group context
+          examples:
+            - Target enterprise buyers. Emphasize security, compliance, and ROI.
+          type: string
+          minLength: 1
         tenantId:
           $ref: "#/components/schemas/TenantId"
       required:
@@ -840,7 +853,7 @@ components:
                 - Product Landing Page
                 - Q4 Campaign
               type: string
-            pageGoal:
+            context:
               examples:
                 - Convert visitors into trial users
                 - Increase Q4 sales by 20%
@@ -873,7 +886,7 @@ components:
             - createdAt
             - id
             - name
-            - pageGoal
+            - context
             - pageUrl
             - slug
             - status
@@ -1243,7 +1256,7 @@ components:
     UpdatePageGroupRequest:
       type: object
       properties:
-        goal:
+        context:
           description: Updated business objective for this page group
           examples:
             - Convert visitors into paid customers through enhanced product demonstrations
@@ -1356,7 +1369,7 @@ components:
                 - Product Landing Page
               type: string
               minLength: 1
-            pageGoal:
+            pageContext:
               description: Business objective or purpose of this page group
               examples:
                 - Convert visitors into trial users by highlighting key product benefits
@@ -1434,7 +1447,7 @@ components:
             - deletedAt
             - footerLinks
             - name
-            - pageGoal
+            - pageContext
             - pageGroupId
             - pagesCount
             - pageTemplateId
