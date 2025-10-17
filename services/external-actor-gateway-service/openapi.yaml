@@ -121,13 +121,7 @@ components:
       required: true
       schema:
         type: string
-  requestBodies:
-    PagesBody:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/CreatePageRequest"
-      required: true
+  requestBodies: {}
   responses:
     BadRequest:
       content:
@@ -318,7 +312,9 @@ components:
       additionalProperties: false
     CreatePageRequest:
       type: object
-      properties: {}
+      properties:
+        pageTemplateId:
+          $ref: "#/components/schemas/PageTemplateId"
       additionalProperties: false
     CreateTemplateRequest:
       type: object
@@ -340,6 +336,10 @@ components:
       required:
         - name
         - templateContent
+      additionalProperties: false
+    CreateVersionRequest:
+      type: object
+      properties: {}
       additionalProperties: false
     CreatedAt:
       type: string
@@ -772,6 +772,13 @@ components:
         - pagetemplate_01j5k9m7n8p9q2r3s4t5v6w7x8
       type: string
       pattern: ^pagetemplate_[0-9a-z]{26}$
+    PageTemplateId1:
+      nullable: true
+      description: Optional template override for this page. When null, inherits from page group template
+      examples:
+        - pagetemplate_01j5k9m7n8p9q2r3s4t5v6w7x8
+      type: string
+      pattern: ^pagetemplate_[0-9a-z]{26}$
     PatchPageVersionRequest:
       type: object
       properties:
@@ -805,12 +812,15 @@ components:
             - pagevar_01j5k9m7n8p9q2r3s4t5v6w7x8
           type: string
           pattern: ^pagevar_[0-9a-z]{26}$
+        pageTemplateId:
+          $ref: "#/components/schemas/PageTemplateId1"
         tenantId:
           $ref: "#/components/schemas/TenantId"
       required:
         - createdAt
         - pageGroupId
         - pageId
+        - pageTemplateId
         - tenantId
       additionalProperties: false
     PostPageGroup:
@@ -893,9 +903,7 @@ components:
             pageTemplateId:
               $ref: "#/components/schemas/PageTemplateId"
             sourcePageTemplateId:
-              nullable: true
-              type: string
-              pattern: ^pagetemplate_[0-9a-z]{26}$
+              $ref: "#/components/schemas/PageTemplateId1"
             templateContent:
               type: string
             updatedAt:
@@ -1488,6 +1496,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetBrand"
       summary: List brands
+      tags:
+        - Brands
       parameters:
         - $ref: "#/components/parameters/CursorQuery"
         - $ref: "#/components/parameters/LimitQuery"
@@ -1500,6 +1510,8 @@ paths:
         "201":
           $ref: "#/components/responses/PostBrandResponse"
       summary: Create brand
+      tags:
+        - Brands
       requestBody:
         content:
           application/json:
@@ -1514,6 +1526,8 @@ paths:
         "200":
           $ref: "#/components/responses/PostBrandResponse"
       summary: Get brand
+      tags:
+        - Brands
       parameters:
         - $ref: "#/components/parameters/BrandIdPath"
     patch:
@@ -1523,6 +1537,8 @@ paths:
         "200":
           $ref: "#/components/responses/PostBrandResponse"
       summary: Update brand
+      tags:
+        - Brands
       parameters:
         - $ref: "#/components/parameters/BrandIdPath"
       requestBody:
@@ -1538,6 +1554,8 @@ paths:
         "200":
           $ref: "#/components/responses/DeleteBrandResponseResponse"
       summary: Delete brand
+      tags:
+        - Brands
       parameters:
         - $ref: "#/components/parameters/BrandIdPath"
   /v0/page_groups:
@@ -1552,6 +1570,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetPageGroup"
       summary: List page groups
+      tags:
+        - Page Groups
       parameters:
         - $ref: "#/components/parameters/CursorQuery"
         - $ref: "#/components/parameters/LimitQuery"
@@ -1570,6 +1590,8 @@ paths:
         "201":
           $ref: "#/components/responses/PostPageGroupResponse"
       summary: Create a new page group
+      tags:
+        - Page Groups
       requestBody:
         content:
           application/json:
@@ -1588,6 +1610,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetPageGroupResponse"
       summary: Get page group by ID
+      tags:
+        - Page Groups
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
     patch:
@@ -1601,6 +1625,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/UpdatePageGroupResponse"
       summary: Update page group
+      tags:
+        - Page Groups
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
       requestBody:
@@ -1620,6 +1646,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeletePageGroupResponse"
       summary: Delete a page group
+      tags:
+        - Page Groups
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
   /v0/page_groups/{page_group_id}/pages:
@@ -1634,6 +1662,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetPage"
       summary: List pages in a page group
+      tags:
+        - Page Groups
+        - Pages
       parameters:
         - $ref: "#/components/parameters/CursorQuery"
         - $ref: "#/components/parameters/LimitQuery"
@@ -1647,10 +1678,17 @@ paths:
         "201":
           $ref: "#/components/responses/PostPageResponse"
       summary: Create a new page in a page group
+      tags:
+        - Page Groups
+        - Pages
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
       requestBody:
-        $ref: "#/components/requestBodies/PagesBody"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePageRequest"
+        required: true
   /v0/page_groups/{page_group_id}/pages/{page_id}/session_count:
     get:
       description: Get total session count for a specific page
@@ -1663,6 +1701,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetSessionCount"
       summary: Get page session count
+      tags:
+        - Page Groups
+        - Pages
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
         - $ref: "#/components/parameters/PageIdPath"
@@ -1678,6 +1719,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetStatistic"
       summary: Get page statistics in group
+      tags:
+        - Page Groups
+        - Pages
       parameters:
         - in: query
           name: from
@@ -1712,6 +1756,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetStatisticsByUtm"
       summary: Get page statistics by UTM group
+      tags:
+        - Page Groups
+        - Pages
       parameters:
         - in: query
           name: endDate
@@ -1752,6 +1799,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetVersion"
       summary: List page versions
+      tags:
+        - Page Groups
+        - Pages
+        - Page Versions
       parameters:
         - in: query
           name: include
@@ -1777,11 +1828,19 @@ paths:
         "201":
           $ref: "#/components/responses/PostVersionResponse"
       summary: Create page version
+      tags:
+        - Page Groups
+        - Pages
+        - Page Versions
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
         - $ref: "#/components/parameters/PageIdPath"
       requestBody:
-        $ref: "#/components/requestBodies/PagesBody"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVersionRequest"
+        required: true
   /v0/page_groups/{page_group_id}/pages/{page_id}/versions/{version_id}:
     get:
       description: Retrieve a specific version of a page with optional additional fields
@@ -1790,6 +1849,10 @@ paths:
         "200":
           $ref: "#/components/responses/PostVersionResponse"
       summary: Get page version
+      tags:
+        - Page Groups
+        - Pages
+        - Page Versions
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
         - $ref: "#/components/parameters/PageIdPath"
@@ -1801,6 +1864,10 @@ paths:
         "200":
           $ref: "#/components/responses/PostVersionResponse"
       summary: Update page version
+      tags:
+        - Page Groups
+        - Pages
+        - Page Versions
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
         - $ref: "#/components/parameters/PageIdPath"
@@ -1822,6 +1889,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeletePageVersionResponse"
       summary: Delete page version
+      tags:
+        - Page Groups
+        - Pages
+        - Page Versions
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
         - $ref: "#/components/parameters/PageIdPath"
@@ -1838,6 +1909,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetUtmParameter"
       summary: Get available UTM parameters
+      tags:
+        - Page Groups
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
   /v0/templates:
@@ -1848,6 +1921,8 @@ paths:
         "200":
           $ref: "#/components/responses/GetTemplateResponse"
       summary: List tenant templates
+      tags:
+        - Templates
       parameters:
         - $ref: "#/components/parameters/CursorQuery"
         - $ref: "#/components/parameters/LimitQuery"
@@ -1860,6 +1935,8 @@ paths:
         "201":
           $ref: "#/components/responses/PostTemplateResponse"
       summary: Create template
+      tags:
+        - Templates
       requestBody:
         content:
           application/json:
@@ -1874,6 +1951,8 @@ paths:
         "200":
           $ref: "#/components/responses/GetTemplateResponse"
       summary: List system templates
+      tags:
+        - Templates
       parameters:
         - $ref: "#/components/parameters/CursorQuery"
         - $ref: "#/components/parameters/LimitQuery"
@@ -1885,6 +1964,8 @@ paths:
         "200":
           $ref: "#/components/responses/PostTemplateResponse"
       summary: Get template
+      tags:
+        - Templates
       parameters:
         - $ref: "#/components/parameters/TemplateIdPath"
     patch:
@@ -1894,6 +1975,8 @@ paths:
         "200":
           $ref: "#/components/responses/PostTemplateResponse"
       summary: Update template
+      tags:
+        - Templates
       parameters:
         - $ref: "#/components/parameters/TemplateIdPath"
       requestBody:
@@ -1909,6 +1992,8 @@ paths:
         "200":
           $ref: "#/components/responses/DeleteBrandResponseResponse"
       summary: Delete template
+      tags:
+        - Templates
       parameters:
         - $ref: "#/components/parameters/TemplateIdPath"
   /v0/templates/{template_id}/duplicate:
@@ -1921,6 +2006,8 @@ paths:
         "201":
           $ref: "#/components/responses/PostTemplateResponse"
       summary: Duplicate template
+      tags:
+        - Templates
       parameters:
         - $ref: "#/components/parameters/TemplateIdPath"
       requestBody:
@@ -1929,3 +2016,14 @@ paths:
             schema:
               $ref: "#/components/schemas/CreateDuplicateRequest"
         required: true
+tags:
+  - name: Page Groups
+    description: Page group management operations
+  - name: Pages
+    description: Page management operations
+  - name: Page Versions
+    description: Page version management operations
+  - name: Brands
+    description: Brand management operations
+  - name: Templates
+    description: Template management operations
