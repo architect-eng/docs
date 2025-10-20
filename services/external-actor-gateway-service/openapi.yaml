@@ -9,9 +9,9 @@ info:
   version: 0.0.1
 servers:
   - description: Production environment
-    url: https://app.tryarchitect.com/api/eag
+    url: https://api.tryarchitect.com
   - description: Beta environment
-    url: https://app.beta.tryarchitect.com/api/eag
+    url: https://api.beta.tryarchitect.com
   - description: Local environment
     url: http://localhost:25001
 components:
