@@ -1676,7 +1676,6 @@ paths:
                 $ref: "#/components/schemas/GetPage"
       summary: List pages in a page group
       tags:
-        - Page Groups
         - Pages
       parameters:
         - $ref: "#/components/parameters/CursorQuery"
@@ -1692,7 +1691,6 @@ paths:
           $ref: "#/components/responses/PostPageResponse"
       summary: Create a new page in a page group
       tags:
-        - Page Groups
         - Pages
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
@@ -1715,7 +1713,6 @@ paths:
                 $ref: "#/components/schemas/GetSessionCount"
       summary: Get page session count
       tags:
-        - Page Groups
         - Pages
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
@@ -1733,7 +1730,6 @@ paths:
                 $ref: "#/components/schemas/GetStatistic"
       summary: Get page statistics in group
       tags:
-        - Page Groups
         - Pages
       parameters:
         - in: query
@@ -1770,7 +1766,6 @@ paths:
                 $ref: "#/components/schemas/GetStatisticsByUtm"
       summary: Get page statistics by UTM group
       tags:
-        - Page Groups
         - Pages
       parameters:
         - in: query
@@ -1813,8 +1808,6 @@ paths:
                 $ref: "#/components/schemas/GetVersion"
       summary: List page versions
       tags:
-        - Page Groups
-        - Pages
         - Page Versions
       parameters:
         - in: query
@@ -1842,8 +1835,6 @@ paths:
           $ref: "#/components/responses/PostVersionResponse"
       summary: Create page version
       tags:
-        - Page Groups
-        - Pages
         - Page Versions
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
@@ -1863,8 +1854,6 @@ paths:
           $ref: "#/components/responses/PostVersionResponse"
       summary: Get page version
       tags:
-        - Page Groups
-        - Pages
         - Page Versions
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
@@ -1878,8 +1867,6 @@ paths:
           $ref: "#/components/responses/PostVersionResponse"
       summary: Update page version
       tags:
-        - Page Groups
-        - Pages
         - Page Versions
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
@@ -1903,8 +1890,6 @@ paths:
                 $ref: "#/components/schemas/DeletePageVersionResponse"
       summary: Delete page version
       tags:
-        - Page Groups
-        - Pages
         - Page Versions
       parameters:
         - $ref: "#/components/parameters/PageGroupIdPath"
