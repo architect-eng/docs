@@ -8,12 +8,12 @@ info:
   title: Architect - External Actor Gateway
   version: 0.0.1
 servers:
+  - description: Production environment
+    url: https://tryarchitect.com
+  - description: Beta environment
+    url: https://beta.tryarchitect.com
   - description: Local environment
     url: http://localhost:25001
-  - description: Beta environment
-    url: https://app.beta.tryarchitect.com/api/eag
-  - description: Production environment
-    url: https://app.tryarchitect.com/api/eag
 components:
   callbacks: {}
   examples: {}
