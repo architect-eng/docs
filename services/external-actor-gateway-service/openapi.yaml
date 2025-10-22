@@ -345,7 +345,9 @@ components:
       additionalProperties: false
     CreateVersionRequest:
       type: object
-      properties: {}
+      properties:
+        callbackUrl:
+          $ref: "#/components/schemas/Url"
       additionalProperties: false
     CreatedAt:
       type: string
@@ -1826,7 +1828,7 @@ paths:
         - $ref: "#/components/parameters/PageGroupIdPath"
         - $ref: "#/components/parameters/PageIdPath"
     post:
-      description: Create a new version of the specified page with automatic type-safe Zod validation
+      description: Create a new version of the specified page with automatic type-safe Zod validation. Optionally provide a callbackUrl to be notified when generation completes.
       operationId: createPageVersion
       responses:
         "200":
@@ -1845,6 +1847,43 @@ paths:
             schema:
               $ref: "#/components/schemas/CreateVersionRequest"
         required: true
+      callbacks:
+        versionComplete:
+          "{$request.body#/callbackUrl}":
+            post:
+              summary: Notification when page version generation completes
+              description: Called when the page version generation process finishes
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        versionId:
+                          type: string
+                          description: ID of the completed version
+                        status:
+                          type: string
+                          enum:
+                            - draft
+                            - published
+                            - archived
+                          description: Final status of the version
+                        createdAt:
+                          type: string
+                          format: date-time
+                          description: Creation timestamp
+                        versionNumber:
+                          type: number
+                          description: Version number
+                      required:
+                        - versionId
+                        - status
+                        - createdAt
+                        - versionNumber
+              responses:
+                "200":
+                  description: Callback successfully processed
   /v0/page_groups/{page_group_id}/pages/{page_id}/versions/{version_id}:
     get:
       description: Retrieve a specific version of a page with optional additional fields
