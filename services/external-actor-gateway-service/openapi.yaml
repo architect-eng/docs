@@ -301,8 +301,6 @@ components:
           type: string
         pageTemplateId:
           $ref: "#/components/schemas/PageTemplateId"
-        slug:
-          type: string
         title:
           type: string
       required:
@@ -862,11 +860,6 @@ components:
               examples:
                 - https://example.com/product-landing
               type: string
-            slug:
-              examples:
-                - product-landing
-                - q4-campaign
-              type: string
             status:
               examples:
                 - draft
@@ -888,7 +881,6 @@ components:
             - name
             - context
             - pageUrl
-            - slug
             - status
             - title
             - updatedAt
@@ -962,14 +954,6 @@ components:
         - status
         - versionNumber
       additionalProperties: false
-    Slug:
-      description: New URL-safe slug for the page group
-      examples:
-        - welcome-amazing-product
-      type: string
-      minLength: 1
-      maxLength: 100
-      pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
     TenantId:
       description: TypeID string identifier for the tenant this page group belongs to
       examples:
@@ -1268,8 +1252,6 @@ components:
             - Enhanced Product Landing Page
           type: string
           minLength: 1
-        slug:
-          $ref: "#/components/schemas/Slug"
         title:
           description: New human-readable title for the page group
           examples:
@@ -1418,8 +1400,6 @@ components:
                   - injectionPoint
                   - name
                 additionalProperties: false
-            slug:
-              $ref: "#/components/schemas/Slug"
             status:
               description: "Page group publication status: draft (editing), published (live), or archived (inactive)"
               examples:
@@ -1453,7 +1433,6 @@ components:
             - pageTemplateId
             - pageUrl
             - scripts
-            - slug
             - status
             - tenantId
             - title
