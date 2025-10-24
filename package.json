@@ -9,7 +9,7 @@
   "devDependencies": {
     "ajv-cli": "^5.0.0",
     "ajv-formats": "^3.0.1",
-    "mintlify": "4.2.169",
+    "mintlify": "4.2.173",
     "nx": "21.6.5"
   }
 }
