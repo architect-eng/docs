@@ -17,9 +17,9 @@ servers:
 components:
   callbacks: {}
   examples:
-    CreateWebhook-subscriptionRequestExample:
+    CreateWebhookSubscriptionRequestExample:
       description: Example values extracted from schema defaults
-      summary: CreateWebhook-subscriptionRequest example
+      summary: CreateWebhookSubscriptionRequest example
       value:
         active: true
   headers: {}
@@ -195,12 +195,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PostVersion"
-    PostWebhook-subscriptionResponse:
+    PostWebhookSubscriptionResponse:
       description: Success
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PostWebhook-subscription"
+            $ref: "#/components/schemas/PostWebhookSubscription"
   schemas:
     ImageReferenceUrl:
       type: object
@@ -228,6 +228,10 @@ components:
         - fileId
         - type
       additionalProperties: false
+    ArraySchema:
+      type: array
+      items:
+        $ref: "#/components/schemas/PostWebhookSubscription"
     Brand:
       type: object
       properties:
@@ -365,7 +369,7 @@ components:
       type: object
       properties: {}
       additionalProperties: false
-    CreateWebhook-subscriptionRequest:
+    CreateWebhookSubscriptionRequest:
       type: object
       properties:
         url:
@@ -375,8 +379,12 @@ components:
           items:
             type: string
             enum:
-              - page-version-created
-              - page-version-deleted
+              - page.version.created
+              - page.version.processed
+              - page.version.deleted
+              - form.submitted
+              - form.enriched
+              - form.enrichment_failed
         active:
           description: Whether the subscription should be active
           examples:
@@ -808,22 +816,6 @@ components:
       required:
         - versions
       additionalProperties: false
-    GetWebhook-subscription:
-      type: object
-      properties:
-        hasMore:
-          description: Whether there are more results available
-          type: boolean
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/PostWebhook-subscription"
-        nextCursor:
-          type: string
-      required:
-        - hasMore
-        - items
-      additionalProperties: false
     PageGroupId:
       description: TypeID string identifier for the page group, always starts with "page_"
       examples:
@@ -1019,7 +1011,7 @@ components:
         - status
         - versionNumber
       additionalProperties: false
-    PostWebhook-subscription:
+    PostWebhookSubscription:
       type: object
       properties:
         id:
@@ -1028,12 +1020,17 @@ components:
         url:
           $ref: "#/components/schemas/Url"
         events:
+          nullable: true
           type: array
           items:
             type: string
             enum:
-              - page-version-created
-              - page-version-deleted
+              - page.version.created
+              - page.version.processed
+              - page.version.deleted
+              - form.submitted
+              - form.enriched
+              - form.enrichment_failed
         active:
           description: Whether the subscription is active
           type: boolean
@@ -1572,8 +1569,12 @@ components:
           items:
             type: string
             enum:
-              - page-version-created
-              - page-version-deleted
+              - page.version.created
+              - page.version.processed
+              - page.version.deleted
+              - form.submitted
+              - form.enriched
+              - form.enrichment_failed
         active:
           type: boolean
       additionalProperties: false
@@ -2116,7 +2117,7 @@ paths:
             schema:
               $ref: "#/components/schemas/CreateDuplicateRequest"
         required: true
-  /v0/webhook-subscriptions:
+  /v0/webhook_subscriptions:
     get:
       description: List webhook subscriptions for the authenticated tenant
       operationId: listWebhookSubscriptions
@@ -2126,19 +2127,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetWebhook-subscription"
+                $ref: "#/components/schemas/ArraySchema"
       summary: List webhook subscriptions
       tags:
         - Webhook Subscriptions
-      parameters:
-        - $ref: "#/components/parameters/CursorQuery"
-        - $ref: "#/components/parameters/LimitQuery"
     post:
       description: Create a webhook subscription
       operationId: createWebhookSubscription
       responses:
         "200":
-          $ref: "#/components/responses/PostWebhook-subscriptionResponse"
+          $ref: "#/components/responses/PostWebhookSubscriptionResponse"
       summary: Create webhook subscription
       tags:
         - Webhook Subscriptions
@@ -2146,15 +2144,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateWebhook-subscriptionRequest"
+              $ref: "#/components/schemas/CreateWebhookSubscriptionRequest"
         required: true
-  /v0/webhook-subscriptions/{subscription_id}:
+  /v0/webhook_subscriptions/{subscription_id}:
     get:
       description: Get a webhook subscription by ID
       operationId: getWebhookSubscription
       responses:
         "200":
-          $ref: "#/components/responses/PostWebhook-subscriptionResponse"
+          $ref: "#/components/responses/PostWebhookSubscriptionResponse"
       summary: Get webhook subscription
       tags:
         - Webhook Subscriptions
@@ -2165,7 +2163,7 @@ paths:
       operationId: updateWebhookSubscription
       responses:
         "200":
-          $ref: "#/components/responses/PostWebhook-subscriptionResponse"
+          $ref: "#/components/responses/PostWebhookSubscriptionResponse"
       summary: Update webhook subscription
       tags:
         - Webhook Subscriptions
