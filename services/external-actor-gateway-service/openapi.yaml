@@ -8,15 +8,20 @@ info:
   title: Architect - External Actor Gateway
   version: 0.0.1
 servers:
+  - description: Production environment
+    url: https://api.tryarchitect.com
+  - description: Beta environment
+    url: https://api.beta.tryarchitect.com
   - description: Local environment
     url: http://localhost:25001
-  - description: Beta environment
-    url: https://app.beta.tryarchitect.com/api/eag
-  - description: Production environment
-    url: https://app.tryarchitect.com/api/eag
 components:
   callbacks: {}
-  examples: {}
+  examples:
+    CreateWebhookSubscriptionRequestExample:
+      description: Example values extracted from schema defaults
+      summary: CreateWebhookSubscriptionRequest example
+      value:
+        active: true
   headers: {}
   links: {}
   parameters:
@@ -69,6 +74,13 @@ components:
       in: path
       name: page_id
       description: page_id parameter
+      required: true
+      schema:
+        type: string
+    SubscriptionIdPath:
+      in: path
+      name: subscription_id
+      description: The webhook subscription ID
       required: true
       schema:
         type: string
@@ -183,6 +195,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PostVersion"
+    PostWebhookSubscriptionResponse:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PostWebhookSubscription"
   schemas:
     ImageReferenceUrl:
       type: object
@@ -210,6 +228,10 @@ components:
         - fileId
         - type
       additionalProperties: false
+    ArraySchema:
+      type: array
+      items:
+        $ref: "#/components/schemas/PostWebhookSubscription"
     Brand:
       type: object
       properties:
@@ -344,6 +366,33 @@ components:
     CreateVersionRequest:
       type: object
       properties: {}
+      additionalProperties: false
+    CreateWebhookSubscriptionRequest:
+      type: object
+      properties:
+        url:
+          $ref: "#/components/schemas/Url"
+        events:
+          type: array
+          items:
+            type: string
+            enum:
+              - page.version.created
+              - page.version.processed
+              - page.version.deleted
+              - form.submitted
+              - form.enriched
+              - form.enrichment_failed
+        active:
+          description: Whether the subscription should be active
+          examples:
+            - true
+          default: true
+          type: boolean
+      required:
+        - url
+        - events
+        - active
       additionalProperties: false
     CreatedAt:
       type: string
@@ -954,6 +1003,41 @@ components:
         - status
         - versionNumber
       additionalProperties: false
+    PostWebhookSubscription:
+      type: object
+      properties:
+        id:
+          description: Unique subscription identifier
+          type: string
+        url:
+          $ref: "#/components/schemas/Url"
+        events:
+          nullable: true
+          type: array
+          items:
+            type: string
+            enum:
+              - page.version.created
+              - page.version.processed
+              - page.version.deleted
+              - form.submitted
+              - form.enriched
+              - form.enrichment_failed
+        active:
+          description: Whether the subscription is active
+          type: boolean
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/CreatedAt"
+      required:
+        - id
+        - url
+        - events
+        - active
+        - createdAt
+        - updatedAt
+      additionalProperties: false
     TenantId:
       description: TypeID string identifier for the tenant this page group belongs to
       examples:
@@ -1453,6 +1537,25 @@ components:
         templateContent:
           type: string
           minLength: 1
+      additionalProperties: false
+    UpdateWebhookSubscriptionRequest:
+      type: object
+      properties:
+        url:
+          $ref: "#/components/schemas/Url"
+        events:
+          type: array
+          items:
+            type: string
+            enum:
+              - page.version.created
+              - page.version.processed
+              - page.version.deleted
+              - form.submitted
+              - form.enriched
+              - form.enrichment_failed
+        active:
+          type: boolean
       additionalProperties: false
     Url:
       type: string
@@ -1993,6 +2096,75 @@ paths:
             schema:
               $ref: "#/components/schemas/CreateDuplicateRequest"
         required: true
+  /v0/webhook_subscriptions:
+    get:
+      description: List webhook subscriptions for the authenticated tenant
+      operationId: listWebhookSubscriptions
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArraySchema"
+      summary: List webhook subscriptions
+      tags:
+        - Webhook Subscriptions
+    post:
+      description: Create a webhook subscription
+      operationId: createWebhookSubscription
+      responses:
+        "200":
+          $ref: "#/components/responses/PostWebhookSubscriptionResponse"
+      summary: Create webhook subscription
+      tags:
+        - Webhook Subscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWebhookSubscriptionRequest"
+        required: true
+  /v0/webhook_subscriptions/{subscription_id}:
+    get:
+      description: Get a webhook subscription by ID
+      operationId: getWebhookSubscription
+      responses:
+        "200":
+          $ref: "#/components/responses/PostWebhookSubscriptionResponse"
+      summary: Get webhook subscription
+      tags:
+        - Webhook Subscriptions
+      parameters:
+        - $ref: "#/components/parameters/SubscriptionIdPath"
+    patch:
+      description: Update a webhook subscription by ID
+      operationId: updateWebhookSubscription
+      responses:
+        "200":
+          $ref: "#/components/responses/PostWebhookSubscriptionResponse"
+      summary: Update webhook subscription
+      tags:
+        - Webhook Subscriptions
+      parameters:
+        - $ref: "#/components/parameters/SubscriptionIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWebhookSubscriptionRequest"
+        required: true
+    delete:
+      description: Delete a webhook subscription by ID
+      operationId: deleteWebhookSubscription
+      responses:
+        "200":
+          $ref: "#/components/responses/DeleteBrandResponseResponse"
+      summary: Delete webhook subscription
+      tags:
+        - Webhook Subscriptions
+      parameters:
+        - $ref: "#/components/parameters/SubscriptionIdPath"
 tags:
   - name: Page Groups
     description: Page group management operations
@@ -2004,3 +2176,5 @@ tags:
     description: Brand management operations
   - name: Templates
     description: Template management operations
+  - name: Webhook Subscriptions
+    description: Webhook subscription management operations
