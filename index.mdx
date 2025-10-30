@@ -73,6 +73,90 @@ The API uses standard HTTP status codes and returns detailed error responses:
 }
 ```
 
+
+## Webhook Signature Verification
+
+Webhook requests include an HMAC-SHA256 signature in the `X-Webhook-Signature-256` header that you should verify to ensure authenticity and prevent tampering.
+
+### Verification Process
+
+1. Extract the signature from the `X-Webhook-Signature-256` header (format: `sha256=<hex-signature>`)
+2. Get the raw request body before parsing
+3. Calculate the expected signature using your webhook signing secret
+4. Compare signatures using a timing-safe comparison function
+5. Process the webhook only if signatures match
+
+<Warning>
+Always use the raw request body for verification, not the parsed JSON. Use timing-safe comparison functions to prevent timing attacks.
+</Warning>
+
+### Implementation Example
+
+```typescript
+import crypto from 'node:crypto';
+import express from 'express';
+
+function verifyWebhookSignature(
+  signingSecret: string,
+  payload: string,
+  signature: string
+): boolean {
+  if (!signingSecret || !payload || !signature?.startsWith('sha256=')) {
+    return false;
+  }
+
+  try {
+    const receivedSignature = signature.substring(7);
+    const expectedSignature = crypto
+      .createHmac('sha256', signingSecret)
+      .update(payload, 'utf8')
+      .digest('hex');
+
+    return crypto.timingSafeEqual(
+      Buffer.from(expectedSignature, 'hex'),
+      Buffer.from(receivedSignature, 'hex')
+    );
+  } catch (error) {
+    console.error('Signature verification failed:', error);
+    return false;
+  }
+}
+```
+
+### Security Best Practices
+
+- Store signing secrets in environment variables, never hardcode them
+- Always verify signatures before processing webhook data
+- Use timing-safe comparison functions (`crypto.timingSafeEqual()` in Node.js, `hmac.compare_digest()` in Python)
+- Only accept webhooks over HTTPS
+- Log verification failures for security monitoring
+- Implement rate limiting on webhook endpoints
+
+### Troubleshooting
+
+<AccordionGroup>
+<Accordion title="Signature verification always fails">
+**Cause**: Using parsed JSON instead of raw request body
+
+**Solution**: Use the raw request body string before any parsing:
+- Express: `express.raw({ type: 'application/json' })` and `req.body.toString()`
+- Flask: `request.get_data(as_text=True)`
+- FastAPI: `await request.body()` then `.decode('utf-8')`
+</Accordion>
+
+<Accordion title="Invalid signature format error">
+**Cause**: Missing header or incorrect format
+
+**Solution**: Verify the `X-Webhook-Signature-256` header is present and starts with `sha256=`. Check for header case sensitivity in your framework.
+</Accordion>
+
+<Accordion title="Character encoding issues">
+**Cause**: Inconsistent encoding when converting body to string
+
+**Solution**: Ensure consistent UTF-8 encoding throughout your verification process.
+</Accordion>
+</AccordionGroup>
+
 ## Support
 
 For API support or questions:
