@@ -1452,8 +1452,6 @@ components:
               maximum: 9007199254740991
             pageTemplateId:
               $ref: "#/components/schemas/PageTemplateId"
-            pageUrl:
-              $ref: "#/components/schemas/Url"
             scripts:
               type: array
               items:
@@ -1515,7 +1513,6 @@ components:
             - pageGroupId
             - pagesCount
             - pageTemplateId
-            - pageUrl
             - scripts
             - status
             - tenantId
