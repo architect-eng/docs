@@ -365,7 +365,11 @@ components:
       additionalProperties: false
     CreateVersionRequest:
       type: object
-      properties: {}
+      properties:
+        operationKey:
+          type: string
+      required:
+        - operationKey
       additionalProperties: false
     CreateWebhookSubscriptionRequest:
       type: object
@@ -841,8 +845,11 @@ components:
             - draft
             - published
             - archived
+        operationKey:
+          type: string
       required:
         - status
+        - operationKey
       additionalProperties: false
     PostBrand:
       type: object
