@@ -368,8 +368,6 @@ components:
       properties:
         operationKey:
           type: string
-      required:
-        - operationKey
       additionalProperties: false
     CreateWebhookSubscriptionRequest:
       type: object
@@ -849,7 +847,6 @@ components:
           type: string
       required:
         - status
-        - operationKey
       additionalProperties: false
     PostBrand:
       type: object
