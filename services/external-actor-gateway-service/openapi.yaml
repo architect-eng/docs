@@ -2238,12 +2238,6 @@ webhooks:
                   type: string
                   format: date-time
                   pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                eventType:
-                  description: Type of event
-                  type: string
-                  enum:
-                    - page.version.created
-                    - page.version.deleted
                 payload:
                   description: Event-specific payload data
                   anyOf:
@@ -2259,7 +2253,6 @@ webhooks:
                           examples:
                             - page_01j5k9m7n8p9q2r3s4t5v6w7x8
                           type: string
-                          pattern: ^page_[0-9a-z]{26}$
                         versionId:
                           description: Unique identifier for the page version that was created
                           examples:
@@ -2285,13 +2278,12 @@ webhooks:
                           description: Event type identifier
                           type: string
                           enum:
-                            - page.version.deleted
+                            - page.version.processed
                         pageId:
                           description: Unique identifier for the page
                           examples:
                             - page_01j5k9m7n8p9q2r3s4t5v6w7x8
                           type: string
-                          pattern: ^page_[0-9a-z]{26}$
                         versionId:
                           description: Unique identifier for the page version that was deleted
                           examples:
@@ -2315,18 +2307,17 @@ webhooks:
                 - eventId
                 - tenantId
                 - timestamp
-                - eventType
                 - payload
               additionalProperties: false
         description: Triggered when a new page version is created. The webhook payload contains details about the newly created page version including page ID, version ID, and creation timestamp.
         required: true
-  pageVersionDeleted:
+  pageVersionProcessed:
     post:
-      description: Triggered when a page version is deleted. The webhook payload contains details about the deleted page version including page ID, version ID, and deletion timestamp.
+      description: Triggered when a page version is processed. The webhook payload contains details about the processed page version including page ID, version ID, and processing timestamp.
       responses:
         "200":
           description: Webhook received successfully
-      summary: Page Version Deleted
+      summary: Page Version Processed
       tags:
         - Webhooks
       requestBody:
@@ -2352,12 +2343,6 @@ webhooks:
                   type: string
                   format: date-time
                   pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                eventType:
-                  description: Type of event
-                  type: string
-                  enum:
-                    - page.version.created
-                    - page.version.deleted
                 payload:
                   description: Event-specific payload data
                   anyOf:
@@ -2373,7 +2358,6 @@ webhooks:
                           examples:
                             - page_01j5k9m7n8p9q2r3s4t5v6w7x8
                           type: string
-                          pattern: ^page_[0-9a-z]{26}$
                         versionId:
                           description: Unique identifier for the page version that was created
                           examples:
@@ -2399,13 +2383,12 @@ webhooks:
                           description: Event type identifier
                           type: string
                           enum:
-                            - page.version.deleted
+                            - page.version.processed
                         pageId:
                           description: Unique identifier for the page
                           examples:
                             - page_01j5k9m7n8p9q2r3s4t5v6w7x8
                           type: string
-                          pattern: ^page_[0-9a-z]{26}$
                         versionId:
                           description: Unique identifier for the page version that was deleted
                           examples:
@@ -2429,10 +2412,9 @@ webhooks:
                 - eventId
                 - tenantId
                 - timestamp
-                - eventType
                 - payload
               additionalProperties: false
-        description: Triggered when a page version is deleted. The webhook payload contains details about the deleted page version including page ID, version ID, and deletion timestamp.
+        description: Triggered when a page version is processed. The webhook payload contains details about the processed page version including page ID, version ID, and processing timestamp.
         required: true
 tags:
   - name: Page Groups
