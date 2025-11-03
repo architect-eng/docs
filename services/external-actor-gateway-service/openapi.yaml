@@ -196,28 +196,26 @@ components:
           schema:
             $ref: "#/components/schemas/PostWebhookSubscription"
   schemas:
-    ImageReferenceUrl:
+    TypeUrlSchema:
       type: object
       properties:
         type:
           type: string
-          enum:
-            - url
+          const: url
         url:
           $ref: "#/components/schemas/Url"
       required:
         - type
         - url
       additionalProperties: false
-    ImageReferenceFile:
+    FileIdTypeSchema:
       type: object
       properties:
         fileId:
           type: string
         type:
           type: string
-          enum:
-            - file
+          const: file
       required:
         - fileId
         - type
@@ -428,11 +426,6 @@ components:
         - page_group_id
         - page_id
       additionalProperties: false
-    DeletedAt:
-      nullable: true
-      type: string
-      format: date-time
-      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
     Error:
       properties:
         code:
@@ -555,7 +548,9 @@ components:
                 type: array
                 items: {}
               deletedAt:
-                $ref: "#/components/schemas/DeletedAt"
+                anyOf:
+                  - $ref: "#/components/schemas/CreatedAt"
+                  - type: "null"
               footerLinks:
                 type: array
                 items: {}
@@ -617,7 +612,9 @@ components:
           type: array
           items: {}
         deletedAt:
-          $ref: "#/components/schemas/DeletedAt"
+          anyOf:
+            - $ref: "#/components/schemas/CreatedAt"
+            - type: "null"
         footerLinks:
           type: array
           items: {}
@@ -718,8 +715,9 @@ components:
               createdAt:
                 type: string
               description:
-                nullable: true
-                type: string
+                anyOf:
+                  - type: string
+                  - type: "null"
               isEditable:
                 type: boolean
               isSystem:
@@ -729,13 +727,15 @@ components:
               pageTemplateId:
                 type: string
               sourcePageTemplateId:
-                nullable: true
-                type: string
+                anyOf:
+                  - type: string
+                  - type: "null"
               templateContent:
                 type: string
               updatedAt:
-                nullable: true
-                type: string
+                anyOf:
+                  - type: string
+                  - type: "null"
               version:
                 type: number
             required:
@@ -831,13 +831,6 @@ components:
         - pagetemplate_01j5k9m7n8p9q2r3s4t5v6w7x8
       type: string
       pattern: ^pagetemplate_[0-9a-z]{26}$
-    PageTemplateId1:
-      nullable: true
-      description: Optional template override for this page. When null, inherits from page group template
-      examples:
-        - pagetemplate_01j5k9m7n8p9q2r3s4t5v6w7x8
-      type: string
-      pattern: ^pagetemplate_[0-9a-z]{26}$
     PatchPageVersionRequest:
       type: object
       properties:
@@ -867,8 +860,7 @@ components:
           type: string
         statusCode:
           type: number
-          enum:
-            - 404
+          const: 404
       required:
         - error
         - message
@@ -888,14 +880,17 @@ components:
           type: string
           pattern: ^pagevar_[0-9a-z]{26}$
         pageTemplateId:
-          $ref: "#/components/schemas/PageTemplateId1"
+          anyOf:
+            - $ref: "#/components/schemas/PageTemplateId"
+            - type: "null"
         supplementaryContext:
-          nullable: true
-          description: Optional supplementary context added to page group context
-          examples:
-            - Target enterprise buyers. Emphasize security, compliance, and ROI.
-          type: string
-          minLength: 1
+          anyOf:
+            - description: Optional supplementary context added to page group context
+              examples:
+                - Target enterprise buyers. Emphasize security, compliance, and ROI.
+              type: string
+              minLength: 1
+            - type: "null"
         tenantId:
           $ref: "#/components/schemas/TenantId"
       required:
@@ -968,8 +963,9 @@ components:
             createdAt:
               $ref: "#/components/schemas/CreatedAt"
             description:
-              nullable: true
-              type: string
+              anyOf:
+                - type: string
+                - type: "null"
             isEditable:
               type: boolean
             isSystem:
@@ -979,11 +975,15 @@ components:
             pageTemplateId:
               $ref: "#/components/schemas/PageTemplateId"
             sourcePageTemplateId:
-              $ref: "#/components/schemas/PageTemplateId1"
+              anyOf:
+                - $ref: "#/components/schemas/PageTemplateId"
+                - type: "null"
             templateContent:
               type: string
             updatedAt:
-              $ref: "#/components/schemas/DeletedAt"
+              anyOf:
+                - $ref: "#/components/schemas/CreatedAt"
+                - type: "null"
             version:
               type: number
           required:
@@ -1035,17 +1035,18 @@ components:
         url:
           $ref: "#/components/schemas/Url"
         events:
-          nullable: true
-          type: array
-          items:
-            type: string
-            enum:
-              - page.version.created
-              - page.version.processed
-              - page.version.deleted
-              - form.submitted
-              - form.enriched
-              - form.enrichment_failed
+          anyOf:
+            - type: array
+              items:
+                type: string
+                enum:
+                  - page.version.created
+                  - page.version.processed
+                  - page.version.deleted
+                  - form.submitted
+                  - form.enriched
+                  - form.enrichment_failed
+            - type: "null"
         active:
           description: Whether the subscription is active
           type: boolean
@@ -1071,40 +1072,49 @@ components:
       type: object
       properties:
         borderColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         buttonBackgroundColor:
           type: string
         buttonTextColor:
           type: string
         faviconFileId:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         faviconUrl:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         logoFileId:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         logoIconFileId:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         logoIconUrl:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         logoUrl:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         mutedTextColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         pageBackgroundColor:
           type: string
         pageForegroundColor:
           type: string
         secondaryAccentColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         sectionCardHighlightColor:
           type: string
       required:
@@ -1118,100 +1128,37 @@ components:
       type: object
       properties:
         borderColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         buttonBackgroundColor:
           type: string
         buttonTextColor:
           type: string
         favicon:
           anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - url
-                url:
-                  $ref: "#/components/schemas/Url"
-              required:
-                - type
-                - url
-              additionalProperties: false
-            - type: object
-              properties:
-                fileId:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - file
-              required:
-                - fileId
-                - type
-              additionalProperties: false
+            - $ref: "#/components/schemas/TypeUrlSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
         logo:
           anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - url
-                url:
-                  $ref: "#/components/schemas/Url"
-              required:
-                - type
-                - url
-              additionalProperties: false
-            - type: object
-              properties:
-                fileId:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - file
-              required:
-                - fileId
-                - type
-              additionalProperties: false
+            - $ref: "#/components/schemas/TypeUrlSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
         logoIcon:
           anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - url
-                url:
-                  $ref: "#/components/schemas/Url"
-              required:
-                - type
-                - url
-              additionalProperties: false
-            - type: object
-              properties:
-                fileId:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - file
-              required:
-                - fileId
-                - type
-              additionalProperties: false
+            - $ref: "#/components/schemas/TypeUrlSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
         mutedTextColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         pageBackgroundColor:
           type: string
         pageForegroundColor:
           type: string
         secondaryAccentColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         sectionCardHighlightColor:
           type: string
       required:
@@ -1228,100 +1175,37 @@ components:
       type: object
       properties:
         borderColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         buttonBackgroundColor:
           type: string
         buttonTextColor:
           type: string
         favicon:
           anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - url
-                url:
-                  $ref: "#/components/schemas/Url"
-              required:
-                - type
-                - url
-              additionalProperties: false
-            - type: object
-              properties:
-                fileId:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - file
-              required:
-                - fileId
-                - type
-              additionalProperties: false
+            - $ref: "#/components/schemas/TypeUrlSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
         logo:
           anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - url
-                url:
-                  $ref: "#/components/schemas/Url"
-              required:
-                - type
-                - url
-              additionalProperties: false
-            - type: object
-              properties:
-                fileId:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - file
-              required:
-                - fileId
-                - type
-              additionalProperties: false
+            - $ref: "#/components/schemas/TypeUrlSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
         logoIcon:
           anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - url
-                url:
-                  $ref: "#/components/schemas/Url"
-              required:
-                - type
-                - url
-              additionalProperties: false
-            - type: object
-              properties:
-                fileId:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - file
-              required:
-                - fileId
-                - type
-              additionalProperties: false
+            - $ref: "#/components/schemas/TypeUrlSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
         mutedTextColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         pageBackgroundColor:
           type: string
         pageForegroundColor:
           type: string
         secondaryAccentColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         sectionCardHighlightColor:
           type: string
       additionalProperties: false
@@ -1390,8 +1274,7 @@ components:
                         type: string
                       ctaType:
                         type: string
-                        enum:
-                          - open-url
+                        const: open-url
                       url:
                         $ref: "#/components/schemas/Url"
                     required:
@@ -1416,8 +1299,7 @@ components:
                         type: string
                       ctaType:
                         type: string
-                        enum:
-                          - calendly-appointment
+                        const: calendly-appointment
                     required:
                       - callToActionIndex
                       - isActionCTA
@@ -1427,7 +1309,9 @@ components:
                       - ctaType
                     additionalProperties: false
             deletedAt:
-              $ref: "#/components/schemas/DeletedAt"
+              anyOf:
+                - $ref: "#/components/schemas/CreatedAt"
+                - type: "null"
             footerLinks:
               type: array
               items:
