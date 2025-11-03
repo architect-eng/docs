@@ -148,13 +148,13 @@ components:
             $ref: "#/components/schemas/Error"
       description: Error response - covers authentication, authorization, rate limiting, and server errors
     DeleteBrandResponseResponse:
-      description: Success
+      description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/DeleteBrandResponse"
     GetTemplateResponse:
-      description: Success
+      description: Successful operation
       content:
         application/json:
           schema:
@@ -166,37 +166,31 @@ components:
             $ref: "#/components/schemas/Error"
       description: Resource not found
     PostBrandResponse:
-      description: Success
+      description: Brand created successfully
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PostBrand"
-    PostPageGroupResponse:
-      description: Success
+    PostDuplicateResponse:
+      description: Template not found - please check the template ID and ensure it exists in your tenant
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PostPageGroup"
-    PostPageResponse:
-      description: Success
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/PostPage"
+            $ref: "#/components/schemas/PostDuplicate"
     PostTemplateResponse:
-      description: Success
+      description: Template created successfully
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PostTemplate"
     PostVersionResponse:
-      description: Success
+      description: PageVersion created successfully
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PostVersion"
     PostWebhookSubscriptionResponse:
-      description: Success
+      description: WebhookSubscription created successfully
       content:
         application/json:
           schema:
@@ -553,65 +547,53 @@ components:
           items:
             type: object
             properties:
+              brandId:
+                type: string
               createdAt:
                 $ref: "#/components/schemas/CreatedAt"
+              ctas:
+                type: array
+                items: {}
+              deletedAt:
+                $ref: "#/components/schemas/DeletedAt"
+              footerLinks:
+                type: array
+                items: {}
               name:
                 type: string
-              pageGoal:
+              pageContext:
                 type: string
-              pageId:
+              pageGroupId:
                 type: string
               pagesCount:
                 type: number
-              pageUrl:
+              pageTemplateId:
                 type: string
               scripts:
                 type: array
-                items:
-                  type: object
-                  properties:
-                    content:
-                      type: string
-                    enabled:
-                      type: boolean
-                    id:
-                      type: string
-                    location:
-                      type: string
-                      enum:
-                        - head
-                        - body
-                    name:
-                      type: string
-                  required:
-                    - content
-                    - enabled
-                    - id
-                    - location
-                    - name
-                  additionalProperties: false
-              slug:
-                type: string
+                items: {}
               status:
                 type: string
-                enum:
-                  - draft
-                  - published
-                  - archived
+              tenantId:
+                type: string
               title:
                 type: string
               updatedAt:
                 $ref: "#/components/schemas/CreatedAt"
             required:
+              - brandId
               - createdAt
+              - ctas
+              - deletedAt
+              - footerLinks
               - name
-              - pageGoal
-              - pageId
+              - pageContext
+              - pageGroupId
               - pagesCount
-              - pageUrl
+              - pageTemplateId
               - scripts
-              - slug
               - status
+              - tenantId
               - title
               - updatedAt
             additionalProperties: false
@@ -627,28 +609,52 @@ components:
     GetPageGroupResponse:
       type: object
       properties:
+        brandId:
+          type: string
         createdAt:
           $ref: "#/components/schemas/CreatedAt"
+        ctas:
+          type: array
+          items: {}
         deletedAt:
           $ref: "#/components/schemas/DeletedAt"
-        id:
+        footerLinks:
+          type: array
+          items: {}
+        name:
           type: string
-        slug:
+        pageContext:
           type: string
+        pageId:
+          type: string
+        pageTemplateId:
+          type: string
+        scripts:
+          type: array
+          items: {}
         tenantId:
           type: string
         title:
           type: string
         updatedAt:
           $ref: "#/components/schemas/CreatedAt"
+        variantsCount:
+          type: number
       required:
+        - brandId
         - createdAt
+        - ctas
         - deletedAt
-        - id
-        - slug
+        - footerLinks
+        - name
+        - pageContext
+        - pageId
+        - pageTemplateId
+        - scripts
         - tenantId
         - title
         - updatedAt
+        - variantsCount
       additionalProperties: false
     GetSessionCount:
       type: object
@@ -852,6 +858,22 @@ components:
       required:
         - brand
       additionalProperties: false
+    PostDuplicate:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        statusCode:
+          type: number
+          enum:
+            - 404
+      required:
+        - error
+        - message
+        - statusCode
+      additionalProperties: false
     PostPage:
       type: object
       properties:
@@ -995,6 +1017,7 @@ components:
             - draft
             - published
             - archived
+            - cancelled
         versionNumber:
           type: number
       required:
@@ -1570,7 +1593,7 @@ paths:
       operationId: healthCheck
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1582,7 +1605,7 @@ paths:
       operationId: listBrands
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1597,8 +1620,6 @@ paths:
       description: Create a new brand for the authenticated tenant
       operationId: createBrand
       responses:
-        "200":
-          $ref: "#/components/responses/PostBrandResponse"
         "201":
           $ref: "#/components/responses/PostBrandResponse"
       summary: Create brand
@@ -1656,7 +1677,7 @@ paths:
       operationId: listPageGroups
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1677,10 +1698,12 @@ paths:
       description: Create a new page group for the authenticated tenant
       operationId: createPageGroup
       responses:
-        "200":
-          $ref: "#/components/responses/PostPageGroupResponse"
         "201":
-          $ref: "#/components/responses/PostPageGroupResponse"
+          description: PageGroup created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostPageGroup"
       summary: Create a new page group
       tags:
         - Page Groups
@@ -1696,7 +1719,7 @@ paths:
       operationId: getPageGroup
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1711,7 +1734,7 @@ paths:
       operationId: updatePageGroup
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1732,7 +1755,7 @@ paths:
       operationId: deletePageGroup
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1748,7 +1771,7 @@ paths:
       operationId: listPagesInGroup
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1764,10 +1787,12 @@ paths:
       description: Create a new page within a page group
       operationId: addPageToGroup
       responses:
-        "200":
-          $ref: "#/components/responses/PostPageResponse"
         "201":
-          $ref: "#/components/responses/PostPageResponse"
+          description: PageToGroup created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostPage"
       summary: Create a new page in a page group
       tags:
         - Pages
@@ -1785,7 +1810,7 @@ paths:
       operationId: getPageSessionCount
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1802,7 +1827,7 @@ paths:
       operationId: getPageStatisticsInGroup
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1838,7 +1863,7 @@ paths:
       operationId: getPageStatisticsByUTMGroup
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1880,7 +1905,7 @@ paths:
       operationId: listPageVersions
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1908,8 +1933,6 @@ paths:
       description: Create a new version of the specified page with automatic type-safe Zod validation
       operationId: createPageVersion
       responses:
-        "200":
-          $ref: "#/components/responses/PostVersionResponse"
         "201":
           $ref: "#/components/responses/PostVersionResponse"
       summary: Create page version
@@ -1962,7 +1985,7 @@ paths:
       operationId: deletePageVersion
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1980,7 +2003,7 @@ paths:
       operationId: getAvailableUTMParameters
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -2007,8 +2030,6 @@ paths:
       description: Create a new template for the authenticated tenant
       operationId: createTemplate
       responses:
-        "200":
-          $ref: "#/components/responses/PostTemplateResponse"
         "201":
           $ref: "#/components/responses/PostTemplateResponse"
       summary: Create template
@@ -2078,10 +2099,12 @@ paths:
       description: Duplicate an existing template
       operationId: duplicateTemplate
       responses:
-        "200":
-          $ref: "#/components/responses/PostTemplateResponse"
         "201":
           $ref: "#/components/responses/PostTemplateResponse"
+        "404":
+          $ref: "#/components/responses/PostDuplicateResponse"
+        "500":
+          $ref: "#/components/responses/PostDuplicateResponse"
       summary: Duplicate template
       tags:
         - Templates
@@ -2099,7 +2122,7 @@ paths:
       operationId: listWebhookSubscriptions
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -2111,7 +2134,7 @@ paths:
       description: Create a webhook subscription
       operationId: createWebhookSubscription
       responses:
-        "200":
+        "201":
           $ref: "#/components/responses/PostWebhookSubscriptionResponse"
       summary: Create webhook subscription
       tags:
