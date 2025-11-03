@@ -379,7 +379,7 @@ components:
             enum:
               - page.version.created
               - page.version.processed
-              - page.version.deleted
+              - page.version.published
               - form.submitted
               - form.enriched
               - form.enrichment_failed
@@ -1054,7 +1054,7 @@ components:
             enum:
               - page.version.created
               - page.version.processed
-              - page.version.deleted
+              - page.version.published
               - form.submitted
               - form.enriched
               - form.enrichment_failed
@@ -1586,7 +1586,7 @@ components:
             enum:
               - page.version.created
               - page.version.processed
-              - page.version.deleted
+              - page.version.published
               - form.submitted
               - form.enriched
               - form.enrichment_failed
