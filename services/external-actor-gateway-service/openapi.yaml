@@ -202,18 +202,49 @@ components:
           schema:
             $ref: "#/components/schemas/PostWebhookSubscription"
   schemas:
-    ImageReferenceUrl:
+    ActionIdActionTypeButtonTitlePurposeUrlSchema:
       type: object
       properties:
-        type:
+        actionId:
+          $ref: "#/components/schemas/ActionId"
+        purpose:
+          type: string
+        buttonTitle:
+          type: string
+        actionType:
           type: string
           enum:
-            - url
+            - open-url
         url:
           $ref: "#/components/schemas/Url"
       required:
-        - type
+        - purpose
+        - buttonTitle
+        - actionType
         - url
+      additionalProperties: false
+    ActionIdActionTypeButtonTitleFormIdFormInstructionsPurposeSchema:
+      type: object
+      properties:
+        actionId:
+          $ref: "#/components/schemas/ActionId"
+        purpose:
+          type: string
+        buttonTitle:
+          type: string
+        actionType:
+          type: string
+          enum:
+            - form
+        formId:
+          $ref: "#/components/schemas/FormId"
+        formInstructions:
+          type: string
+      required:
+        - purpose
+        - buttonTitle
+        - actionType
+        - formId
       additionalProperties: false
     ImageReferenceFile:
       type: object
@@ -228,6 +259,22 @@ components:
         - fileId
         - type
       additionalProperties: false
+    ImageReferenceUrl:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - url
+        url:
+          $ref: "#/components/schemas/Url"
+      required:
+        - type
+        - url
+      additionalProperties: false
+    ActionId:
+      type: string
+      pattern: ^pagegroupaction_
     ArraySchema:
       type: array
       items:
@@ -325,6 +372,55 @@ components:
           $ref: "#/components/schemas/PageTemplateId"
         title:
           type: string
+        actions:
+          type: array
+          items:
+            anyOf:
+              - type: object
+                properties:
+                  actionId:
+                    $ref: "#/components/schemas/ActionId"
+                  purpose:
+                    type: string
+                  buttonTitle:
+                    type: string
+                  actionType:
+                    type: string
+                    enum:
+                      - open-url
+                  url:
+                    $ref: "#/components/schemas/Url"
+                required:
+                  - purpose
+                  - buttonTitle
+                  - actionType
+                  - url
+                additionalProperties: false
+              - type: object
+                properties:
+                  actionId:
+                    $ref: "#/components/schemas/ActionId"
+                  purpose:
+                    type: string
+                  buttonTitle:
+                    type: string
+                  actionType:
+                    type: string
+                    enum:
+                      - form
+                  formId:
+                    $ref: "#/components/schemas/FormId"
+                  formInstructions:
+                    type: string
+                required:
+                  - purpose
+                  - buttonTitle
+                  - actionType
+                  - formId
+                additionalProperties: false
+        headerActionId:
+          type: string
+          pattern: ^pagegroupaction_[0-9a-z]{26}$
       required:
         - brandId
         - name
@@ -475,6 +571,9 @@ components:
         - message
         - requestId
       type: object
+    FormId:
+      type: string
+      pattern: ^form_
     GetBrand:
       type: object
       properties:
@@ -1342,6 +1441,56 @@ components:
             - Welcome to Our Amazing Product
           type: string
           minLength: 1
+        actions:
+          type: array
+          items:
+            anyOf:
+              - type: object
+                properties:
+                  actionId:
+                    $ref: "#/components/schemas/ActionId"
+                  purpose:
+                    type: string
+                  buttonTitle:
+                    type: string
+                  actionType:
+                    type: string
+                    enum:
+                      - open-url
+                  url:
+                    $ref: "#/components/schemas/Url"
+                required:
+                  - purpose
+                  - buttonTitle
+                  - actionType
+                  - url
+                additionalProperties: false
+              - type: object
+                properties:
+                  actionId:
+                    $ref: "#/components/schemas/ActionId"
+                  purpose:
+                    type: string
+                  buttonTitle:
+                    type: string
+                  actionType:
+                    type: string
+                    enum:
+                      - form
+                  formId:
+                    $ref: "#/components/schemas/FormId"
+                  formInstructions:
+                    type: string
+                required:
+                  - purpose
+                  - buttonTitle
+                  - actionType
+                  - formId
+                additionalProperties: false
+        headerActionId:
+          nullable: true
+          type: string
+          pattern: ^pagegroupaction_
       additionalProperties: false
     UpdatePageGroupResponse:
       type: object
@@ -1351,58 +1500,62 @@ components:
           properties:
             brandId:
               $ref: "#/components/schemas/BrandId"
-            ctas:
+            actions:
               type: array
               items:
                 anyOf:
                   - type: object
                     properties:
-                      callToActionIndex:
+                      actionId:
+                        $ref: "#/components/schemas/ActionId"
+                      actionIndex:
                         type: number
-                      isActionCTA:
-                        type: boolean
                       purpose:
                         type: string
                       buttonTitle:
                         type: string
-                      ctaType:
+                      actionType:
                         type: string
                         enum:
                           - open-url
                       url:
                         $ref: "#/components/schemas/Url"
                     required:
-                      - callToActionIndex
-                      - isActionCTA
+                      - actionId
+                      - actionIndex
                       - purpose
                       - buttonTitle
-                      - ctaType
+                      - actionType
                       - url
                     additionalProperties: false
                   - type: object
                     properties:
-                      callToActionIndex:
+                      actionId:
+                        $ref: "#/components/schemas/ActionId"
+                      actionIndex:
                         type: number
-                      isActionCTA:
-                        type: boolean
                       purpose:
                         type: string
                       buttonTitle:
                         type: string
-                      calendlyAppointmentEventTypeId:
-                        type: string
-                      ctaType:
+                      actionType:
                         type: string
                         enum:
-                          - calendly-appointment
+                          - form
+                      formId:
+                        $ref: "#/components/schemas/FormId"
+                      formInstructions:
+                        type: string
                     required:
-                      - callToActionIndex
-                      - isActionCTA
+                      - actionId
+                      - actionIndex
                       - purpose
                       - buttonTitle
-                      - calendlyAppointmentEventTypeId
-                      - ctaType
+                      - actionType
+                      - formId
                     additionalProperties: false
+            headerActionId:
+              $ref: "#/components/schemas/ActionId"
             deletedAt:
               $ref: "#/components/schemas/DeletedAt"
             footerLinks:
@@ -1505,7 +1658,7 @@ components:
               $ref: "#/components/schemas/CreatedAt"
           required:
             - brandId
-            - ctas
+            - actions
             - deletedAt
             - footerLinks
             - name
@@ -1674,7 +1827,7 @@ paths:
           schema:
             type: string
     post:
-      description: Create a new page group for the authenticated tenant
+      description: Create a new page group for the authenticated tenant, including optional action definitions and header selection
       operationId: createPageGroup
       responses:
         "200":
