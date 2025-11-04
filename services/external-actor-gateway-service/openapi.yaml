@@ -159,6 +159,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/GetTemplate"
+    GetWebhookSubscriptionResponseResponse:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetWebhookSubscriptionResponse"
     NotFound:
       content:
         application/json:
@@ -195,12 +201,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PostVersion"
-    PostWebhookSubscriptionResponse:
-      description: Success
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/PostWebhookSubscription"
   schemas:
     ImageReferenceUrl:
       type: object
@@ -231,7 +231,7 @@ components:
     ArraySchema:
       type: array
       items:
-        $ref: "#/components/schemas/PostWebhookSubscription"
+        $ref: "#/components/schemas/GetWebhookSubscriptionResponse"
     Brand:
       type: object
       properties:
@@ -816,6 +816,41 @@ components:
       required:
         - versions
       additionalProperties: false
+    GetWebhookSubscriptionResponse:
+      type: object
+      properties:
+        id:
+          description: Unique subscription identifier
+          type: string
+        url:
+          $ref: "#/components/schemas/Url"
+        events:
+          nullable: true
+          type: array
+          items:
+            type: string
+            enum:
+              - page.version.created
+              - page.version.processed
+              - page.version.published
+              - form.submitted
+              - form.enriched
+              - form.enrichment_failed
+        active:
+          description: Whether the subscription is active
+          type: boolean
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/CreatedAt"
+      required:
+        - id
+        - url
+        - events
+        - active
+        - createdAt
+        - updatedAt
+      additionalProperties: false
     PageGroupId:
       description: TypeID string identifier for the page group, always starts with "page_"
       examples:
@@ -1034,6 +1069,9 @@ components:
           $ref: "#/components/schemas/CreatedAt"
         updatedAt:
           $ref: "#/components/schemas/CreatedAt"
+        signingSecret:
+          description: The signing secret for the subscription
+          type: string
       required:
         - id
         - url
@@ -1041,6 +1079,7 @@ components:
         - active
         - createdAt
         - updatedAt
+        - signingSecret
       additionalProperties: false
     TenantId:
       description: TypeID string identifier for the tenant this page group belongs to
@@ -2116,7 +2155,11 @@ paths:
       operationId: createWebhookSubscription
       responses:
         "200":
-          $ref: "#/components/responses/PostWebhookSubscriptionResponse"
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostWebhookSubscription"
       summary: Create webhook subscription
       tags:
         - Webhook Subscriptions
@@ -2132,7 +2175,7 @@ paths:
       operationId: getWebhookSubscription
       responses:
         "200":
-          $ref: "#/components/responses/PostWebhookSubscriptionResponse"
+          $ref: "#/components/responses/GetWebhookSubscriptionResponseResponse"
       summary: Get webhook subscription
       tags:
         - Webhook Subscriptions
@@ -2143,7 +2186,7 @@ paths:
       operationId: updateWebhookSubscription
       responses:
         "200":
-          $ref: "#/components/responses/PostWebhookSubscriptionResponse"
+          $ref: "#/components/responses/GetWebhookSubscriptionResponseResponse"
       summary: Update webhook subscription
       tags:
         - Webhook Subscriptions
@@ -2166,6 +2209,222 @@ paths:
         - Webhook Subscriptions
       parameters:
         - $ref: "#/components/parameters/SubscriptionIdPath"
+webhooks:
+  pageVersionCreated:
+    post:
+      description: Triggered when a new page version is created. The webhook payload contains details about the newly created page version including page ID, version ID, and creation timestamp.
+      responses:
+        "200":
+          description: Webhook received successfully
+      summary: Page Version Created
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  description: Unique identifier for this event
+                  examples:
+                    - evt_01j5k9m7n8p9q2r3s4t5v6w7x8
+                  type: string
+                tenantId:
+                  description: Tenant identifier for the event
+                  examples:
+                    - tenant_01j5k9m7n8p9q2r3s4t5v6w7x8
+                  type: string
+                timestamp:
+                  description: Timestamp when the event was processed
+                  examples:
+                    - 2024-01-15T10:30:00Z
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                payload:
+                  type: object
+                  properties:
+                    type:
+                      description: Event type identifier
+                      type: string
+                      enum:
+                        - page.version.created
+                    pageId:
+                      description: Unique identifier for the page
+                      examples:
+                        - page_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                    versionId:
+                      description: Unique identifier for the page version that was created
+                      examples:
+                        - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                      pattern: ^pageversion_[0-9a-z]{26}$
+                    createdAt:
+                      description: Timestamp when the page version was created
+                      examples:
+                        - 2024-01-15T10:30:00Z
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                  required:
+                    - type
+                    - pageId
+                    - versionId
+                    - createdAt
+                  additionalProperties: false
+              required:
+                - eventId
+                - tenantId
+                - timestamp
+                - payload
+              additionalProperties: false
+        description: Triggered when a new page version is created. The webhook payload contains details about the newly created page version including page ID, version ID, and creation timestamp.
+        required: true
+  pageVersionProcessed:
+    post:
+      description: Triggered when a page version is processed. The webhook payload contains details about the processed page version including page ID, version ID, and processing timestamp.
+      responses:
+        "200":
+          description: Webhook received successfully
+      summary: Page Version Processed
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  description: Unique identifier for this event
+                  examples:
+                    - evt_01j5k9m7n8p9q2r3s4t5v6w7x8
+                  type: string
+                tenantId:
+                  description: Tenant identifier for the event
+                  examples:
+                    - tenant_01j5k9m7n8p9q2r3s4t5v6w7x8
+                  type: string
+                timestamp:
+                  description: Timestamp when the event was processed
+                  examples:
+                    - 2024-01-15T10:30:00Z
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                payload:
+                  type: object
+                  properties:
+                    type:
+                      description: Event type identifier
+                      type: string
+                      enum:
+                        - page.version.processed
+                    pageId:
+                      description: Unique identifier for the page
+                      examples:
+                        - page_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                    versionId:
+                      description: Unique identifier for the page version that was processed
+                      examples:
+                        - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                    processedAt:
+                      description: Timestamp when the page version was processed
+                      examples:
+                        - 2024-01-15T10:30:00Z
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                  required:
+                    - type
+                    - pageId
+                    - versionId
+                    - processedAt
+                  additionalProperties: false
+              required:
+                - eventId
+                - tenantId
+                - timestamp
+                - payload
+              additionalProperties: false
+        description: Triggered when a page version is processed. The webhook payload contains details about the processed page version including page ID, version ID, and processing timestamp.
+        required: true
+  pageVersionPublished:
+    post:
+      description: Triggered when a page version is published. The webhook payload contains details about the published page version including page ID, version ID, and publishing timestamp.
+      responses:
+        "200":
+          description: Webhook received successfully
+      summary: Page Version Published
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  description: Unique identifier for this event
+                  examples:
+                    - evt_01j5k9m7n8p9q2r3s4t5v6w7x8
+                  type: string
+                tenantId:
+                  description: Tenant identifier for the event
+                  examples:
+                    - tenant_01j5k9m7n8p9q2r3s4t5v6w7x8
+                  type: string
+                timestamp:
+                  description: Timestamp when the event was processed
+                  examples:
+                    - 2024-01-15T10:30:00Z
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                payload:
+                  type: object
+                  properties:
+                    type:
+                      description: Event type identifier
+                      type: string
+                      enum:
+                        - page.version.published
+                    pageId:
+                      description: Unique identifier for the page
+                      examples:
+                        - page_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                    versionId:
+                      description: Unique identifier for the page version that was published
+                      examples:
+                        - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                      pattern: ^pageversion_[0-9a-z]{26}$
+                    publishedAt:
+                      description: Timestamp when the page version was published
+                      examples:
+                        - 2024-01-15T10:30:00Z
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                  required:
+                    - type
+                    - pageId
+                    - versionId
+                    - publishedAt
+                  additionalProperties: false
+              required:
+                - eventId
+                - tenantId
+                - timestamp
+                - payload
+              additionalProperties: false
+        description: Triggered when a page version is published. The webhook payload contains details about the published page version including page ID, version ID, and publishing timestamp.
+        required: true
 tags:
   - name: Page Groups
     description: Page group management operations
