@@ -2243,100 +2243,37 @@ webhooks:
                   format: date-time
                   pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
                 payload:
-                  description: Event-specific payload data
-                  anyOf:
-                    - type: object
-                      properties:
-                        type:
-                          description: Event type identifier
-                          type: string
-                          enum:
-                            - page.version.created
-                        pageId:
-                          description: Unique identifier for the page
-                          examples:
-                            - page_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                        versionId:
-                          description: Unique identifier for the page version that was created
-                          examples:
-                            - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                          pattern: ^pageversion_[0-9a-z]{26}$
-                        createdAt:
-                          description: Timestamp when the page version was created
-                          examples:
-                            - 2024-01-15T10:30:00Z
-                          type: string
-                          format: date-time
-                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                      required:
-                        - type
-                        - pageId
-                        - versionId
-                        - createdAt
-                      additionalProperties: false
-                    - type: object
-                      properties:
-                        type:
-                          description: Event type identifier
-                          type: string
-                          enum:
-                            - page.version.processed
-                        pageId:
-                          description: Unique identifier for the page
-                          examples:
-                            - page_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                        versionId:
-                          description: Unique identifier for the page version that was processed
-                          examples:
-                            - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                        processedAt:
-                          description: Timestamp when the page version was processed
-                          examples:
-                            - 2024-01-15T10:30:00Z
-                          type: string
-                          format: date-time
-                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                      required:
-                        - type
-                        - pageId
-                        - versionId
-                        - processedAt
-                      additionalProperties: false
-                    - type: object
-                      properties:
-                        type:
-                          description: Event type identifier
-                          type: string
-                          enum:
-                            - page.version.published
-                        pageId:
-                          description: Unique identifier for the page
-                          examples:
-                            - page_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                        versionId:
-                          description: Unique identifier for the page version that was published
-                          examples:
-                            - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                          pattern: ^pageversion_[0-9a-z]{26}$
-                        publishedAt:
-                          description: Timestamp when the page version was published
-                          examples:
-                            - 2024-01-15T10:30:00Z
-                          type: string
-                          format: date-time
-                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                      required:
-                        - type
-                        - pageId
-                        - versionId
-                        - publishedAt
-                      additionalProperties: false
+                  type: object
+                  properties:
+                    type:
+                      description: Event type identifier
+                      type: string
+                      enum:
+                        - page.version.created
+                    pageId:
+                      description: Unique identifier for the page
+                      examples:
+                        - page_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                    versionId:
+                      description: Unique identifier for the page version that was created
+                      examples:
+                        - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                      pattern: ^pageversion_[0-9a-z]{26}$
+                    createdAt:
+                      description: Timestamp when the page version was created
+                      examples:
+                        - 2024-01-15T10:30:00Z
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                  required:
+                    - type
+                    - pageId
+                    - versionId
+                    - createdAt
+                  additionalProperties: false
               required:
                 - eventId
                 - tenantId
@@ -2378,100 +2315,36 @@ webhooks:
                   format: date-time
                   pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
                 payload:
-                  description: Event-specific payload data
-                  anyOf:
-                    - type: object
-                      properties:
-                        type:
-                          description: Event type identifier
-                          type: string
-                          enum:
-                            - page.version.created
-                        pageId:
-                          description: Unique identifier for the page
-                          examples:
-                            - page_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                        versionId:
-                          description: Unique identifier for the page version that was created
-                          examples:
-                            - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                          pattern: ^pageversion_[0-9a-z]{26}$
-                        createdAt:
-                          description: Timestamp when the page version was created
-                          examples:
-                            - 2024-01-15T10:30:00Z
-                          type: string
-                          format: date-time
-                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                      required:
-                        - type
-                        - pageId
-                        - versionId
-                        - createdAt
-                      additionalProperties: false
-                    - type: object
-                      properties:
-                        type:
-                          description: Event type identifier
-                          type: string
-                          enum:
-                            - page.version.processed
-                        pageId:
-                          description: Unique identifier for the page
-                          examples:
-                            - page_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                        versionId:
-                          description: Unique identifier for the page version that was processed
-                          examples:
-                            - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                        processedAt:
-                          description: Timestamp when the page version was processed
-                          examples:
-                            - 2024-01-15T10:30:00Z
-                          type: string
-                          format: date-time
-                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                      required:
-                        - type
-                        - pageId
-                        - versionId
-                        - processedAt
-                      additionalProperties: false
-                    - type: object
-                      properties:
-                        type:
-                          description: Event type identifier
-                          type: string
-                          enum:
-                            - page.version.published
-                        pageId:
-                          description: Unique identifier for the page
-                          examples:
-                            - page_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                        versionId:
-                          description: Unique identifier for the page version that was published
-                          examples:
-                            - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                          pattern: ^pageversion_[0-9a-z]{26}$
-                        publishedAt:
-                          description: Timestamp when the page version was published
-                          examples:
-                            - 2024-01-15T10:30:00Z
-                          type: string
-                          format: date-time
-                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                      required:
-                        - type
-                        - pageId
-                        - versionId
-                        - publishedAt
-                      additionalProperties: false
+                  type: object
+                  properties:
+                    type:
+                      description: Event type identifier
+                      type: string
+                      enum:
+                        - page.version.processed
+                    pageId:
+                      description: Unique identifier for the page
+                      examples:
+                        - page_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                    versionId:
+                      description: Unique identifier for the page version that was processed
+                      examples:
+                        - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                    processedAt:
+                      description: Timestamp when the page version was processed
+                      examples:
+                        - 2024-01-15T10:30:00Z
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                  required:
+                    - type
+                    - pageId
+                    - versionId
+                    - processedAt
+                  additionalProperties: false
               required:
                 - eventId
                 - tenantId
@@ -2513,100 +2386,37 @@ webhooks:
                   format: date-time
                   pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
                 payload:
-                  description: Event-specific payload data
-                  anyOf:
-                    - type: object
-                      properties:
-                        type:
-                          description: Event type identifier
-                          type: string
-                          enum:
-                            - page.version.created
-                        pageId:
-                          description: Unique identifier for the page
-                          examples:
-                            - page_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                        versionId:
-                          description: Unique identifier for the page version that was created
-                          examples:
-                            - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                          pattern: ^pageversion_[0-9a-z]{26}$
-                        createdAt:
-                          description: Timestamp when the page version was created
-                          examples:
-                            - 2024-01-15T10:30:00Z
-                          type: string
-                          format: date-time
-                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                      required:
-                        - type
-                        - pageId
-                        - versionId
-                        - createdAt
-                      additionalProperties: false
-                    - type: object
-                      properties:
-                        type:
-                          description: Event type identifier
-                          type: string
-                          enum:
-                            - page.version.processed
-                        pageId:
-                          description: Unique identifier for the page
-                          examples:
-                            - page_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                        versionId:
-                          description: Unique identifier for the page version that was processed
-                          examples:
-                            - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                        processedAt:
-                          description: Timestamp when the page version was processed
-                          examples:
-                            - 2024-01-15T10:30:00Z
-                          type: string
-                          format: date-time
-                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                      required:
-                        - type
-                        - pageId
-                        - versionId
-                        - processedAt
-                      additionalProperties: false
-                    - type: object
-                      properties:
-                        type:
-                          description: Event type identifier
-                          type: string
-                          enum:
-                            - page.version.published
-                        pageId:
-                          description: Unique identifier for the page
-                          examples:
-                            - page_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                        versionId:
-                          description: Unique identifier for the page version that was published
-                          examples:
-                            - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
-                          type: string
-                          pattern: ^pageversion_[0-9a-z]{26}$
-                        publishedAt:
-                          description: Timestamp when the page version was published
-                          examples:
-                            - 2024-01-15T10:30:00Z
-                          type: string
-                          format: date-time
-                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                      required:
-                        - type
-                        - pageId
-                        - versionId
-                        - publishedAt
-                      additionalProperties: false
+                  type: object
+                  properties:
+                    type:
+                      description: Event type identifier
+                      type: string
+                      enum:
+                        - page.version.published
+                    pageId:
+                      description: Unique identifier for the page
+                      examples:
+                        - page_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                    versionId:
+                      description: Unique identifier for the page version that was published
+                      examples:
+                        - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                      pattern: ^pageversion_[0-9a-z]{26}$
+                    publishedAt:
+                      description: Timestamp when the page version was published
+                      examples:
+                        - 2024-01-15T10:30:00Z
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                  required:
+                    - type
+                    - pageId
+                    - versionId
+                    - publishedAt
+                  additionalProperties: false
               required:
                 - eventId
                 - tenantId
