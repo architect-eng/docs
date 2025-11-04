@@ -195,6 +195,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PostWebhookSubscription"
+    SchemaResponse:
+      description: Not implemented
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Schema"
   schemas:
     TypeUrlSchema:
       type: object
@@ -224,41 +230,6 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/PostWebhookSubscription"
-    Brand:
-      type: object
-      properties:
-        brandId:
-          $ref: "#/components/schemas/BrandId"
-        companyHomePage:
-          $ref: "#/components/schemas/Url"
-        createdAt:
-          $ref: "#/components/schemas/CreatedAt"
-        name:
-          type: string
-        preferredAppearance:
-          type: string
-          enum:
-            - system
-            - light
-            - dark
-        tenantId:
-          type: string
-        themeDark:
-          $ref: "#/components/schemas/ThemeDark"
-        themeLight:
-          $ref: "#/components/schemas/ThemeDark"
-        updatedAt:
-          $ref: "#/components/schemas/CreatedAt"
-      required:
-        - brandId
-        - createdAt
-        - name
-        - preferredAppearance
-        - tenantId
-        - themeDark
-        - themeLight
-        - updatedAt
-      additionalProperties: false
     BrandId:
       examples:
         - brand_01j5k9m7n8p9q2r3s4t5v6w7x8
@@ -409,23 +380,6 @@ components:
         - id
         - success
       additionalProperties: false
-    DeletePageVersionResponse:
-      type: object
-      properties:
-        deletedVersionId:
-          type: string
-        message:
-          type: string
-        page_group_id:
-          type: string
-        page_id:
-          type: string
-      required:
-        - deletedVersionId
-        - message
-        - page_group_id
-        - page_id
-      additionalProperties: false
     Error:
       properties:
         code:
@@ -470,7 +424,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Brand"
+            $ref: "#/components/schemas/PostBrand"
         nextCursor:
           type: string
       required:
@@ -795,30 +749,24 @@ components:
     GetVersion:
       type: object
       properties:
-        versions:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostVersion"
+        page:
           type: object
           properties:
-            items:
-              type: array
-              items:
-                $ref: "#/components/schemas/PostVersion"
-            page:
-              type: object
-              properties:
-                hasMore:
-                  type: boolean
-                totalCount:
-                  type: number
-              required:
-                - hasMore
-                - totalCount
-              additionalProperties: false
+            hasMore:
+              type: boolean
+            totalCount:
+              type: number
           required:
-            - items
-            - page
+            - hasMore
+            - totalCount
           additionalProperties: false
       required:
-        - versions
+        - items
+        - page
       additionalProperties: false
     PageGroupId:
       description: TypeID string identifier for the page group, always starts with "page_"
@@ -846,10 +794,37 @@ components:
     PostBrand:
       type: object
       properties:
-        brand:
-          $ref: "#/components/schemas/Brand"
+        brandId:
+          $ref: "#/components/schemas/BrandId"
+        companyHomePage:
+          $ref: "#/components/schemas/Url"
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        name:
+          type: string
+        preferredAppearance:
+          type: string
+          enum:
+            - system
+            - light
+            - dark
+        tenantId:
+          type: string
+        themeDark:
+          $ref: "#/components/schemas/ThemeDark"
+        themeLight:
+          $ref: "#/components/schemas/ThemeDark"
+        updatedAt:
+          $ref: "#/components/schemas/CreatedAt"
       required:
-        - brand
+        - brandId
+        - createdAt
+        - name
+        - preferredAppearance
+        - tenantId
+        - themeDark
+        - themeLight
+        - updatedAt
       additionalProperties: false
     PostDuplicate:
       type: object
@@ -903,103 +878,91 @@ components:
     PostPageGroup:
       type: object
       properties:
-        page:
-          type: object
-          properties:
-            createdAt:
-              $ref: "#/components/schemas/CreatedAt"
-            id:
-              examples:
-                - page_01j5k9m7n8p9q2r3s4t5v6w7x8
-              type: string
-            name:
-              examples:
-                - Product Landing Page
-                - Q4 Campaign
-              type: string
-            context:
-              examples:
-                - Convert visitors into trial users
-                - Increase Q4 sales by 20%
-              type: string
-            pageUrl:
-              examples:
-                - https://example.com/product-landing
-              type: string
-            status:
-              examples:
-                - draft
-              type: string
-              enum:
-                - archived
-                - draft
-                - published
-            title:
-              examples:
-                - Welcome to Our Product
-                - Limited Time Offer
-              type: string
-            updatedAt:
-              $ref: "#/components/schemas/CreatedAt"
-          required:
-            - createdAt
-            - id
-            - name
-            - context
-            - pageUrl
-            - status
-            - title
-            - updatedAt
-          additionalProperties: false
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        id:
+          examples:
+            - page_01j5k9m7n8p9q2r3s4t5v6w7x8
+          type: string
+        name:
+          examples:
+            - Product Landing Page
+            - Q4 Campaign
+          type: string
+        context:
+          examples:
+            - Convert visitors into trial users
+            - Increase Q4 sales by 20%
+          type: string
+        pageUrl:
+          examples:
+            - https://example.com/product-landing
+          type: string
+        status:
+          examples:
+            - draft
+          type: string
+          enum:
+            - archived
+            - draft
+            - published
+        title:
+          examples:
+            - Welcome to Our Product
+            - Limited Time Offer
+          type: string
+        updatedAt:
+          $ref: "#/components/schemas/CreatedAt"
       required:
-        - page
+        - createdAt
+        - id
+        - name
+        - context
+        - pageUrl
+        - status
+        - title
+        - updatedAt
       additionalProperties: false
     PostTemplate:
       type: object
       properties:
-        template:
-          type: object
-          properties:
-            createdAt:
-              $ref: "#/components/schemas/CreatedAt"
-            description:
-              anyOf:
-                - type: string
-                - type: "null"
-            isEditable:
-              type: boolean
-            isSystem:
-              type: boolean
-            name:
-              type: string
-            pageTemplateId:
-              $ref: "#/components/schemas/PageTemplateId"
-            sourcePageTemplateId:
-              anyOf:
-                - $ref: "#/components/schemas/PageTemplateId"
-                - type: "null"
-            templateContent:
-              type: string
-            updatedAt:
-              anyOf:
-                - $ref: "#/components/schemas/CreatedAt"
-                - type: "null"
-            version:
-              type: number
-          required:
-            - createdAt
-            - description
-            - isEditable
-            - isSystem
-            - name
-            - pageTemplateId
-            - sourcePageTemplateId
-            - templateContent
-            - updatedAt
-            - version
-          additionalProperties: false
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+        isEditable:
+          type: boolean
+        isSystem:
+          type: boolean
+        name:
+          type: string
+        pageTemplateId:
+          $ref: "#/components/schemas/PageTemplateId"
+        sourcePageTemplateId:
+          anyOf:
+            - $ref: "#/components/schemas/PageTemplateId"
+            - type: "null"
+        templateContent:
+          type: string
+        updatedAt:
+          anyOf:
+            - $ref: "#/components/schemas/CreatedAt"
+            - type: "null"
+        version:
+          type: number
       required:
-        - template
+        - createdAt
+        - description
+        - isEditable
+        - isSystem
+        - name
+        - pageTemplateId
+        - sourcePageTemplateId
+        - templateContent
+        - updatedAt
+        - version
       additionalProperties: false
     PostVersion:
       type: object
@@ -1062,6 +1025,19 @@ components:
         - createdAt
         - updatedAt
       additionalProperties: false
+    Schema:
+      anyOf:
+        - $ref: "#/components/schemas/PostVersion"
+        - type: object
+          properties:
+            error:
+              type: string
+            message:
+              type: string
+          required:
+            - error
+            - message
+          additionalProperties: false
     TenantId:
       description: TypeID string identifier for the tenant this page group belongs to
       examples:
@@ -1849,8 +1825,8 @@ paths:
       description: Update an existing version of a page with partial data
       operationId: patchPageVersion
       responses:
-        "200":
-          $ref: "#/components/responses/PostVersionResponse"
+        "501":
+          $ref: "#/components/responses/SchemaResponse"
       summary: Update page version
       tags:
         - Page Versions
@@ -1868,12 +1844,8 @@ paths:
       description: Delete a specific version of a page
       operationId: deletePageVersion
       responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DeletePageVersionResponse"
+        "501":
+          $ref: "#/components/responses/SchemaResponse"
       summary: Delete page version
       tags:
         - Page Versions
