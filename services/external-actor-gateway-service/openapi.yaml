@@ -365,7 +365,9 @@ components:
       additionalProperties: false
     CreateVersionRequest:
       type: object
-      properties: {}
+      properties:
+        operationKey:
+          type: string
       additionalProperties: false
     CreateWebhookSubscriptionRequest:
       type: object
@@ -379,7 +381,7 @@ components:
             enum:
               - page.version.created
               - page.version.processed
-              - page.version.deleted
+              - page.version.published
               - form.submitted
               - form.enriched
               - form.enrichment_failed
@@ -841,6 +843,8 @@ components:
             - draft
             - published
             - archived
+        operationKey:
+          type: string
       required:
         - status
       additionalProperties: false
@@ -1019,7 +1023,7 @@ components:
             enum:
               - page.version.created
               - page.version.processed
-              - page.version.deleted
+              - page.version.published
               - form.submitted
               - form.enriched
               - form.enrichment_failed
@@ -1547,7 +1551,7 @@ components:
             enum:
               - page.version.created
               - page.version.processed
-              - page.version.deleted
+              - page.version.published
               - form.submitted
               - form.enriched
               - form.enrichment_failed
