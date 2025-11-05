@@ -159,6 +159,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/GetTemplate"
+    GetWebhookSubscriptionResponseResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetWebhookSubscriptionResponse"
     NotFound:
       content:
         application/json:
@@ -171,12 +177,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PostBrand"
-    PostDuplicateResponse:
+    PostDuplicate_0Response:
       description: Template not found - please check the template ID and ensure it exists in your tenant
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PostDuplicate"
+            $ref: "#/components/schemas/PostDuplicate_0"
     PostTemplateResponse:
       description: Template created successfully
       content:
@@ -189,12 +195,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PostVersion"
-    PostWebhookSubscriptionResponse:
-      description: WebhookSubscription created successfully
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/PostWebhookSubscription"
     SchemaResponse:
       description: Not implemented
       content:
@@ -202,18 +202,12 @@ components:
           schema:
             $ref: "#/components/schemas/Schema"
   schemas:
-    TypeUrlSchema:
-      type: object
-      properties:
-        type:
-          type: string
-          const: url
-        url:
-          $ref: "#/components/schemas/Url"
-      required:
-        - type
-        - url
-      additionalProperties: false
+    UnnamedSchema:
+      description: TypeID string identifier for the action that appears in the header
+      examples:
+        - pagegroupaction_01j5k9m7n8p9q2r3s4t5v6w7x8
+      type: string
+      pattern: ^pagegroupaction_[0-9a-z]{26}$
     FileIdTypeSchema:
       type: object
       properties:
@@ -226,10 +220,25 @@ components:
         - fileId
         - type
       additionalProperties: false
+    TypeUrlSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: url
+        url:
+          $ref: "#/components/schemas/Url"
+      required:
+        - type
+        - url
+      additionalProperties: false
+    ActionId:
+      type: string
+      pattern: ^pagegroupaction_
     ArraySchema:
       type: array
       items:
-        $ref: "#/components/schemas/PostWebhookSubscription"
+        $ref: "#/components/schemas/GetWebhookSubscriptionResponse"
     BrandId:
       examples:
         - brand_01j5k9m7n8p9q2r3s4t5v6w7x8
@@ -328,7 +337,9 @@ components:
       additionalProperties: false
     CreateVersionRequest:
       type: object
-      properties: {}
+      properties:
+        operationKey:
+          type: string
       additionalProperties: false
     CreateWebhookSubscriptionRequest:
       type: object
@@ -342,7 +353,7 @@ components:
             enum:
               - page.version.created
               - page.version.processed
-              - page.version.deleted
+              - page.version.published
               - form.submitted
               - form.enriched
               - form.enrichment_failed
@@ -416,6 +427,10 @@ components:
         - message
         - requestId
       type: object
+    FormId:
+      description: TypeID identifier for the form to display
+      type: string
+      pattern: ^form_
     GetBrand:
       type: object
       properties:
@@ -494,13 +509,13 @@ components:
           items:
             type: object
             properties:
+              actions:
+                type: array
+                items: {}
               brandId:
                 type: string
               createdAt:
                 $ref: "#/components/schemas/CreatedAt"
-              ctas:
-                type: array
-                items: {}
               deletedAt:
                 anyOf:
                   - $ref: "#/components/schemas/CreatedAt"
@@ -508,6 +523,8 @@ components:
               footerLinks:
                 type: array
                 items: {}
+              headerActionId:
+                type: string
               name:
                 type: string
               pageContext:
@@ -530,9 +547,9 @@ components:
               updatedAt:
                 $ref: "#/components/schemas/CreatedAt"
             required:
+              - actions
               - brandId
               - createdAt
-              - ctas
               - deletedAt
               - footerLinks
               - name
@@ -768,6 +785,42 @@ components:
         - items
         - page
       additionalProperties: false
+    GetWebhookSubscriptionResponse:
+      type: object
+      properties:
+        id:
+          description: Unique subscription identifier
+          type: string
+        url:
+          $ref: "#/components/schemas/Url"
+        events:
+          anyOf:
+            - type: array
+              items:
+                type: string
+                enum:
+                  - page.version.created
+                  - page.version.processed
+                  - page.version.published
+                  - form.submitted
+                  - form.enriched
+                  - form.enrichment_failed
+            - type: "null"
+        active:
+          description: Whether the subscription is active
+          type: boolean
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/CreatedAt"
+      required:
+        - id
+        - url
+        - events
+        - active
+        - createdAt
+        - updatedAt
+      additionalProperties: false
     PageGroupId:
       description: TypeID string identifier for the page group, always starts with "page_"
       examples:
@@ -788,6 +841,8 @@ components:
             - draft
             - published
             - archived
+        operationKey:
+          type: string
       required:
         - status
       additionalProperties: false
@@ -827,6 +882,53 @@ components:
         - updatedAt
       additionalProperties: false
     PostDuplicate:
+      type: object
+      properties:
+        template:
+          type: object
+          properties:
+            createdAt:
+              $ref: "#/components/schemas/CreatedAt"
+            description:
+              anyOf:
+                - type: string
+                - type: "null"
+            isEditable:
+              type: boolean
+            isSystem:
+              type: boolean
+            name:
+              type: string
+            pageTemplateId:
+              $ref: "#/components/schemas/PageTemplateId"
+            sourcePageTemplateId:
+              anyOf:
+                - $ref: "#/components/schemas/PageTemplateId"
+                - type: "null"
+            templateContent:
+              type: string
+            updatedAt:
+              anyOf:
+                - $ref: "#/components/schemas/CreatedAt"
+                - type: "null"
+            version:
+              type: number
+          required:
+            - createdAt
+            - description
+            - isEditable
+            - isSystem
+            - name
+            - pageTemplateId
+            - sourcePageTemplateId
+            - templateContent
+            - updatedAt
+            - version
+          additionalProperties: false
+      required:
+        - template
+      additionalProperties: false
+    PostDuplicate_0:
       type: object
       properties:
         error:
@@ -1005,7 +1107,7 @@ components:
                 enum:
                   - page.version.created
                   - page.version.processed
-                  - page.version.deleted
+                  - page.version.published
                   - form.submitted
                   - form.enriched
                   - form.enrichment_failed
@@ -1017,6 +1119,9 @@ components:
           $ref: "#/components/schemas/CreatedAt"
         updatedAt:
           $ref: "#/components/schemas/CreatedAt"
+        signingSecret:
+          description: The signing secret for the subscription
+          type: string
       required:
         - id
         - url
@@ -1024,6 +1129,7 @@ components:
         - active
         - createdAt
         - updatedAt
+        - signingSecret
       additionalProperties: false
     Schema:
       anyOf:
@@ -1207,12 +1313,68 @@ components:
     UpdatePageGroupRequest:
       type: object
       properties:
+        actions:
+          type: array
+          items:
+            anyOf:
+              - type: object
+                properties:
+                  actionId:
+                    $ref: "#/components/schemas/ActionId"
+                  actionIndex:
+                    type: number
+                  purpose:
+                    description: Business purpose or goal of this action
+                    type: string
+                  buttonTitle:
+                    description: Text displayed on the action button
+                    type: string
+                  actionType:
+                    type: string
+                    const: open-url
+                  url:
+                    $ref: "#/components/schemas/Url"
+                required:
+                  - purpose
+                  - buttonTitle
+                  - actionType
+                  - url
+                additionalProperties: false
+              - type: object
+                properties:
+                  actionId:
+                    $ref: "#/components/schemas/ActionId"
+                  actionIndex:
+                    type: number
+                  purpose:
+                    description: Business purpose or goal of this action
+                    type: string
+                  buttonTitle:
+                    description: Text displayed on the action button
+                    type: string
+                  actionType:
+                    type: string
+                    const: form
+                  formId:
+                    $ref: "#/components/schemas/FormId"
+                  formInstructions:
+                    type: string
+                required:
+                  - purpose
+                  - buttonTitle
+                  - actionType
+                  - formId
+                additionalProperties: false
         context:
           description: Updated business objective for this page group
           examples:
             - Convert visitors into paid customers through enhanced product demonstrations
           type: string
           minLength: 1
+        headerActionId:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
         name:
           description: New internal name for page group identification
           examples:
@@ -1234,56 +1396,66 @@ components:
           properties:
             brandId:
               $ref: "#/components/schemas/BrandId"
-            ctas:
+            actions:
               type: array
               items:
                 anyOf:
                   - type: object
                     properties:
-                      callToActionIndex:
+                      actionId:
+                        $ref: "#/components/schemas/ActionId"
+                      actionIndex:
+                        description: Position in actions array
                         type: number
-                      isActionCTA:
-                        type: boolean
                       purpose:
+                        description: Business purpose or goal of this action
                         type: string
                       buttonTitle:
+                        description: Text displayed on the action button
                         type: string
-                      ctaType:
+                      actionType:
                         type: string
                         const: open-url
                       url:
                         $ref: "#/components/schemas/Url"
                     required:
-                      - callToActionIndex
-                      - isActionCTA
+                      - actionId
+                      - actionIndex
                       - purpose
                       - buttonTitle
-                      - ctaType
+                      - actionType
                       - url
                     additionalProperties: false
                   - type: object
                     properties:
-                      callToActionIndex:
+                      actionId:
+                        $ref: "#/components/schemas/ActionId"
+                      actionIndex:
+                        description: Position in actions array
                         type: number
-                      isActionCTA:
-                        type: boolean
                       purpose:
+                        description: Business purpose or goal of this action
                         type: string
                       buttonTitle:
+                        description: Text displayed on the action button
                         type: string
-                      calendlyAppointmentEventTypeId:
+                      actionType:
                         type: string
-                      ctaType:
+                        const: form
+                      formId:
+                        $ref: "#/components/schemas/FormId"
+                      formInstructions:
                         type: string
-                        const: calendly-appointment
                     required:
-                      - callToActionIndex
-                      - isActionCTA
+                      - actionId
+                      - actionIndex
                       - purpose
                       - buttonTitle
-                      - calendlyAppointmentEventTypeId
-                      - ctaType
+                      - actionType
+                      - formId
                     additionalProperties: false
+            headerActionId:
+              $ref: "#/components/schemas/UnnamedSchema"
             deletedAt:
               anyOf:
                 - $ref: "#/components/schemas/CreatedAt"
@@ -1388,7 +1560,7 @@ components:
               $ref: "#/components/schemas/CreatedAt"
           required:
             - brandId
-            - ctas
+            - actions
             - deletedAt
             - footerLinks
             - name
@@ -1430,7 +1602,7 @@ components:
             enum:
               - page.version.created
               - page.version.processed
-              - page.version.deleted
+              - page.version.published
               - form.submitted
               - form.enriched
               - form.enrichment_failed
@@ -1438,6 +1610,7 @@ components:
           type: boolean
       additionalProperties: false
     Url:
+      description: URL to open when action is triggered
       type: string
       format: uri
   securitySchemes:
@@ -1647,8 +1820,8 @@ paths:
       description: Create a new page within a page group
       operationId: addPageToGroup
       responses:
-        "201":
-          description: PageToGroup created successfully
+        "200":
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1956,11 +2129,15 @@ paths:
       operationId: duplicateTemplate
       responses:
         "201":
-          $ref: "#/components/responses/PostTemplateResponse"
+          description: Template created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostDuplicate"
         "404":
-          $ref: "#/components/responses/PostDuplicateResponse"
+          $ref: "#/components/responses/PostDuplicate_0Response"
         "500":
-          $ref: "#/components/responses/PostDuplicateResponse"
+          $ref: "#/components/responses/PostDuplicate_0Response"
       summary: Duplicate template
       tags:
         - Templates
@@ -1991,7 +2168,11 @@ paths:
       operationId: createWebhookSubscription
       responses:
         "201":
-          $ref: "#/components/responses/PostWebhookSubscriptionResponse"
+          description: WebhookSubscription created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostWebhookSubscription"
       summary: Create webhook subscription
       tags:
         - Webhook Subscriptions
@@ -2007,7 +2188,7 @@ paths:
       operationId: getWebhookSubscription
       responses:
         "200":
-          $ref: "#/components/responses/PostWebhookSubscriptionResponse"
+          $ref: "#/components/responses/GetWebhookSubscriptionResponseResponse"
       summary: Get webhook subscription
       tags:
         - Webhook Subscriptions
@@ -2018,7 +2199,7 @@ paths:
       operationId: updateWebhookSubscription
       responses:
         "200":
-          $ref: "#/components/responses/PostWebhookSubscriptionResponse"
+          $ref: "#/components/responses/GetWebhookSubscriptionResponseResponse"
       summary: Update webhook subscription
       tags:
         - Webhook Subscriptions
@@ -2041,6 +2222,222 @@ paths:
         - Webhook Subscriptions
       parameters:
         - $ref: "#/components/parameters/SubscriptionIdPath"
+webhooks:
+  pageVersionCreated:
+    post:
+      description: Triggered when a new page version is created. The webhook payload contains details about the newly created page version including page ID, version ID, and creation timestamp.
+      responses:
+        "200":
+          description: Webhook received successfully
+      summary: Page Version Created
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  description: Unique identifier for this event
+                  examples:
+                    - evt_01j5k9m7n8p9q2r3s4t5v6w7x8
+                  type: string
+                tenantId:
+                  description: Tenant identifier for the event
+                  examples:
+                    - tenant_01j5k9m7n8p9q2r3s4t5v6w7x8
+                  type: string
+                timestamp:
+                  description: Timestamp when the event was processed
+                  examples:
+                    - 2024-01-15T10:30:00Z
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                payload:
+                  type: object
+                  properties:
+                    type:
+                      description: Event type identifier
+                      type: string
+                      enum:
+                        - page.version.created
+                    pageId:
+                      description: Unique identifier for the page
+                      examples:
+                        - page_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                    versionId:
+                      description: Unique identifier for the page version that was created
+                      examples:
+                        - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                      pattern: ^pageversion_[0-9a-z]{26}$
+                    createdAt:
+                      description: Timestamp when the page version was created
+                      examples:
+                        - 2024-01-15T10:30:00Z
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                  required:
+                    - type
+                    - pageId
+                    - versionId
+                    - createdAt
+                  additionalProperties: false
+              required:
+                - eventId
+                - tenantId
+                - timestamp
+                - payload
+              additionalProperties: false
+        description: Triggered when a new page version is created. The webhook payload contains details about the newly created page version including page ID, version ID, and creation timestamp.
+        required: true
+  pageVersionProcessed:
+    post:
+      description: Triggered when a page version is processed. The webhook payload contains details about the processed page version including page ID, version ID, and processing timestamp.
+      responses:
+        "200":
+          description: Webhook received successfully
+      summary: Page Version Processed
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  description: Unique identifier for this event
+                  examples:
+                    - evt_01j5k9m7n8p9q2r3s4t5v6w7x8
+                  type: string
+                tenantId:
+                  description: Tenant identifier for the event
+                  examples:
+                    - tenant_01j5k9m7n8p9q2r3s4t5v6w7x8
+                  type: string
+                timestamp:
+                  description: Timestamp when the event was processed
+                  examples:
+                    - 2024-01-15T10:30:00Z
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                payload:
+                  type: object
+                  properties:
+                    type:
+                      description: Event type identifier
+                      type: string
+                      enum:
+                        - page.version.processed
+                    pageId:
+                      description: Unique identifier for the page
+                      examples:
+                        - page_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                    versionId:
+                      description: Unique identifier for the page version that was processed
+                      examples:
+                        - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                    processedAt:
+                      description: Timestamp when the page version was processed
+                      examples:
+                        - 2024-01-15T10:30:00Z
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                  required:
+                    - type
+                    - pageId
+                    - versionId
+                    - processedAt
+                  additionalProperties: false
+              required:
+                - eventId
+                - tenantId
+                - timestamp
+                - payload
+              additionalProperties: false
+        description: Triggered when a page version is processed. The webhook payload contains details about the processed page version including page ID, version ID, and processing timestamp.
+        required: true
+  pageVersionPublished:
+    post:
+      description: Triggered when a page version is published. The webhook payload contains details about the published page version including page ID, version ID, and publishing timestamp.
+      responses:
+        "200":
+          description: Webhook received successfully
+      summary: Page Version Published
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  description: Unique identifier for this event
+                  examples:
+                    - evt_01j5k9m7n8p9q2r3s4t5v6w7x8
+                  type: string
+                tenantId:
+                  description: Tenant identifier for the event
+                  examples:
+                    - tenant_01j5k9m7n8p9q2r3s4t5v6w7x8
+                  type: string
+                timestamp:
+                  description: Timestamp when the event was processed
+                  examples:
+                    - 2024-01-15T10:30:00Z
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                payload:
+                  type: object
+                  properties:
+                    type:
+                      description: Event type identifier
+                      type: string
+                      enum:
+                        - page.version.published
+                    pageId:
+                      description: Unique identifier for the page
+                      examples:
+                        - page_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                    versionId:
+                      description: Unique identifier for the page version that was published
+                      examples:
+                        - pageversion_01j5k9m7n8p9q2r3s4t5v6w7x8
+                      type: string
+                      pattern: ^pageversion_[0-9a-z]{26}$
+                    publishedAt:
+                      description: Timestamp when the page version was published
+                      examples:
+                        - 2024-01-15T10:30:00Z
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                  required:
+                    - type
+                    - pageId
+                    - versionId
+                    - publishedAt
+                  additionalProperties: false
+              required:
+                - eventId
+                - tenantId
+                - timestamp
+                - payload
+              additionalProperties: false
+        description: Triggered when a page version is published. The webhook payload contains details about the published page version including page ID, version ID, and publishing timestamp.
+        required: true
 tags:
   - name: Page Groups
     description: Page group management operations
