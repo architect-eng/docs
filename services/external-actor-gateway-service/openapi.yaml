@@ -177,12 +177,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PostBrand"
-    PostDuplicate_0Response:
+    PostDuplicateResponse:
       description: Template not found - please check the template ID and ensure it exists in your tenant
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PostDuplicate_0"
+            $ref: "#/components/schemas/PostDuplicate"
     PostTemplateResponse:
       description: Template created successfully
       content:
@@ -579,7 +579,7 @@ components:
           type: string
         createdAt:
           $ref: "#/components/schemas/CreatedAt"
-        ctas:
+        actions:
           type: array
           items: {}
         deletedAt:
@@ -589,6 +589,8 @@ components:
         footerLinks:
           type: array
           items: {}
+        headerActionId:
+          type: string
         name:
           type: string
         pageContext:
@@ -611,7 +613,7 @@ components:
       required:
         - brandId
         - createdAt
-        - ctas
+        - actions
         - deletedAt
         - footerLinks
         - name
@@ -882,53 +884,6 @@ components:
         - updatedAt
       additionalProperties: false
     PostDuplicate:
-      type: object
-      properties:
-        template:
-          type: object
-          properties:
-            createdAt:
-              $ref: "#/components/schemas/CreatedAt"
-            description:
-              anyOf:
-                - type: string
-                - type: "null"
-            isEditable:
-              type: boolean
-            isSystem:
-              type: boolean
-            name:
-              type: string
-            pageTemplateId:
-              $ref: "#/components/schemas/PageTemplateId"
-            sourcePageTemplateId:
-              anyOf:
-                - $ref: "#/components/schemas/PageTemplateId"
-                - type: "null"
-            templateContent:
-              type: string
-            updatedAt:
-              anyOf:
-                - $ref: "#/components/schemas/CreatedAt"
-                - type: "null"
-            version:
-              type: number
-          required:
-            - createdAt
-            - description
-            - isEditable
-            - isSystem
-            - name
-            - pageTemplateId
-            - sourcePageTemplateId
-            - templateContent
-            - updatedAt
-            - version
-          additionalProperties: false
-      required:
-        - template
-      additionalProperties: false
-    PostDuplicate_0:
       type: object
       properties:
         error:
@@ -2129,15 +2084,11 @@ paths:
       operationId: duplicateTemplate
       responses:
         "201":
-          description: Template created successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PostDuplicate"
+          $ref: "#/components/responses/PostTemplateResponse"
         "404":
-          $ref: "#/components/responses/PostDuplicate_0Response"
+          $ref: "#/components/responses/PostDuplicateResponse"
         "500":
-          $ref: "#/components/responses/PostDuplicate_0Response"
+          $ref: "#/components/responses/PostDuplicateResponse"
       summary: Duplicate template
       tags:
         - Templates
