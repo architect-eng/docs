@@ -1343,192 +1343,186 @@ components:
     UpdatePageGroupResponse:
       type: object
       properties:
-        pageGroup:
-          type: object
-          properties:
-            brandId:
-              $ref: "#/components/schemas/BrandId"
-            actions:
-              type: array
-              items:
-                anyOf:
-                  - type: object
-                    properties:
-                      actionId:
-                        $ref: "#/components/schemas/ActionId"
-                      actionIndex:
-                        description: Position in actions array
-                        type: number
-                      purpose:
-                        description: Business purpose or goal of this action
-                        type: string
-                      buttonTitle:
-                        description: Text displayed on the action button
-                        type: string
-                      actionType:
-                        type: string
-                        const: open-url
-                      url:
-                        $ref: "#/components/schemas/Url"
-                    required:
-                      - actionId
-                      - actionIndex
-                      - purpose
-                      - buttonTitle
-                      - actionType
-                      - url
-                    additionalProperties: false
-                  - type: object
-                    properties:
-                      actionId:
-                        $ref: "#/components/schemas/ActionId"
-                      actionIndex:
-                        description: Position in actions array
-                        type: number
-                      purpose:
-                        description: Business purpose or goal of this action
-                        type: string
-                      buttonTitle:
-                        description: Text displayed on the action button
-                        type: string
-                      actionType:
-                        type: string
-                        const: form
-                      formId:
-                        $ref: "#/components/schemas/FormId"
-                      formInstructions:
-                        type: string
-                    required:
-                      - actionId
-                      - actionIndex
-                      - purpose
-                      - buttonTitle
-                      - actionType
-                      - formId
-                    additionalProperties: false
-            headerActionId:
-              $ref: "#/components/schemas/UnnamedSchema"
-            deletedAt:
-              anyOf:
-                - $ref: "#/components/schemas/CreatedAt"
-                - type: "null"
-            footerLinks:
-              type: array
-              items:
-                type: object
+        brandId:
+          $ref: "#/components/schemas/BrandId"
+        actions:
+          type: array
+          items:
+            anyOf:
+              - type: object
                 properties:
-                  links:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        text:
-                          type: string
-                        url:
-                          type: string
-                      required:
-                        - text
-                        - url
-                      additionalProperties: false
-                  title:
+                  actionId:
+                    $ref: "#/components/schemas/ActionId"
+                  actionIndex:
+                    description: Position in actions array
+                    type: number
+                  purpose:
+                    description: Business purpose or goal of this action
+                    type: string
+                  buttonTitle:
+                    description: Text displayed on the action button
+                    type: string
+                  actionType:
+                    type: string
+                    const: open-url
+                  url:
+                    $ref: "#/components/schemas/Url"
+                required:
+                  - actionId
+                  - actionIndex
+                  - purpose
+                  - buttonTitle
+                  - actionType
+                  - url
+                additionalProperties: false
+              - type: object
+                properties:
+                  actionId:
+                    $ref: "#/components/schemas/ActionId"
+                  actionIndex:
+                    description: Position in actions array
+                    type: number
+                  purpose:
+                    description: Business purpose or goal of this action
+                    type: string
+                  buttonTitle:
+                    description: Text displayed on the action button
+                    type: string
+                  actionType:
+                    type: string
+                    const: form
+                  formId:
+                    $ref: "#/components/schemas/FormId"
+                  formInstructions:
                     type: string
                 required:
-                  - links
-                  - title
+                  - actionId
+                  - actionIndex
+                  - purpose
+                  - buttonTitle
+                  - actionType
+                  - formId
                 additionalProperties: false
-            name:
-              description: Internal name used for page group identification and management
-              examples:
-                - Product Landing Page
-              type: string
-              minLength: 1
-            pageContext:
-              description: Business objective or purpose of this page group
-              examples:
-                - Convert visitors into trial users by highlighting key product benefits
-              type: string
-              minLength: 1
-            pageGroupId:
-              $ref: "#/components/schemas/PageGroupId"
-            pagesCount:
-              description: Total number of pages within this page group
-              examples:
-                - 3
-              type: integer
-              minimum: 0
-              maximum: 9007199254740991
-            pageTemplateId:
-              $ref: "#/components/schemas/PageTemplateId"
-            scripts:
-              type: array
-              items:
-                type: object
-                properties:
-                  content:
-                    type: string
-                    maxLength: 50000
-                  description:
-                    type: string
-                    maxLength: 500
-                  enabled:
-                    default: true
-                    type: boolean
-                  injectionPoint:
-                    type: string
-                    enum:
-                      - head
-                      - body-start
-                      - body-end
-                  name:
-                    type: string
-                    minLength: 1
-                    maxLength: 100
-                required:
-                  - content
-                  - enabled
-                  - injectionPoint
-                  - name
-                additionalProperties: false
-            status:
-              description: "Page group publication status: draft (editing), published (live), or archived (inactive)"
-              examples:
-                - published
-              type: string
-              enum:
-                - draft
-                - published
-                - archived
-            tenantId:
-              $ref: "#/components/schemas/TenantId"
-            title:
-              description: Human-readable title displayed for the page group
-              examples:
-                - Welcome to Our Product
-              type: string
-              minLength: 1
-            createdAt:
-              $ref: "#/components/schemas/CreatedAt"
-            updatedAt:
-              $ref: "#/components/schemas/CreatedAt"
-          required:
-            - brandId
-            - actions
-            - deletedAt
-            - footerLinks
-            - name
-            - pageContext
-            - pageGroupId
-            - pagesCount
-            - pageTemplateId
-            - scripts
-            - status
-            - tenantId
-            - title
-            - createdAt
-            - updatedAt
-          additionalProperties: false
+        headerActionId:
+          $ref: "#/components/schemas/UnnamedSchema"
+        deletedAt:
+          anyOf:
+            - $ref: "#/components/schemas/CreatedAt"
+            - type: "null"
+        footerLinks:
+          type: array
+          items:
+            type: object
+            properties:
+              links:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    text:
+                      type: string
+                    url:
+                      type: string
+                  required:
+                    - text
+                    - url
+                  additionalProperties: false
+              title:
+                type: string
+            required:
+              - links
+              - title
+            additionalProperties: false
+        name:
+          description: Internal name used for page group identification and management
+          examples:
+            - Product Landing Page
+          type: string
+          minLength: 1
+        pageContext:
+          description: Business objective or purpose of this page group
+          examples:
+            - Convert visitors into trial users by highlighting key product benefits
+          type: string
+          minLength: 1
+        pageGroupId:
+          $ref: "#/components/schemas/PageGroupId"
+        pagesCount:
+          description: Total number of pages within this page group
+          examples:
+            - 3
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        pageTemplateId:
+          $ref: "#/components/schemas/PageTemplateId"
+        scripts:
+          type: array
+          items:
+            type: object
+            properties:
+              content:
+                type: string
+                maxLength: 50000
+              description:
+                type: string
+                maxLength: 500
+              enabled:
+                default: true
+                type: boolean
+              injectionPoint:
+                type: string
+                enum:
+                  - head
+                  - body-start
+                  - body-end
+              name:
+                type: string
+                minLength: 1
+                maxLength: 100
+            required:
+              - content
+              - enabled
+              - injectionPoint
+              - name
+            additionalProperties: false
+        status:
+          description: "Page group publication status: draft (editing), published (live), or archived (inactive)"
+          examples:
+            - published
+          type: string
+          enum:
+            - draft
+            - published
+            - archived
+        tenantId:
+          $ref: "#/components/schemas/TenantId"
+        title:
+          description: Human-readable title displayed for the page group
+          examples:
+            - Welcome to Our Product
+          type: string
+          minLength: 1
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/CreatedAt"
       required:
-        - pageGroup
+        - brandId
+        - actions
+        - deletedAt
+        - footerLinks
+        - name
+        - pageContext
+        - pageGroupId
+        - pagesCount
+        - pageTemplateId
+        - scripts
+        - status
+        - tenantId
+        - title
+        - createdAt
+        - updatedAt
       additionalProperties: false
     UpdateTemplateRequest:
       type: object
@@ -1772,8 +1766,8 @@ paths:
       description: Create a new page within a page group
       operationId: addPageToGroup
       responses:
-        "200":
-          description: Successful operation
+        "201":
+          description: PageToGroup created successfully
           content:
             application/json:
               schema:
