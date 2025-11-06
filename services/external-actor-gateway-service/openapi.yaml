@@ -148,19 +148,19 @@ components:
             $ref: "#/components/schemas/Error"
       description: Error response - covers authentication, authorization, rate limiting, and server errors
     DeleteBrandResponseResponse:
-      description: Success
+      description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/DeleteBrandResponse"
     GetTemplateResponse:
-      description: Success
+      description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/GetTemplate"
     GetWebhookSubscriptionResponseResponse:
-      description: Success
+      description: Successful operation
       content:
         application/json:
           schema:
@@ -172,101 +172,73 @@ components:
             $ref: "#/components/schemas/Error"
       description: Resource not found
     PostBrandResponse:
-      description: Success
+      description: Brand created successfully
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PostBrand"
-    PostPageGroupResponse:
-      description: Success
+    PostDuplicateResponse:
+      description: Template not found - please check the template ID and ensure it exists in your tenant
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PostPageGroup"
-    PostPageResponse:
-      description: Success
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/PostPage"
+            $ref: "#/components/schemas/PostDuplicate"
     PostTemplateResponse:
-      description: Success
+      description: Template created successfully
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PostTemplate"
     PostVersionResponse:
-      description: Success
+      description: PageVersion created successfully
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PostVersion"
+    SchemaResponse:
+      description: Not implemented
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Schema"
   schemas:
-    ImageReferenceUrl:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - url
-        url:
-          $ref: "#/components/schemas/Url"
-      required:
-        - type
-        - url
-      additionalProperties: false
-    ImageReferenceFile:
+    UnnamedSchema:
+      description: TypeID string identifier for the action that appears in the header
+      examples:
+        - pagegroupaction_01j5k9m7n8p9q2r3s4t5v6w7x8
+      type: string
+      pattern: ^pagegroupaction_[0-9a-z]{26}$
+    FileIdTypeSchema:
       type: object
       properties:
         fileId:
           type: string
         type:
           type: string
-          enum:
-            - file
+          const: file
       required:
         - fileId
         - type
       additionalProperties: false
+    TypeUrlSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: url
+        url:
+          $ref: "#/components/schemas/Url"
+      required:
+        - type
+        - url
+      additionalProperties: false
+    ActionId:
+      type: string
+      pattern: ^pagegroupaction_
     ArraySchema:
       type: array
       items:
         $ref: "#/components/schemas/GetWebhookSubscriptionResponse"
-    Brand:
-      type: object
-      properties:
-        brandId:
-          $ref: "#/components/schemas/BrandId"
-        companyHomePage:
-          $ref: "#/components/schemas/Url"
-        createdAt:
-          $ref: "#/components/schemas/CreatedAt"
-        name:
-          type: string
-        preferredAppearance:
-          type: string
-          enum:
-            - system
-            - light
-            - dark
-        tenantId:
-          type: string
-        themeDark:
-          $ref: "#/components/schemas/ThemeDark"
-        themeLight:
-          $ref: "#/components/schemas/ThemeDark"
-        updatedAt:
-          $ref: "#/components/schemas/CreatedAt"
-      required:
-        - brandId
-        - createdAt
-        - name
-        - preferredAppearance
-        - tenantId
-        - themeDark
-        - themeLight
-        - updatedAt
-      additionalProperties: false
     BrandId:
       examples:
         - brand_01j5k9m7n8p9q2r3s4t5v6w7x8
@@ -419,28 +391,6 @@ components:
         - id
         - success
       additionalProperties: false
-    DeletePageVersionResponse:
-      type: object
-      properties:
-        deletedVersionId:
-          type: string
-        message:
-          type: string
-        page_group_id:
-          type: string
-        page_id:
-          type: string
-      required:
-        - deletedVersionId
-        - message
-        - page_group_id
-        - page_id
-      additionalProperties: false
-    DeletedAt:
-      nullable: true
-      type: string
-      format: date-time
-      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
     Error:
       properties:
         code:
@@ -477,6 +427,10 @@ components:
         - message
         - requestId
       type: object
+    FormId:
+      description: TypeID identifier for the form to display
+      type: string
+      pattern: ^form_
     GetBrand:
       type: object
       properties:
@@ -485,7 +439,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Brand"
+            $ref: "#/components/schemas/PostBrand"
         nextCursor:
           type: string
       required:
@@ -555,65 +509,57 @@ components:
           items:
             type: object
             properties:
+              actions:
+                type: array
+                items: {}
+              brandId:
+                type: string
               createdAt:
                 $ref: "#/components/schemas/CreatedAt"
+              deletedAt:
+                anyOf:
+                  - $ref: "#/components/schemas/CreatedAt"
+                  - type: "null"
+              footerLinks:
+                type: array
+                items: {}
+              headerActionId:
+                type: string
               name:
                 type: string
-              pageGoal:
+              pageContext:
                 type: string
-              pageId:
+              pageGroupId:
                 type: string
               pagesCount:
                 type: number
-              pageUrl:
+              pageTemplateId:
                 type: string
               scripts:
                 type: array
-                items:
-                  type: object
-                  properties:
-                    content:
-                      type: string
-                    enabled:
-                      type: boolean
-                    id:
-                      type: string
-                    location:
-                      type: string
-                      enum:
-                        - head
-                        - body
-                    name:
-                      type: string
-                  required:
-                    - content
-                    - enabled
-                    - id
-                    - location
-                    - name
-                  additionalProperties: false
-              slug:
-                type: string
+                items: {}
               status:
                 type: string
-                enum:
-                  - draft
-                  - published
-                  - archived
+              tenantId:
+                type: string
               title:
                 type: string
               updatedAt:
                 $ref: "#/components/schemas/CreatedAt"
             required:
+              - actions
+              - brandId
               - createdAt
+              - deletedAt
+              - footerLinks
               - name
-              - pageGoal
-              - pageId
+              - pageContext
+              - pageGroupId
               - pagesCount
-              - pageUrl
+              - pageTemplateId
               - scripts
-              - slug
               - status
+              - tenantId
               - title
               - updatedAt
             additionalProperties: false
@@ -629,28 +575,54 @@ components:
     GetPageGroupResponse:
       type: object
       properties:
+        brandId:
+          type: string
         createdAt:
           $ref: "#/components/schemas/CreatedAt"
+        actions:
+          type: array
+          items: {}
         deletedAt:
-          $ref: "#/components/schemas/DeletedAt"
-        id:
+          anyOf:
+            - $ref: "#/components/schemas/CreatedAt"
+            - type: "null"
+        footerLinks:
+          type: array
+          items: {}
+        headerActionId:
           type: string
-        slug:
+        metadata: {}
+        name:
           type: string
+        pageContext:
+          type: string
+        pageId:
+          type: string
+        pageTemplateId:
+          type: string
+        scripts:
+          type: array
+          items: {}
         tenantId:
-          type: string
-        title:
           type: string
         updatedAt:
           $ref: "#/components/schemas/CreatedAt"
+        variantsCount:
+          type: number
       required:
+        - brandId
         - createdAt
+        - actions
         - deletedAt
-        - id
-        - slug
+        - footerLinks
+        - name
+        - pageContext
+        - pageId
+        - pageTemplateId
+        - scripts
         - tenantId
-        - title
         - updatedAt
+        - variantsCount
       additionalProperties: false
     GetSessionCount:
       type: object
@@ -714,8 +686,9 @@ components:
               createdAt:
                 type: string
               description:
-                nullable: true
-                type: string
+                anyOf:
+                  - type: string
+                  - type: "null"
               isEditable:
                 type: boolean
               isSystem:
@@ -725,13 +698,15 @@ components:
               pageTemplateId:
                 type: string
               sourcePageTemplateId:
-                nullable: true
-                type: string
+                anyOf:
+                  - type: string
+                  - type: "null"
               templateContent:
                 type: string
               updatedAt:
-                nullable: true
-                type: string
+                anyOf:
+                  - type: string
+                  - type: "null"
               version:
                 type: number
             required:
@@ -791,30 +766,24 @@ components:
     GetVersion:
       type: object
       properties:
-        versions:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostVersion"
+        page:
           type: object
           properties:
-            items:
-              type: array
-              items:
-                $ref: "#/components/schemas/PostVersion"
-            page:
-              type: object
-              properties:
-                hasMore:
-                  type: boolean
-                totalCount:
-                  type: number
-              required:
-                - hasMore
-                - totalCount
-              additionalProperties: false
+            hasMore:
+              type: boolean
+            totalCount:
+              type: number
           required:
-            - items
-            - page
+            - hasMore
+            - totalCount
           additionalProperties: false
       required:
-        - versions
+        - items
+        - page
       additionalProperties: false
     GetWebhookSubscriptionResponse:
       type: object
@@ -825,17 +794,18 @@ components:
         url:
           $ref: "#/components/schemas/Url"
         events:
-          nullable: true
-          type: array
-          items:
-            type: string
-            enum:
-              - page.version.created
-              - page.version.processed
-              - page.version.published
-              - form.submitted
-              - form.enriched
-              - form.enrichment_failed
+          anyOf:
+            - type: array
+              items:
+                type: string
+                enum:
+                  - page.version.created
+                  - page.version.processed
+                  - page.version.published
+                  - form.submitted
+                  - form.enriched
+                  - form.enrichment_failed
+            - type: "null"
         active:
           description: Whether the subscription is active
           type: boolean
@@ -862,13 +832,6 @@ components:
         - pagetemplate_01j5k9m7n8p9q2r3s4t5v6w7x8
       type: string
       pattern: ^pagetemplate_[0-9a-z]{26}$
-    PageTemplateId1:
-      nullable: true
-      description: Optional template override for this page. When null, inherits from page group template
-      examples:
-        - pagetemplate_01j5k9m7n8p9q2r3s4t5v6w7x8
-      type: string
-      pattern: ^pagetemplate_[0-9a-z]{26}$
     PatchPageVersionRequest:
       type: object
       properties:
@@ -886,10 +849,52 @@ components:
     PostBrand:
       type: object
       properties:
-        brand:
-          $ref: "#/components/schemas/Brand"
+        brandId:
+          $ref: "#/components/schemas/BrandId"
+        companyHomePage:
+          $ref: "#/components/schemas/Url"
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        name:
+          type: string
+        preferredAppearance:
+          type: string
+          enum:
+            - system
+            - light
+            - dark
+        tenantId:
+          type: string
+        themeDark:
+          $ref: "#/components/schemas/ThemeDark"
+        themeLight:
+          $ref: "#/components/schemas/ThemeDark"
+        updatedAt:
+          $ref: "#/components/schemas/CreatedAt"
       required:
-        - brand
+        - brandId
+        - createdAt
+        - name
+        - preferredAppearance
+        - tenantId
+        - themeDark
+        - themeLight
+        - updatedAt
+      additionalProperties: false
+    PostDuplicate:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        statusCode:
+          type: number
+          const: 404
+      required:
+        - error
+        - message
+        - statusCode
       additionalProperties: false
     PostPage:
       type: object
@@ -905,14 +910,17 @@ components:
           type: string
           pattern: ^pagevar_[0-9a-z]{26}$
         pageTemplateId:
-          $ref: "#/components/schemas/PageTemplateId1"
+          anyOf:
+            - $ref: "#/components/schemas/PageTemplateId"
+            - type: "null"
         supplementaryContext:
-          nullable: true
-          description: Optional supplementary context added to page group context
-          examples:
-            - Target enterprise buyers. Emphasize security, compliance, and ROI.
-          type: string
-          minLength: 1
+          anyOf:
+            - description: Optional supplementary context added to page group context
+              examples:
+                - Target enterprise buyers. Emphasize security, compliance, and ROI.
+              type: string
+              minLength: 1
+            - type: "null"
         tenantId:
           $ref: "#/components/schemas/TenantId"
       required:
@@ -925,98 +933,91 @@ components:
     PostPageGroup:
       type: object
       properties:
-        page:
-          type: object
-          properties:
-            createdAt:
-              $ref: "#/components/schemas/CreatedAt"
-            id:
-              examples:
-                - page_01j5k9m7n8p9q2r3s4t5v6w7x8
-              type: string
-            name:
-              examples:
-                - Product Landing Page
-                - Q4 Campaign
-              type: string
-            context:
-              examples:
-                - Convert visitors into trial users
-                - Increase Q4 sales by 20%
-              type: string
-            pageUrl:
-              examples:
-                - https://example.com/product-landing
-              type: string
-            status:
-              examples:
-                - draft
-              type: string
-              enum:
-                - archived
-                - draft
-                - published
-            title:
-              examples:
-                - Welcome to Our Product
-                - Limited Time Offer
-              type: string
-            updatedAt:
-              $ref: "#/components/schemas/CreatedAt"
-          required:
-            - createdAt
-            - id
-            - name
-            - context
-            - pageUrl
-            - status
-            - title
-            - updatedAt
-          additionalProperties: false
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        id:
+          examples:
+            - page_01j5k9m7n8p9q2r3s4t5v6w7x8
+          type: string
+        name:
+          examples:
+            - Product Landing Page
+            - Q4 Campaign
+          type: string
+        context:
+          examples:
+            - Convert visitors into trial users
+            - Increase Q4 sales by 20%
+          type: string
+        pageUrl:
+          examples:
+            - https://example.com/product-landing
+          type: string
+        status:
+          examples:
+            - draft
+          type: string
+          enum:
+            - archived
+            - draft
+            - published
+        title:
+          examples:
+            - Welcome to Our Product
+            - Limited Time Offer
+          type: string
+        updatedAt:
+          $ref: "#/components/schemas/CreatedAt"
       required:
-        - page
+        - createdAt
+        - id
+        - name
+        - context
+        - pageUrl
+        - status
+        - title
+        - updatedAt
       additionalProperties: false
     PostTemplate:
       type: object
       properties:
-        template:
-          type: object
-          properties:
-            createdAt:
-              $ref: "#/components/schemas/CreatedAt"
-            description:
-              nullable: true
-              type: string
-            isEditable:
-              type: boolean
-            isSystem:
-              type: boolean
-            name:
-              type: string
-            pageTemplateId:
-              $ref: "#/components/schemas/PageTemplateId"
-            sourcePageTemplateId:
-              $ref: "#/components/schemas/PageTemplateId1"
-            templateContent:
-              type: string
-            updatedAt:
-              $ref: "#/components/schemas/DeletedAt"
-            version:
-              type: number
-          required:
-            - createdAt
-            - description
-            - isEditable
-            - isSystem
-            - name
-            - pageTemplateId
-            - sourcePageTemplateId
-            - templateContent
-            - updatedAt
-            - version
-          additionalProperties: false
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+        isEditable:
+          type: boolean
+        isSystem:
+          type: boolean
+        name:
+          type: string
+        pageTemplateId:
+          $ref: "#/components/schemas/PageTemplateId"
+        sourcePageTemplateId:
+          anyOf:
+            - $ref: "#/components/schemas/PageTemplateId"
+            - type: "null"
+        templateContent:
+          type: string
+        updatedAt:
+          anyOf:
+            - $ref: "#/components/schemas/CreatedAt"
+            - type: "null"
+        version:
+          type: number
       required:
-        - template
+        - createdAt
+        - description
+        - isEditable
+        - isSystem
+        - name
+        - pageTemplateId
+        - sourcePageTemplateId
+        - templateContent
+        - updatedAt
+        - version
       additionalProperties: false
     PostVersion:
       type: object
@@ -1034,6 +1035,7 @@ components:
             - draft
             - published
             - archived
+            - cancelled
         versionNumber:
           type: number
       required:
@@ -1051,17 +1053,18 @@ components:
         url:
           $ref: "#/components/schemas/Url"
         events:
-          nullable: true
-          type: array
-          items:
-            type: string
-            enum:
-              - page.version.created
-              - page.version.processed
-              - page.version.published
-              - form.submitted
-              - form.enriched
-              - form.enrichment_failed
+          anyOf:
+            - type: array
+              items:
+                type: string
+                enum:
+                  - page.version.created
+                  - page.version.processed
+                  - page.version.published
+                  - form.submitted
+                  - form.enriched
+                  - form.enrichment_failed
+            - type: "null"
         active:
           description: Whether the subscription is active
           type: boolean
@@ -1081,6 +1084,19 @@ components:
         - updatedAt
         - signingSecret
       additionalProperties: false
+    Schema:
+      anyOf:
+        - $ref: "#/components/schemas/PostVersion"
+        - type: object
+          properties:
+            error:
+              type: string
+            message:
+              type: string
+          required:
+            - error
+            - message
+          additionalProperties: false
     TenantId:
       description: TypeID string identifier for the tenant this page group belongs to
       examples:
@@ -1091,40 +1107,49 @@ components:
       type: object
       properties:
         borderColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         buttonBackgroundColor:
           type: string
         buttonTextColor:
           type: string
         faviconFileId:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         faviconUrl:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         logoFileId:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         logoIconFileId:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         logoIconUrl:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         logoUrl:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         mutedTextColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         pageBackgroundColor:
           type: string
         pageForegroundColor:
           type: string
         secondaryAccentColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         sectionCardHighlightColor:
           type: string
       required:
@@ -1138,100 +1163,37 @@ components:
       type: object
       properties:
         borderColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         buttonBackgroundColor:
           type: string
         buttonTextColor:
           type: string
         favicon:
           anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - url
-                url:
-                  $ref: "#/components/schemas/Url"
-              required:
-                - type
-                - url
-              additionalProperties: false
-            - type: object
-              properties:
-                fileId:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - file
-              required:
-                - fileId
-                - type
-              additionalProperties: false
+            - $ref: "#/components/schemas/TypeUrlSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
         logo:
           anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - url
-                url:
-                  $ref: "#/components/schemas/Url"
-              required:
-                - type
-                - url
-              additionalProperties: false
-            - type: object
-              properties:
-                fileId:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - file
-              required:
-                - fileId
-                - type
-              additionalProperties: false
+            - $ref: "#/components/schemas/TypeUrlSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
         logoIcon:
           anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - url
-                url:
-                  $ref: "#/components/schemas/Url"
-              required:
-                - type
-                - url
-              additionalProperties: false
-            - type: object
-              properties:
-                fileId:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - file
-              required:
-                - fileId
-                - type
-              additionalProperties: false
+            - $ref: "#/components/schemas/TypeUrlSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
         mutedTextColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         pageBackgroundColor:
           type: string
         pageForegroundColor:
           type: string
         secondaryAccentColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         sectionCardHighlightColor:
           type: string
       required:
@@ -1248,100 +1210,37 @@ components:
       type: object
       properties:
         borderColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         buttonBackgroundColor:
           type: string
         buttonTextColor:
           type: string
         favicon:
           anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - url
-                url:
-                  $ref: "#/components/schemas/Url"
-              required:
-                - type
-                - url
-              additionalProperties: false
-            - type: object
-              properties:
-                fileId:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - file
-              required:
-                - fileId
-                - type
-              additionalProperties: false
+            - $ref: "#/components/schemas/TypeUrlSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
         logo:
           anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - url
-                url:
-                  $ref: "#/components/schemas/Url"
-              required:
-                - type
-                - url
-              additionalProperties: false
-            - type: object
-              properties:
-                fileId:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - file
-              required:
-                - fileId
-                - type
-              additionalProperties: false
+            - $ref: "#/components/schemas/TypeUrlSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
         logoIcon:
           anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - url
-                url:
-                  $ref: "#/components/schemas/Url"
-              required:
-                - type
-                - url
-              additionalProperties: false
-            - type: object
-              properties:
-                fileId:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - file
-              required:
-                - fileId
-                - type
-              additionalProperties: false
+            - $ref: "#/components/schemas/TypeUrlSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
         mutedTextColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         pageBackgroundColor:
           type: string
         pageForegroundColor:
           type: string
         secondaryAccentColor:
-          nullable: true
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         sectionCardHighlightColor:
           type: string
       additionalProperties: false
@@ -1367,12 +1266,68 @@ components:
     UpdatePageGroupRequest:
       type: object
       properties:
+        actions:
+          type: array
+          items:
+            anyOf:
+              - type: object
+                properties:
+                  actionId:
+                    $ref: "#/components/schemas/ActionId"
+                  actionIndex:
+                    type: number
+                  purpose:
+                    description: Business purpose or goal of this action
+                    type: string
+                  buttonTitle:
+                    description: Text displayed on the action button
+                    type: string
+                  actionType:
+                    type: string
+                    const: open-url
+                  url:
+                    $ref: "#/components/schemas/Url"
+                required:
+                  - purpose
+                  - buttonTitle
+                  - actionType
+                  - url
+                additionalProperties: false
+              - type: object
+                properties:
+                  actionId:
+                    $ref: "#/components/schemas/ActionId"
+                  actionIndex:
+                    type: number
+                  purpose:
+                    description: Business purpose or goal of this action
+                    type: string
+                  buttonTitle:
+                    description: Text displayed on the action button
+                    type: string
+                  actionType:
+                    type: string
+                    const: form
+                  formId:
+                    $ref: "#/components/schemas/FormId"
+                  formInstructions:
+                    type: string
+                required:
+                  - purpose
+                  - buttonTitle
+                  - actionType
+                  - formId
+                additionalProperties: false
         context:
           description: Updated business objective for this page group
           examples:
             - Convert visitors into paid customers through enhanced product demonstrations
           type: string
           minLength: 1
+        headerActionId:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
         name:
           description: New internal name for page group identification
           examples:
@@ -1389,182 +1344,186 @@ components:
     UpdatePageGroupResponse:
       type: object
       properties:
-        pageGroup:
-          type: object
-          properties:
-            brandId:
-              $ref: "#/components/schemas/BrandId"
-            ctas:
-              type: array
-              items:
-                anyOf:
-                  - type: object
-                    properties:
-                      callToActionIndex:
-                        type: number
-                      isActionCTA:
-                        type: boolean
-                      purpose:
-                        type: string
-                      buttonTitle:
-                        type: string
-                      ctaType:
-                        type: string
-                        enum:
-                          - open-url
-                      url:
-                        $ref: "#/components/schemas/Url"
-                    required:
-                      - callToActionIndex
-                      - isActionCTA
-                      - purpose
-                      - buttonTitle
-                      - ctaType
-                      - url
-                    additionalProperties: false
-                  - type: object
-                    properties:
-                      callToActionIndex:
-                        type: number
-                      isActionCTA:
-                        type: boolean
-                      purpose:
-                        type: string
-                      buttonTitle:
-                        type: string
-                      calendlyAppointmentEventTypeId:
-                        type: string
-                      ctaType:
-                        type: string
-                        enum:
-                          - calendly-appointment
-                    required:
-                      - callToActionIndex
-                      - isActionCTA
-                      - purpose
-                      - buttonTitle
-                      - calendlyAppointmentEventTypeId
-                      - ctaType
-                    additionalProperties: false
-            deletedAt:
-              $ref: "#/components/schemas/DeletedAt"
-            footerLinks:
-              type: array
-              items:
-                type: object
+        brandId:
+          $ref: "#/components/schemas/BrandId"
+        actions:
+          type: array
+          items:
+            anyOf:
+              - type: object
                 properties:
-                  links:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        text:
-                          type: string
-                        url:
-                          type: string
-                      required:
-                        - text
-                        - url
-                      additionalProperties: false
-                  title:
+                  actionId:
+                    $ref: "#/components/schemas/ActionId"
+                  actionIndex:
+                    description: Position in actions array
+                    type: number
+                  purpose:
+                    description: Business purpose or goal of this action
+                    type: string
+                  buttonTitle:
+                    description: Text displayed on the action button
+                    type: string
+                  actionType:
+                    type: string
+                    const: open-url
+                  url:
+                    $ref: "#/components/schemas/Url"
+                required:
+                  - actionId
+                  - actionIndex
+                  - purpose
+                  - buttonTitle
+                  - actionType
+                  - url
+                additionalProperties: false
+              - type: object
+                properties:
+                  actionId:
+                    $ref: "#/components/schemas/ActionId"
+                  actionIndex:
+                    description: Position in actions array
+                    type: number
+                  purpose:
+                    description: Business purpose or goal of this action
+                    type: string
+                  buttonTitle:
+                    description: Text displayed on the action button
+                    type: string
+                  actionType:
+                    type: string
+                    const: form
+                  formId:
+                    $ref: "#/components/schemas/FormId"
+                  formInstructions:
                     type: string
                 required:
-                  - links
-                  - title
+                  - actionId
+                  - actionIndex
+                  - purpose
+                  - buttonTitle
+                  - actionType
+                  - formId
                 additionalProperties: false
-            name:
-              description: Internal name used for page group identification and management
-              examples:
-                - Product Landing Page
-              type: string
-              minLength: 1
-            pageContext:
-              description: Business objective or purpose of this page group
-              examples:
-                - Convert visitors into trial users by highlighting key product benefits
-              type: string
-              minLength: 1
-            pageGroupId:
-              $ref: "#/components/schemas/PageGroupId"
-            pagesCount:
-              description: Total number of pages within this page group
-              examples:
-                - 3
-              type: integer
-              minimum: 0
-              maximum: 9007199254740991
-            pageTemplateId:
-              $ref: "#/components/schemas/PageTemplateId"
-            scripts:
-              type: array
-              items:
-                type: object
-                properties:
-                  content:
-                    type: string
-                    maxLength: 50000
-                  description:
-                    type: string
-                    maxLength: 500
-                  enabled:
-                    default: true
-                    type: boolean
-                  injectionPoint:
-                    type: string
-                    enum:
-                      - head
-                      - body-start
-                      - body-end
-                  name:
-                    type: string
-                    minLength: 1
-                    maxLength: 100
-                required:
-                  - content
-                  - enabled
-                  - injectionPoint
-                  - name
-                additionalProperties: false
-            status:
-              description: "Page group publication status: draft (editing), published (live), or archived (inactive)"
-              examples:
-                - published
-              type: string
-              enum:
-                - draft
-                - published
-                - archived
-            tenantId:
-              $ref: "#/components/schemas/TenantId"
-            title:
-              description: Human-readable title displayed for the page group
-              examples:
-                - Welcome to Our Product
-              type: string
-              minLength: 1
-            createdAt:
-              $ref: "#/components/schemas/CreatedAt"
-            updatedAt:
-              $ref: "#/components/schemas/CreatedAt"
-          required:
-            - brandId
-            - ctas
-            - deletedAt
-            - footerLinks
-            - name
-            - pageContext
-            - pageGroupId
-            - pagesCount
-            - pageTemplateId
-            - scripts
-            - status
-            - tenantId
-            - title
-            - createdAt
-            - updatedAt
-          additionalProperties: false
+        headerActionId:
+          $ref: "#/components/schemas/UnnamedSchema"
+        deletedAt:
+          anyOf:
+            - $ref: "#/components/schemas/CreatedAt"
+            - type: "null"
+        footerLinks:
+          type: array
+          items:
+            type: object
+            properties:
+              links:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    text:
+                      type: string
+                    url:
+                      type: string
+                  required:
+                    - text
+                    - url
+                  additionalProperties: false
+              title:
+                type: string
+            required:
+              - links
+              - title
+            additionalProperties: false
+        name:
+          description: Internal name used for page group identification and management
+          examples:
+            - Product Landing Page
+          type: string
+          minLength: 1
+        pageContext:
+          description: Business objective or purpose of this page group
+          examples:
+            - Convert visitors into trial users by highlighting key product benefits
+          type: string
+          minLength: 1
+        pageGroupId:
+          $ref: "#/components/schemas/PageGroupId"
+        pagesCount:
+          description: Total number of pages within this page group
+          examples:
+            - 3
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        pageTemplateId:
+          $ref: "#/components/schemas/PageTemplateId"
+        scripts:
+          type: array
+          items:
+            type: object
+            properties:
+              content:
+                type: string
+                maxLength: 50000
+              description:
+                type: string
+                maxLength: 500
+              enabled:
+                default: true
+                type: boolean
+              injectionPoint:
+                type: string
+                enum:
+                  - head
+                  - body-start
+                  - body-end
+              name:
+                type: string
+                minLength: 1
+                maxLength: 100
+            required:
+              - content
+              - enabled
+              - injectionPoint
+              - name
+            additionalProperties: false
+        status:
+          description: "Page group publication status: draft (editing), published (live), or archived (inactive)"
+          examples:
+            - published
+          type: string
+          enum:
+            - draft
+            - published
+            - archived
+        tenantId:
+          $ref: "#/components/schemas/TenantId"
+        title:
+          description: Human-readable title displayed for the page group
+          examples:
+            - Welcome to Our Product
+          type: string
+          minLength: 1
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/CreatedAt"
       required:
-        - pageGroup
+        - brandId
+        - actions
+        - deletedAt
+        - footerLinks
+        - name
+        - pageContext
+        - pageGroupId
+        - pagesCount
+        - pageTemplateId
+        - scripts
+        - status
+        - tenantId
+        - title
+        - createdAt
+        - updatedAt
       additionalProperties: false
     UpdateTemplateRequest:
       type: object
@@ -1598,6 +1557,7 @@ components:
           type: boolean
       additionalProperties: false
     Url:
+      description: URL to open when action is triggered
       type: string
       format: uri
   securitySchemes:
@@ -1613,7 +1573,7 @@ paths:
       operationId: healthCheck
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1625,7 +1585,7 @@ paths:
       operationId: listBrands
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1640,8 +1600,6 @@ paths:
       description: Create a new brand for the authenticated tenant
       operationId: createBrand
       responses:
-        "200":
-          $ref: "#/components/responses/PostBrandResponse"
         "201":
           $ref: "#/components/responses/PostBrandResponse"
       summary: Create brand
@@ -1699,7 +1657,7 @@ paths:
       operationId: listPageGroups
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1720,10 +1678,12 @@ paths:
       description: Create a new page group for the authenticated tenant
       operationId: createPageGroup
       responses:
-        "200":
-          $ref: "#/components/responses/PostPageGroupResponse"
         "201":
-          $ref: "#/components/responses/PostPageGroupResponse"
+          description: PageGroup created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostPageGroup"
       summary: Create a new page group
       tags:
         - Page Groups
@@ -1739,7 +1699,7 @@ paths:
       operationId: getPageGroup
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1754,7 +1714,7 @@ paths:
       operationId: updatePageGroup
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1775,7 +1735,7 @@ paths:
       operationId: deletePageGroup
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1791,7 +1751,7 @@ paths:
       operationId: listPagesInGroup
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1807,10 +1767,12 @@ paths:
       description: Create a new page within a page group
       operationId: addPageToGroup
       responses:
-        "200":
-          $ref: "#/components/responses/PostPageResponse"
         "201":
-          $ref: "#/components/responses/PostPageResponse"
+          description: PageToGroup created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostPage"
       summary: Create a new page in a page group
       tags:
         - Pages
@@ -1828,7 +1790,7 @@ paths:
       operationId: getPageSessionCount
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1845,7 +1807,7 @@ paths:
       operationId: getPageStatisticsInGroup
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1881,7 +1843,7 @@ paths:
       operationId: getPageStatisticsByUTMGroup
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1923,7 +1885,7 @@ paths:
       operationId: listPageVersions
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1951,8 +1913,6 @@ paths:
       description: Create a new version of the specified page with automatic type-safe Zod validation
       operationId: createPageVersion
       responses:
-        "200":
-          $ref: "#/components/responses/PostVersionResponse"
         "201":
           $ref: "#/components/responses/PostVersionResponse"
       summary: Create page version
@@ -1985,8 +1945,8 @@ paths:
       description: Update an existing version of a page with partial data
       operationId: patchPageVersion
       responses:
-        "200":
-          $ref: "#/components/responses/PostVersionResponse"
+        "501":
+          $ref: "#/components/responses/SchemaResponse"
       summary: Update page version
       tags:
         - Page Versions
@@ -2004,12 +1964,8 @@ paths:
       description: Delete a specific version of a page
       operationId: deletePageVersion
       responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DeletePageVersionResponse"
+        "501":
+          $ref: "#/components/responses/SchemaResponse"
       summary: Delete page version
       tags:
         - Page Versions
@@ -2023,7 +1979,7 @@ paths:
       operationId: getAvailableUTMParameters
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -2050,8 +2006,6 @@ paths:
       description: Create a new template for the authenticated tenant
       operationId: createTemplate
       responses:
-        "200":
-          $ref: "#/components/responses/PostTemplateResponse"
         "201":
           $ref: "#/components/responses/PostTemplateResponse"
       summary: Create template
@@ -2121,10 +2075,12 @@ paths:
       description: Duplicate an existing template
       operationId: duplicateTemplate
       responses:
-        "200":
-          $ref: "#/components/responses/PostTemplateResponse"
         "201":
           $ref: "#/components/responses/PostTemplateResponse"
+        "404":
+          $ref: "#/components/responses/PostDuplicateResponse"
+        "500":
+          $ref: "#/components/responses/PostDuplicateResponse"
       summary: Duplicate template
       tags:
         - Templates
@@ -2142,7 +2098,7 @@ paths:
       operationId: listWebhookSubscriptions
       responses:
         "200":
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -2154,8 +2110,8 @@ paths:
       description: Create a webhook subscription
       operationId: createWebhookSubscription
       responses:
-        "200":
-          description: Success
+        "201":
+          description: WebhookSubscription created successfully
           content:
             application/json:
               schema:
