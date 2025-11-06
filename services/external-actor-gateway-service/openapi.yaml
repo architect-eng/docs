@@ -591,6 +591,7 @@ components:
           items: {}
         headerActionId:
           type: string
+        metadata: {}
         name:
           type: string
         pageContext:
