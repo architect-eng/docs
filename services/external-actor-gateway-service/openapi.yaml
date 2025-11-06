@@ -821,6 +821,41 @@ components:
         - createdAt
         - updatedAt
       additionalProperties: false
+    GetWebhookSubscriptionResponse:
+      type: object
+      properties:
+        id:
+          description: Unique subscription identifier
+          type: string
+        url:
+          $ref: "#/components/schemas/Url"
+        events:
+          nullable: true
+          type: array
+          items:
+            type: string
+            enum:
+              - page.version.created
+              - page.version.processed
+              - page.version.published
+              - form.submitted
+              - form.enriched
+              - form.enrichment_failed
+        active:
+          description: Whether the subscription is active
+          type: boolean
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/CreatedAt"
+      required:
+        - id
+        - url
+        - events
+        - active
+        - createdAt
+        - updatedAt
+      additionalProperties: false
     PageGroupId:
       description: TypeID string identifier for the page group, always starts with "page_"
       examples:
