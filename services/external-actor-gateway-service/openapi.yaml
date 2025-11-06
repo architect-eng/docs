@@ -604,8 +604,6 @@ components:
           items: {}
         tenantId:
           type: string
-        title:
-          type: string
         updatedAt:
           $ref: "#/components/schemas/CreatedAt"
         variantsCount:
@@ -622,7 +620,6 @@ components:
         - pageTemplateId
         - scripts
         - tenantId
-        - title
         - updatedAt
         - variantsCount
       additionalProperties: false
