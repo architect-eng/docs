@@ -1,26 +1,19 @@
 ---
-title: "External Actor Gateway API"
-description: "API documentation for third-party integrations with Architect"
+title: "Customer API"
+description: "API documentation for integrating with Architect"
 ---
 
-The External Actor Gateway (EAG) provides a RESTful API for external systems to integrate with the Architect platform. This API enables third-party applications to programmatically manage brands, page groups, templates, and analytics.
+The Customer API provides a RESTful API for external systems to integrate with the Architect platform.
 
 ## Getting Started
 
 To begin using the API:
 
-1. **Obtain API credentials** - Contact your account manager to receive an API key
+1. **Obtain API credentials** - Create an API key in the Architect customer management app
 2. **Authenticate requests** - Include your API key in the `x-api-key` header for all requests
 3. **Explore the API reference** - Browse the available endpoints in the API Reference tab
 
 ## Core Concepts
-
-### Brands
-Brands represent your organization's visual identity and theme configuration. Each brand includes:
-- Name and company homepage
-- Theme customization (light and dark modes)
-- Color schemes and logo assets
-- Preferred appearance settings
 
 ### Page Groups
 Page groups are collections of related pages with shared configuration:
@@ -29,6 +22,8 @@ Page groups are collections of related pages with shared configuration:
 - URL slugs and titles
 - Publication status (draft, published, archived)
 - Custom scripts and tracking
+
+**Page groups must be configured ahead of time in the Architect platform.**
 
 ### Pages
 Individual page variants within a page group, each with:
@@ -49,7 +44,7 @@ Reusable page templates for consistent design:
 All API requests require authentication using an API key:
 
 ```bash
-curl -X GET 'https://app.tryarchitect.com/api/eag/v0/brands' \
+curl -X GET 'https://api.tryarchitect.com/v0/brands' \
   -H 'x-api-key: YOUR_API_KEY'
 ```
 
@@ -160,13 +155,6 @@ function verifyWebhookSignature(
 ## Support
 
 For API support or questions:
-- Email: [eag-support@tryarchitect.com](mailto:eag-support@tryarchitect.com)
+- Email: [api-support@tryarchitect.com](mailto:api-support@tryarchitect.com)
 - Website: [tryarchitect.com](https://tryarchitect.com)
-
-## API Environments
-
-The API is available in multiple environments:
-
-- **Production**: `https://app.tryarchitect.com/api/eag`
-- **Beta**: `https://app.beta.tryarchitect.com/api/eag`
-- **Local Development**: `http://localhost:25001`
+- Contact your account manager via email or Slack
