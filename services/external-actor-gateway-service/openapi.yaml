@@ -1,11 +1,11 @@
 openapi: 3.1.0
 info:
   contact:
-    email: eag-support@tryarchitect.com
+    email: api-support@tryarchitect.com
     name: Architect
     url: https://tryarchitect.com
-  description: Complete External Actor Gateway API for third-party integrations
-  title: Architect - External Actor Gateway
+  description: The Customer API provides a RESTful API for external systems to integrate with the Architect platform.
+  title: Architect - Customer API
   version: 0.0.1
 servers:
   - description: Production environment
