@@ -27,5 +27,13 @@
         ]
       }
     ]
+  },
+  "api": {
+    "mdx": {
+      "auth": {
+        "method": "key",
+        "name": "x-api-key"
+      }
+    }
   }
 }
