@@ -14,6 +14,8 @@ servers:
     url: https://api.beta.tryarchitect.com
   - description: Local environment
     url: http://localhost:25001
+security:
+  - apiKey: []
 components:
   callbacks: {}
   examples:
@@ -1579,6 +1581,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetHealthz"
       summary: Health check
+      security: []
   /v0/brands:
     get:
       description: List all brands for the authenticated tenant
