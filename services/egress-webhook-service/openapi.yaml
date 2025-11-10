@@ -6,6 +6,9 @@ info:
     email: support@tryarchitect.com
     name: Architect
     url: https://tryarchitect.com
+
+
+
 openapi: 3.1.0
 paths: {}
 servers: []
