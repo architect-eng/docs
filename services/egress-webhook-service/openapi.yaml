@@ -1,0 +1,336 @@
+info:
+  title: Architect - Egress Webhook Events
+  description: Webhook events delivered by the Egress Webhook Service to subscribed endpoints
+  version: 1.0.0
+  contact:
+    email: support@tryarchitect.com
+    name: Architect
+    url: https://tryarchitect.com
+openapi: 3.1.0
+paths: {}
+servers: []
+webhooks:
+  page.version.created:
+    post:
+      description: Triggered when a new page version is created. The webhook payload contains details about the newly created page version including page ID, version ID, and creation timestamp.
+      responses:
+        "200":
+          description: Webhook received successfully
+      summary: Page Version Created
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                tenantId:
+                  type: string
+                eventId:
+                  type: string
+                payload:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - page.version.created
+                    pageId:
+                      type: string
+                      minLength: 1
+                    versionId:
+                      type: string
+                      minLength: 1
+                    createdAt:
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                  required:
+                    - type
+                    - pageId
+                    - versionId
+                    - createdAt
+              required:
+                - timestamp
+                - tenantId
+                - eventId
+                - payload
+        description: Triggered when a new page version is created. The webhook payload contains details about the newly created page version including page ID, version ID, and creation timestamp.
+        required: true
+  page.version.processed:
+    post:
+      description: Triggered when a page version is processed. The webhook payload contains details about the processed page version including page ID, version ID, and processing timestamp.
+      responses:
+        "200":
+          description: Webhook received successfully
+      summary: Page Version Processed
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                tenantId:
+                  type: string
+                eventId:
+                  type: string
+                payload:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - page.version.processed
+                    pageId:
+                      type: string
+                      minLength: 1
+                    versionId:
+                      type: string
+                      minLength: 1
+                    processedAt:
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                  required:
+                    - type
+                    - pageId
+                    - versionId
+                    - processedAt
+              required:
+                - timestamp
+                - tenantId
+                - eventId
+                - payload
+        description: Triggered when a page version is processed. The webhook payload contains details about the processed page version including page ID, version ID, and processing timestamp.
+        required: true
+  page.version.published:
+    post:
+      description: Triggered when a page version is published. The webhook payload contains details about the published page version including page ID, version ID, and publishing timestamp.
+      responses:
+        "200":
+          description: Webhook received successfully
+      summary: Page Version Published
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                tenantId:
+                  type: string
+                eventId:
+                  type: string
+                payload:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - page.version.published
+                    pageId:
+                      type: string
+                      minLength: 1
+                    versionId:
+                      type: string
+                      minLength: 1
+                    publishedAt:
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                  required:
+                    - type
+                    - pageId
+                    - versionId
+                    - publishedAt
+              required:
+                - timestamp
+                - tenantId
+                - eventId
+                - payload
+        description: Triggered when a page version is published. The webhook payload contains details about the published page version including page ID, version ID, and publishing timestamp.
+        required: true
+  form.submitted:
+    post:
+      description: Triggered when a form is submitted. The webhook payload contains details about the submitted form including form ID, submission ID, and submission timestamp.
+      responses:
+        "200":
+          description: Webhook received successfully
+      summary: Form Submitted
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                tenantId:
+                  type: string
+                eventId:
+                  type: string
+                payload:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - form.submitted
+                    formId:
+                      type: string
+                      minLength: 1
+                    submissionId:
+                      type: string
+                      minLength: 1
+                    submittedAt:
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                    input:
+                      type: object
+                      additionalProperties: {}
+                  required:
+                    - type
+                    - formId
+                    - submissionId
+                    - submittedAt
+                    - input
+              required:
+                - timestamp
+                - tenantId
+                - eventId
+                - payload
+        description: Triggered when a form is submitted. The webhook payload contains details about the submitted form including form ID, submission ID, and submission timestamp.
+        required: true
+  form.enriched:
+    post:
+      description: Triggered when a form submission is enriched with additional data. The webhook payload contains details about the enriched form including form ID, submission ID, and enriched data.
+      responses:
+        "200":
+          description: Webhook received successfully
+      summary: Form Enriched
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                tenantId:
+                  type: string
+                eventId:
+                  type: string
+                payload:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - form.enriched
+                    formId:
+                      type: string
+                      minLength: 1
+                    submissionId:
+                      type: string
+                      minLength: 1
+                    enrichedAt:
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                    enrichedData:
+                      type: object
+                      additionalProperties: {}
+                  required:
+                    - type
+                    - formId
+                    - submissionId
+                    - enrichedAt
+                    - enrichedData
+              required:
+                - timestamp
+                - tenantId
+                - eventId
+                - payload
+        description: Triggered when a form submission is enriched with additional data. The webhook payload contains details about the enriched form including form ID, submission ID, and enriched data.
+        required: true
+  form.enrichment_failed:
+    post:
+      description: Triggered when form enrichment fails. The webhook payload contains details about the failed enrichment including form ID, submission ID, failure timestamp, and error information.
+      responses:
+        "200":
+          description: Webhook received successfully
+      summary: Form Enrichment Failed
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                tenantId:
+                  type: string
+                eventId:
+                  type: string
+                payload:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - form.enrichment_failed
+                    formId:
+                      type: string
+                      minLength: 1
+                    submissionId:
+                      type: string
+                      minLength: 1
+                    failedAt:
+                      type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                    error:
+                      type: string
+                      minLength: 1
+                  required:
+                    - type
+                    - formId
+                    - submissionId
+                    - failedAt
+                    - error
+              required:
+                - timestamp
+                - tenantId
+                - eventId
+                - payload
+        description: Triggered when form enrichment fails. The webhook payload contains details about the failed enrichment including form ID, submission ID, failure timestamp, and error information.
+        required: true
