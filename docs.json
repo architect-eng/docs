@@ -15,16 +15,29 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "API Reference",
-        "openapi": "services/external-actor-gateway-service/openapi.yaml",
+        "tab": "Overview",
         "groups": [
           {
             "group": "Overview",
             "pages": [
               "index"
             ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "webhooks"
+            ]
           }
         ]
+      },
+      {
+        "tab": "Customer API",
+        "openapi": "services/external-actor-gateway-service/openapi.yaml"
+      },
+      {
+        "tab": "Webhook Events",
+        "openapi": "services/egress-webhook-service/openapi.yaml"
       }
     ]
   },
