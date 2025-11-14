@@ -488,12 +488,23 @@ components:
                 type: string
               updatedAt:
                 type: string
+              effectiveName:
+                type: string
+              customName:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              computedName:
+                type: string
             required:
               - createdAt
               - pageGroupId
               - pageId
               - tenantId
               - updatedAt
+              - effectiveName
+              - customName
+              - computedName
             additionalProperties: false
         nextCursor:
           type: string
@@ -1527,6 +1538,54 @@ components:
         - createdAt
         - updatedAt
       additionalProperties: false
+    UpdatePageInGroupRequest:
+      type: object
+      properties:
+        customName:
+          anyOf:
+            - type: string
+            - type: "null"
+        supplementaryContext:
+          anyOf:
+            - type: string
+            - type: "null"
+      additionalProperties: false
+    UpdatePageInGroupResponse:
+      type: object
+      properties:
+        pageGroupId:
+          type: string
+        pageId:
+          type: string
+        tenantId:
+          type: string
+        effectiveName:
+          type: string
+        customName:
+          anyOf:
+            - type: string
+            - type: "null"
+        computedName:
+          type: string
+        supplementaryContext:
+          anyOf:
+            - type: string
+            - type: "null"
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - pageGroupId
+        - pageId
+        - tenantId
+        - effectiveName
+        - customName
+        - computedName
+        - supplementaryContext
+        - createdAt
+        - updatedAt
+      additionalProperties: false
     UpdateTemplateRequest:
       type: object
       properties:
@@ -1786,6 +1845,29 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreatePageRequest"
+        required: true
+  /v0/page_groups/{page_group_id}/pages/{page_id}:
+    patch:
+      description: Update a page within the specified page group
+      operationId: updatePageInGroup
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdatePageInGroupResponse"
+      summary: Update a page
+      tags:
+        - Pages
+      parameters:
+        - $ref: "#/components/parameters/PageGroupIdPath"
+        - $ref: "#/components/parameters/PageIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePageInGroupRequest"
         required: true
   /v0/page_groups/{page_group_id}/pages/{page_id}/session_count:
     get:
