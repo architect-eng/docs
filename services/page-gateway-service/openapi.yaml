@@ -1,0 +1,1884 @@
+openapi: 3.1.0
+info:
+  title: Architect - Page Gateway Service
+  version: 0.0.1
+  contact:
+    name: Architect
+    url: https://tryarchitect.com
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Bearer token authentication
+  schemas:
+    SendRequest:
+      type: object
+      properties:
+        operationKey:
+          type: string
+          maxLength: 128
+        data:
+          oneOf:
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - user-response
+                responseId:
+                  type: string
+                  maxLength: 128
+                response:
+                  oneOf:
+                    - type: object
+                      properties:
+                        responseType:
+                          type: string
+                          enum:
+                            - free-form-response
+                        responseValue:
+                          type: string
+                          maxLength: 1024
+                      required:
+                        - responseType
+                        - responseValue
+                    - type: object
+                      properties:
+                        responseType:
+                          type: string
+                          enum:
+                            - multiple-choice-response
+                        responseLabel:
+                          type: string
+                          maxLength: 1024
+                        responseValue:
+                          type: string
+                          maxLength: 1024
+                      required:
+                        - responseType
+                        - responseLabel
+                        - responseValue
+                    - type: object
+                      properties:
+                        responseType:
+                          type: string
+                          enum:
+                            - card-selection-response
+                        responseValue:
+                          type: string
+                          maxLength: 1024
+                      required:
+                        - responseType
+                        - responseValue
+              required:
+                - type
+                - responseId
+                - response
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - user-question
+                question:
+                  type: string
+                  maxLength: 1024
+              required:
+                - type
+                - question
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - user-selected-branch
+                branchId:
+                  type: string
+                  maxLength: 256
+              required:
+                - type
+                - branchId
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - user-multiple-choice-questions-response
+                responses:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      questionId:
+                        type: string
+                      selectedChoiceId:
+                        type: string
+                    required:
+                      - questionId
+                      - selectedChoiceId
+              required:
+                - type
+                - responses
+      required:
+        - operationKey
+        - data
+    GetImageUrlResponse:
+      type: string
+    SubmitFormResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the submission was successful
+        submissionId:
+          type: string
+          description: Form submission ID
+        redirectUrl:
+          type: string
+          description: URL to redirect to after submission
+      required:
+        - success
+        - submissionId
+    SubmitFormRequest:
+      type: object
+      properties:
+        operationKey:
+          type: string
+          maxLength: 128
+          description: Operation key
+        formId:
+          type: string
+          pattern: ^form_
+          description: Form ID to submit to
+        pageSessionId:
+          type: string
+          pattern: ^pagesession_
+          description: Page session ID
+        pageVersionId:
+          type: string
+          pattern: ^pageversion_
+          description: Page version ID
+        input:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+              description: Email address
+          required:
+            - email
+          description: Form input data
+      required:
+        - operationKey
+        - formId
+        - pageSessionId
+        - pageVersionId
+        - input
+    RecordAnalyticsEventsResponse:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+          description: Whether the events were accepted and processed
+      required:
+        - accepted
+    DataAttributes:
+      type: object
+      properties:
+        id:
+          type: string
+          description: From data-id attribute
+        type:
+          type: string
+          description: From data-type attribute
+        faqIndex:
+          type: string
+          description: From data-faq-index attribute
+        faqQuestion:
+          type: string
+          description: From data-faq-question attribute
+        faqExpanded:
+          type: string
+          description: From data-faq-expanded attribute
+        formId:
+          type: string
+          description: From data-form-id attribute
+        formType:
+          type: string
+          description: From data-form-type attribute
+      additionalProperties: {}
+      description: Minimal data object with id and type
+    AnalyticsEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Client-generated event ID for idempotency
+        eventName:
+          type: string
+          enum:
+            - analytics_session_start
+            - analytics_session_end
+            - page_view
+            - page_heartbeat
+            - scroll_depth
+            - click
+            - form_submit
+        timestamp:
+          type: number
+          description: Unix epoch timestamp in milliseconds
+        metadata:
+          anyOf:
+            - type: object
+              properties:
+                pageTitle:
+                  type: string
+                  description: Title of the page
+                referrer:
+                  type: string
+                  description: Referrer URL for marketing attribution
+                viewportWidth:
+                  type: number
+                  description: Viewport width for device type detection
+                viewportHeight:
+                  type: number
+                  description: Viewport height for device type detection
+              required:
+                - pageTitle
+                - viewportWidth
+                - viewportHeight
+            - type: object
+              properties:
+                isVisible:
+                  type: boolean
+                  description: Whether the tab is currently visible in foreground
+                sequenceNumber:
+                  type: number
+                  description: Incremental counter to detect missed heartbeats
+                clientTimestamp:
+                  type: number
+                  description: Client-side timestamp for latency calculation
+              required:
+                - isVisible
+                - sequenceNumber
+                - clientTimestamp
+            - type: object
+              properties:
+                scrollPosition:
+                  type: number
+                  description: The position of the scroll
+                viewportHeight:
+                  type: number
+                  description: The height of the viewport
+                pageHeight:
+                  type: number
+                  description: The height of the page
+                snapshotTime:
+                  type: number
+                  description: Elapsed time since page view when snapshot taken (ms)
+                intervalSeconds:
+                  type: number
+                  description: The interval duration this snapshot represents
+              required:
+                - scrollPosition
+                - viewportHeight
+                - pageHeight
+                - snapshotTime
+                - intervalSeconds
+            - type: object
+              properties:
+                elementType:
+                  type: string
+                  enum:
+                    - button
+                    - link
+                    - input
+                    - image
+                    - other
+                  description: Type of element clicked
+                elementId:
+                  type: string
+                  description: DOM element ID if available
+                dataAttributes:
+                  $ref: "#/components/schemas/DataAttributes"
+              required:
+                - elementType
+            - type: object
+              properties:
+                formId:
+                  type: string
+                  description: Form identifier
+                formType:
+                  type: string
+                  description: Type of form (contact, signup, newsletter, etc.)
+                dataAttributes:
+                  $ref: "#/components/schemas/DataAttributes"
+              required:
+                - formId
+                - formType
+            - type: object
+              properties: {}
+              description: Empty metadata for session start events
+            - type: object
+              properties: {}
+              description: Empty metadata for session end events
+      required:
+        - id
+        - eventName
+        - timestamp
+        - metadata
+    RecordAnalyticsEventsRequest:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsEvent"
+          description: Array of analytics events to record
+      required:
+        - events
+  parameters: {}
+paths:
+  /page/session/send/{pageSessionId}:
+    post:
+      tags:
+        - page
+      summary: Send data to page session
+      parameters:
+        - name: pageSessionId
+          in: path
+          required: true
+          description: The page session ID
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendRequest"
+      responses:
+        "200":
+          description: Data sent successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - oneOf:
+                      - type: object
+                        properties:
+                          operationKey:
+                            type: string
+                          success:
+                            type: boolean
+                            enum:
+                              - true
+                        required:
+                          - operationKey
+                          - success
+                      - type: object
+                        properties:
+                          operationKey:
+                            type: string
+                          success:
+                            type: boolean
+                            enum:
+                              - false
+                          error:
+                            type: string
+                        required:
+                          - operationKey
+                          - success
+                          - error
+                  - type: object
+                    properties:
+                      newAuthToken:
+                        type: string
+        "400":
+          description: The request was invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the request was invalid
+                  details:
+                    description: More detail about why the request was invalid. Structure is
+                      arbitrary, do not rely on it
+                required:
+                  - reason
+        "401":
+          description: The caller's API key is invalid or expired.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dueTo:
+                    type: string
+                    description: The reason the request was unauthorized
+                required:
+                  - dueTo
+        "403":
+          description: The caller is not authorized to perform the requested action.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the request was forbidden
+                required:
+                  - reason
+        "404":
+          description: The requested resource was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the resource was not found
+                required:
+                  - reason
+        "500":
+          description: An internal server error occurred while creating the appointment
+            invitation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                  - error
+  /page/session/image-url:
+    get:
+      tags:
+        - page
+      summary: Get image URL
+      parameters:
+        - schema:
+            type:
+              - string
+              - "null"
+            description: Direct image URL
+          required: false
+          description: Direct image URL
+          name: imageUrl
+          in: query
+        - schema:
+            type:
+              - string
+              - "null"
+            description: File ID to get download URL for
+          required: false
+          description: File ID to get download URL for
+          name: fileId
+          in: query
+      responses:
+        "200":
+          description: Image URL retrieved successfully
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/GetImageUrlResponse"
+        "400":
+          description: The request was invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the request was invalid
+                  details:
+                    description: More detail about why the request was invalid. Structure is
+                      arbitrary, do not rely on it
+                required:
+                  - reason
+        "401":
+          description: The caller's API key is invalid or expired.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dueTo:
+                    type: string
+                    description: The reason the request was unauthorized
+                required:
+                  - dueTo
+        "403":
+          description: The caller is not authorized to perform the requested action.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the request was forbidden
+                required:
+                  - reason
+        "404":
+          description: The requested resource was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the resource was not found
+                required:
+                  - reason
+        "500":
+          description: An internal server error occurred while creating the appointment
+            invitation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                  - error
+  /page/session/state:
+    get:
+      tags:
+        - page
+      summary: Get page session state stream
+      description: Stream real-time page session state updates via Server-Sent Events (SSE).
+      parameters: []
+      responses:
+        "200":
+          description: Page session state stream established
+          content:
+            text/event-stream:
+              schema:
+                anyOf:
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - event
+                      sequenceNumber:
+                        type: number
+                      timestamp:
+                        type: string
+                      data:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            enum:
+                              - deal-room-model
+                          data:
+                            type: object
+                            properties:
+                              userResponses:
+                                type: object
+                                properties:
+                                  ids:
+                                    type: array
+                                    items:
+                                      type: string
+                                  entities:
+                                    type: object
+                                    additionalProperties:
+                                      type: object
+                                      properties:
+                                        responseId:
+                                          type: string
+                                        responseData:
+                                          oneOf:
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - free-form-response
+                                                questionData:
+                                                  type: object
+                                                  properties:
+                                                    prompt:
+                                                      type: string
+                                                  required:
+                                                    - prompt
+                                                answerData:
+                                                  type: object
+                                                  properties:
+                                                    answeredValue:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                    skipped:
+                                                      type: boolean
+                                                      default: false
+                                                  required:
+                                                    - answeredValue
+                                              required:
+                                                - type
+                                                - questionData
+                                                - answerData
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - multiple-choice-response
+                                                questionData:
+                                                  type: object
+                                                  properties:
+                                                    prompt:
+                                                      type: string
+                                                    choices:
+                                                      type: array
+                                                      items:
+                                                        type: object
+                                                        properties:
+                                                          label:
+                                                            type: string
+                                                          value:
+                                                            type: string
+                                                        required:
+                                                          - label
+                                                          - value
+                                                  required:
+                                                    - prompt
+                                                    - choices
+                                                answerData:
+                                                  type: object
+                                                  properties:
+                                                    answeredValue:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                    skipped:
+                                                      type: boolean
+                                                      default: false
+                                                  required:
+                                                    - answeredValue
+                                              required:
+                                                - type
+                                                - questionData
+                                                - answerData
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - card-selection-response
+                                                displayData:
+                                                  type: object
+                                                  properties:
+                                                    title:
+                                                      type: string
+                                                    cards:
+                                                      type: array
+                                                      items:
+                                                        type: object
+                                                        properties:
+                                                          cardId:
+                                                            type: string
+                                                          title:
+                                                            type: string
+                                                          buttonLabel:
+                                                            type: string
+                                                        required:
+                                                          - cardId
+                                                          - title
+                                                          - buttonLabel
+                                                  required:
+                                                    - title
+                                                    - cards
+                                                answerData:
+                                                  type: object
+                                                  properties:
+                                                    cardId:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                    skipped:
+                                                      type: boolean
+                                                      default: false
+                                                  required:
+                                                    - cardId
+                                              required:
+                                                - type
+                                                - displayData
+                                                - answerData
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - multi-question-mcq-response
+                                                questionResponses:
+                                                  type: array
+                                                  items:
+                                                    type: object
+                                                    properties:
+                                                      questionId:
+                                                        type: string
+                                                      selectedChoiceId:
+                                                        type: string
+                                                      selectedChoiceText:
+                                                        type: string
+                                                    required:
+                                                      - questionId
+                                                      - selectedChoiceId
+                                                      - selectedChoiceText
+                                              required:
+                                                - type
+                                                - questionResponses
+                                      required:
+                                        - responseId
+                                        - responseData
+                                default:
+                                  ids: []
+                                  entities: {}
+                                required:
+                                  - ids
+                                  - entities
+                              headerActions:
+                                type: object
+                                properties:
+                                  ids:
+                                    type: array
+                                    items:
+                                      type: string
+                                  entities:
+                                    type: object
+                                    additionalProperties:
+                                      type: object
+                                      properties:
+                                        headerActionId:
+                                          type: string
+                                        label:
+                                          type: string
+                                        disabled:
+                                          type: boolean
+                                          default: false
+                                        onClick:
+                                          oneOf:
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - open-url
+                                                url:
+                                                  type: string
+                                              required:
+                                                - type
+                                                - url
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - open-calendly
+                                                calendlyUrl:
+                                                  type: string
+                                              required:
+                                                - type
+                                                - calendlyUrl
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - form
+                                                formId:
+                                                  type: string
+                                              required:
+                                                - type
+                                                - formId
+                                            - type: "null"
+                                          default: null
+                                      required:
+                                        - headerActionId
+                                        - label
+                                default:
+                                  ids: []
+                                  entities: {}
+                                required:
+                                  - ids
+                                  - entities
+                              contentSlices:
+                                type: object
+                                properties:
+                                  ids:
+                                    type: array
+                                    items:
+                                      type: string
+                                  entities:
+                                    type: object
+                                    additionalProperties:
+                                      type: object
+                                      properties:
+                                        contentSliceId:
+                                          type: string
+                                        isDeleted:
+                                          type: boolean
+                                          default: false
+                                        isGoingToBe:
+                                          type:
+                                            - string
+                                            - "null"
+                                          enum:
+                                            - hero-short-headline
+                                            - hero-long-headline
+                                            - hero-product-headline
+                                            - section-cards-branching
+                                            - faq
+                                            - split-image
+                                            - highlighted-statistics
+                                            - centered-preamble
+                                            - person-quote
+                                            - long-text-with-headline
+                                            - image-grid
+                                            - text-cards
+                                            - image-cards
+                                            - split-gallery
+                                            - logos
+                                            - table
+                                            - call-to-action
+                                            - multiple-choice-question
+                                          default: null
+                                        data:
+                                          oneOf:
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - hero-short-headline
+                                                headline:
+                                                  type: string
+                                                subHeadline:
+                                                  type: string
+                                                primaryButton:
+                                                  type:
+                                                    - object
+                                                    - "null"
+                                                  properties:
+                                                    label:
+                                                      type: string
+                                                    url:
+                                                      type: string
+                                                    type:
+                                                      type: string
+                                                      enum:
+                                                        - open-url
+                                                        - form
+                                                    formId:
+                                                      type: string
+                                                  default: null
+                                                  required:
+                                                    - label
+                                                backgroundImage:
+                                                  type:
+                                                    - object
+                                                    - "null"
+                                                  properties:
+                                                    altText:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    url:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    fileId:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                  default: null
+                                              required:
+                                                - type
+                                                - headline
+                                                - subHeadline
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - hero-long-headline
+                                                headline:
+                                                  type: string
+                                                subHeadline:
+                                                  type: string
+                                                primaryButton:
+                                                  type:
+                                                    - object
+                                                    - "null"
+                                                  properties:
+                                                    label:
+                                                      type: string
+                                                    url:
+                                                      type: string
+                                                    type:
+                                                      type: string
+                                                      enum:
+                                                        - open-url
+                                                        - form
+                                                    formId:
+                                                      type: string
+                                                  default: null
+                                                  required:
+                                                    - label
+                                                backgroundImage:
+                                                  type:
+                                                    - object
+                                                    - "null"
+                                                  properties:
+                                                    altText:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    url:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    fileId:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                  default: null
+                                              required:
+                                                - type
+                                                - headline
+                                                - subHeadline
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - hero-product-headline
+                                                headline:
+                                                  type: string
+                                                subHeadline:
+                                                  type: string
+                                                primaryButton:
+                                                  type:
+                                                    - object
+                                                    - "null"
+                                                  properties:
+                                                    label:
+                                                      type: string
+                                                    url:
+                                                      type: string
+                                                    type:
+                                                      type: string
+                                                      enum:
+                                                        - open-url
+                                                        - form
+                                                    formId:
+                                                      type: string
+                                                  default: null
+                                                  required:
+                                                    - label
+                                                backgroundImage:
+                                                  type:
+                                                    - object
+                                                    - "null"
+                                                  properties:
+                                                    altText:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    url:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    fileId:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                  default: null
+                                                productImage:
+                                                  type: object
+                                                  properties:
+                                                    altText:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    url:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    fileId:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                              required:
+                                                - type
+                                                - headline
+                                                - subHeadline
+                                                - productImage
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - section-cards-branching
+                                                headline:
+                                                  type: string
+                                                cards:
+                                                  type: array
+                                                  items:
+                                                    type: object
+                                                    properties:
+                                                      branchId:
+                                                        type: string
+                                                      name:
+                                                        type: string
+                                                      clickLabel:
+                                                        type: string
+                                                    required:
+                                                      - branchId
+                                                      - name
+                                                      - clickLabel
+                                                userChoseBranchId:
+                                                  type:
+                                                    - string
+                                                    - "null"
+                                                  default: null
+                                              required:
+                                                - type
+                                                - headline
+                                                - cards
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - faq
+                                                headline:
+                                                  type: string
+                                                questions:
+                                                  type: array
+                                                  items:
+                                                    type: object
+                                                    properties:
+                                                      question:
+                                                        type: string
+                                                      answer:
+                                                        type: string
+                                                    required:
+                                                      - question
+                                                      - answer
+                                              required:
+                                                - type
+                                                - headline
+                                                - questions
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - split-image
+                                                headline:
+                                                  type: string
+                                                subHeadline:
+                                                  type: string
+                                                image:
+                                                  type: object
+                                                  properties:
+                                                    altText:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    url:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    fileId:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                imagePosition:
+                                                  type: string
+                                                  enum:
+                                                    - Left
+                                                    - Right
+                                                primaryButton:
+                                                  type:
+                                                    - object
+                                                    - "null"
+                                                  properties:
+                                                    label:
+                                                      type: string
+                                                    url:
+                                                      type: string
+                                                    type:
+                                                      type: string
+                                                      enum:
+                                                        - open-url
+                                                        - form
+                                                    formId:
+                                                      type: string
+                                                  default: null
+                                                  required:
+                                                    - label
+                                              required:
+                                                - type
+                                                - headline
+                                                - subHeadline
+                                                - image
+                                                - imagePosition
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - highlighted-statistics
+                                                headline:
+                                                  type: string
+                                                subHeadline:
+                                                  type: string
+                                                statistics:
+                                                  type: array
+                                                  items:
+                                                    type: object
+                                                    properties:
+                                                      value:
+                                                        type: string
+                                                      label:
+                                                        type: string
+                                                    required:
+                                                      - value
+                                                      - label
+                                              required:
+                                                - type
+                                                - headline
+                                                - subHeadline
+                                                - statistics
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - centered-preamble
+                                                highlightedText:
+                                                  type: string
+                                                restOfText:
+                                                  type: string
+                                              required:
+                                                - type
+                                                - highlightedText
+                                                - restOfText
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - person-quote
+                                                quote:
+                                                  type: string
+                                                author:
+                                                  type: object
+                                                  properties:
+                                                    name:
+                                                      type: string
+                                                    title:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    company:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                  required:
+                                                    - name
+                                              required:
+                                                - type
+                                                - quote
+                                                - author
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - long-text-with-headline
+                                                headline:
+                                                  type: string
+                                                content:
+                                                  type: string
+                                                image:
+                                                  type:
+                                                    - object
+                                                    - "null"
+                                                  properties:
+                                                    altText:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    url:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    fileId:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                  default: null
+                                              required:
+                                                - type
+                                                - headline
+                                                - content
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - image-grid
+                                                headline:
+                                                  type: string
+                                                subHeadline:
+                                                  type: string
+                                                images:
+                                                  type: array
+                                                  items:
+                                                    type: object
+                                                    properties:
+                                                      altText:
+                                                        type:
+                                                          - string
+                                                          - "null"
+                                                        default: null
+                                                      url:
+                                                        type:
+                                                          - string
+                                                          - "null"
+                                                        default: null
+                                                      fileId:
+                                                        type:
+                                                          - string
+                                                          - "null"
+                                                        default: null
+                                              required:
+                                                - type
+                                                - headline
+                                                - subHeadline
+                                                - images
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - text-cards
+                                                headline:
+                                                  type: string
+                                                cards:
+                                                  type: array
+                                                  items:
+                                                    type: object
+                                                    properties:
+                                                      headline:
+                                                        type: string
+                                                      content:
+                                                        type: string
+                                                    required:
+                                                      - headline
+                                                      - content
+                                              required:
+                                                - type
+                                                - headline
+                                                - cards
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - image-cards
+                                                headline:
+                                                  type: string
+                                                subHeadline:
+                                                  type: string
+                                                cards:
+                                                  type: array
+                                                  items:
+                                                    type: object
+                                                    properties:
+                                                      image:
+                                                        type: object
+                                                        properties:
+                                                          altText:
+                                                            type:
+                                                              - string
+                                                              - "null"
+                                                            default: null
+                                                          url:
+                                                            type:
+                                                              - string
+                                                              - "null"
+                                                            default: null
+                                                          fileId:
+                                                            type:
+                                                              - string
+                                                              - "null"
+                                                            default: null
+                                                      headline:
+                                                        type: string
+                                                      content:
+                                                        type: string
+                                                    required:
+                                                      - image
+                                                      - headline
+                                                      - content
+                                              required:
+                                                - type
+                                                - headline
+                                                - subHeadline
+                                                - cards
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - split-gallery
+                                                headline:
+                                                  type: string
+                                                subHeadline:
+                                                  type: string
+                                                leftImage:
+                                                  type: object
+                                                  properties:
+                                                    altText:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    url:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    fileId:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                rightImage:
+                                                  type: object
+                                                  properties:
+                                                    altText:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    url:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                                    fileId:
+                                                      type:
+                                                        - string
+                                                        - "null"
+                                                      default: null
+                                              required:
+                                                - type
+                                                - headline
+                                                - subHeadline
+                                                - leftImage
+                                                - rightImage
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - logos
+                                                headline:
+                                                  type: string
+                                                subHeadline:
+                                                  type: string
+                                                logos:
+                                                  type: array
+                                                  items:
+                                                    type: object
+                                                    properties:
+                                                      image:
+                                                        type: object
+                                                        properties:
+                                                          altText:
+                                                            type:
+                                                              - string
+                                                              - "null"
+                                                            default: null
+                                                          url:
+                                                            type:
+                                                              - string
+                                                              - "null"
+                                                            default: null
+                                                          fileId:
+                                                            type:
+                                                              - string
+                                                              - "null"
+                                                            default: null
+                                                    required:
+                                                      - image
+                                              required:
+                                                - type
+                                                - headline
+                                                - subHeadline
+                                                - logos
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - table
+                                                headline:
+                                                  type: string
+                                                table:
+                                                  type: object
+                                                  properties:
+                                                    headers:
+                                                      type: array
+                                                      items:
+                                                        type: string
+                                                    rows:
+                                                      type: array
+                                                      items:
+                                                        type: array
+                                                        items:
+                                                          type: string
+                                                  required:
+                                                    - headers
+                                                    - rows
+                                              required:
+                                                - type
+                                                - headline
+                                                - table
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - call-to-action
+                                                headline:
+                                                  type: string
+                                                subHeadline:
+                                                  type: string
+                                                primaryButton:
+                                                  type: object
+                                                  properties:
+                                                    label:
+                                                      type: string
+                                                    url:
+                                                      type: string
+                                                    type:
+                                                      type: string
+                                                      enum:
+                                                        - open-url
+                                                        - form
+                                                    formId:
+                                                      type: string
+                                                  required:
+                                                    - label
+                                                secondaryButton:
+                                                  type:
+                                                    - object
+                                                    - "null"
+                                                  properties:
+                                                    label:
+                                                      type: string
+                                                    url:
+                                                      type: string
+                                                    type:
+                                                      type: string
+                                                      enum:
+                                                        - open-url
+                                                        - form
+                                                    formId:
+                                                      type: string
+                                                  default: null
+                                                  required:
+                                                    - label
+                                              required:
+                                                - type
+                                                - headline
+                                                - subHeadline
+                                                - primaryButton
+                                            - type: object
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                    - multiple-choice-question
+                                                headline:
+                                                  type: string
+                                                instructions:
+                                                  type: string
+                                                questions:
+                                                  type: array
+                                                  items:
+                                                    type: object
+                                                    properties:
+                                                      questionId:
+                                                        type: string
+                                                      questionText:
+                                                        type: string
+                                                      choices:
+                                                        type: array
+                                                        items:
+                                                          type: object
+                                                          properties:
+                                                            choiceId:
+                                                              type: string
+                                                            choiceText:
+                                                              type: string
+                                                          required:
+                                                            - choiceId
+                                                            - choiceText
+                                                      userSelectedChoiceId:
+                                                        type:
+                                                          - string
+                                                          - "null"
+                                                        default: null
+                                                    required:
+                                                      - questionId
+                                                      - questionText
+                                                      - choices
+                                                isCompleted:
+                                                  type: boolean
+                                                  default: false
+                                              required:
+                                                - type
+                                                - headline
+                                                - questions
+                                            - type: "null"
+                                          default: null
+                                      required:
+                                        - contentSliceId
+                                default:
+                                  ids: []
+                                  entities: {}
+                                required:
+                                  - ids
+                                  - entities
+                              isWorking:
+                                type: boolean
+                                default: false
+                              conversationHasEnded:
+                                type: boolean
+                                default: false
+                        required:
+                          - type
+                          - data
+                    required:
+                      - type
+                      - sequenceNumber
+                      - timestamp
+                      - data
+                  - type: object
+                    properties:
+                      reconnectAfterInactivityMs:
+                        type: number
+                    required:
+                      - reconnectAfterInactivityMs
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - finished
+                      message:
+                        type: string
+                        enum:
+                          - finished loading
+                    required:
+                      - type
+                      - message
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - error
+                      message:
+                        type: string
+                    required:
+                      - type
+                      - message
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - ping
+                      timestamp:
+                        type: number
+                    required:
+                      - type
+                      - timestamp
+        "400":
+          description: The request was invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the request was invalid
+                  details:
+                    description: More detail about why the request was invalid. Structure is
+                      arbitrary, do not rely on it
+                required:
+                  - reason
+        "401":
+          description: The caller's API key is invalid or expired.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dueTo:
+                    type: string
+                    description: The reason the request was unauthorized
+                required:
+                  - dueTo
+        "403":
+          description: The caller is not authorized to perform the requested action.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the request was forbidden
+                required:
+                  - reason
+        "404":
+          description: The requested resource was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the resource was not found
+                required:
+                  - reason
+        "500":
+          description: An internal server error occurred while creating the appointment
+            invitation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                  - error
+  /page/session/submit-form:
+    post:
+      tags:
+        - page
+      summary: Submit a form
+      description: Submit form data for a page session
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitFormRequest"
+      responses:
+        "200":
+          description: Form submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmitFormResponse"
+        "400":
+          description: The request was invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the request was invalid
+                  details:
+                    description: More detail about why the request was invalid. Structure is
+                      arbitrary, do not rely on it
+                required:
+                  - reason
+        "401":
+          description: The caller's API key is invalid or expired.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dueTo:
+                    type: string
+                    description: The reason the request was unauthorized
+                required:
+                  - dueTo
+        "403":
+          description: The caller is not authorized to perform the requested action.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the request was forbidden
+                required:
+                  - reason
+        "404":
+          description: The requested resource was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the resource was not found
+                required:
+                  - reason
+        "500":
+          description: An internal server error occurred while creating the appointment
+            invitation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                  - error
+  /analytics/session-events:
+    post:
+      tags:
+        - analytics
+      summary: Record analytics events
+      description: Record a batch of analytics events for processing and storage
+      parameters:
+        - name: token
+          in: query
+          required: true
+          description: JWT authentication token
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordAnalyticsEventsRequest"
+      responses:
+        "200":
+          description: Analytics events recorded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecordAnalyticsEventsResponse"
+        "400":
+          description: The request was invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the request was invalid
+                  details:
+                    description: More detail about why the request was invalid. Structure is
+                      arbitrary, do not rely on it
+                required:
+                  - reason
+        "401":
+          description: The caller's API key is invalid or expired.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dueTo:
+                    type: string
+                    description: The reason the request was unauthorized
+                required:
+                  - dueTo
+        "403":
+          description: The caller is not authorized to perform the requested action.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the request was forbidden
+                required:
+                  - reason
+        "404":
+          description: The requested resource was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+                    description: The reason the resource was not found
+                required:
+                  - reason
+        "500":
+          description: An internal server error occurred while creating the appointment
+            invitation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                  - error
+webhooks: {}
