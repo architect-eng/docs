@@ -119,6 +119,16 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/GetWebhookSubscriptionResponse"
+    CreatePageRequest:
+      type: object
+      properties:
+        templateId:
+          type: string
+        supplementaryContext:
+          type: string
+        customName:
+          type: string
+      additionalProperties: false
     CreateWebhookSubscriptionRequest:
       type: object
       properties:
@@ -214,6 +224,23 @@ components:
         - timestamp
         - uptime
         - version
+      additionalProperties: false
+    GetLink:
+      type: object
+      properties:
+        url:
+          description: Full shareable URL for the page
+          type: string
+        domain:
+          description: Domain used in the URL
+          type: string
+        path:
+          description: Path portion of the URL
+          type: string
+      required:
+        - url
+        - domain
+        - path
       additionalProperties: false
     GetPage:
       type: object
@@ -409,6 +436,74 @@ components:
         - status
         - versionNumber
       additionalProperties: false
+    GetPageWithVersionResponse:
+      type: object
+      properties:
+        pageId:
+          description: The page ID
+          type: string
+        pageGroupId:
+          description: The parent page group ID
+          type: string
+        tenantId:
+          description: The tenant ID
+          type: string
+        createdAt:
+          description: ISO 8601 creation timestamp
+          type: string
+        effectiveName:
+          description: The effective name (custom or computed)
+          type: string
+        customName:
+          anyOf:
+            - type: string
+            - type: "null"
+        computedName:
+          description: AI-computed name
+          type: string
+        supplementaryContext:
+          anyOf:
+            - type: string
+            - type: "null"
+        publishedVersion:
+          anyOf:
+            - type: object
+              properties:
+                versionId:
+                  type: string
+                versionNumber:
+                  type: number
+                publishedAt:
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                templateId:
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                templateVersion:
+                  anyOf:
+                    - type: number
+                    - type: "null"
+              required:
+                - versionId
+                - versionNumber
+                - publishedAt
+                - templateId
+                - templateVersion
+              additionalProperties: false
+            - type: "null"
+      required:
+        - pageId
+        - pageGroupId
+        - tenantId
+        - createdAt
+        - effectiveName
+        - customName
+        - computedName
+        - supplementaryContext
+        - publishedVersion
+      additionalProperties: false
     GetTemplate:
       type: object
       properties:
@@ -562,6 +657,32 @@ components:
         - createdAt
         - updatedAt
       additionalProperties: false
+    PostPage:
+      type: object
+      properties:
+        pageId:
+          description: The created page ID (external pageVariantId)
+          type: string
+        pageGroupId:
+          description: The parent page group ID
+          type: string
+        tenantId:
+          description: The tenant ID
+          type: string
+        createdAt:
+          description: ISO 8601 creation timestamp
+          type: string
+        status:
+          description: Version creation status (always 'processing' on create)
+          type: string
+          const: processing
+      required:
+        - pageId
+        - pageGroupId
+        - tenantId
+        - createdAt
+        - status
+      additionalProperties: false
     PostWebhookSubscription:
       type: object
       properties:
@@ -702,6 +823,67 @@ paths:
         - $ref: "#/components/parameters/CursorQuery"
         - $ref: "#/components/parameters/LimitQuery"
         - $ref: "#/components/parameters/PageGroupIdPath"
+    post:
+      description: Create a new page in the page group and trigger version creation/publishing
+      operationId: createPageInGroup
+      responses:
+        "201":
+          description: PageInGroup created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostPage"
+      summary: Create page with version
+      tags:
+        - Pages
+      parameters:
+        - $ref: "#/components/parameters/PageGroupIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePageRequest"
+        required: true
+  /v0/page_groups/{page_group_id}/pages/{page_id}:
+    get:
+      description: Retrieve page details including published version information
+      operationId: getPageWithVersion
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetPageWithVersionResponse"
+      summary: Get page with published version
+      tags:
+        - Pages
+      parameters:
+        - $ref: "#/components/parameters/PageGroupIdPath"
+        - $ref: "#/components/parameters/PageIdPath"
+  /v0/page_groups/{page_group_id}/pages/{page_id}/link:
+    get:
+      description: Generate shareable link for a page. Fails if page version not yet published.
+      operationId: getPageLink
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetLink"
+      summary: Get page link
+      tags:
+        - Pages
+      parameters:
+        - in: query
+          name: tenantDomainId
+          description: Optional tenant domain ID for custom domain. If not provided, uses fallback subdomain.
+          required: false
+          schema:
+            type: string
+        - $ref: "#/components/parameters/PageGroupIdPath"
+        - $ref: "#/components/parameters/PageIdPath"
   /v0/page_groups/{page_group_id}/pages/{page_id}/versions:
     get:
       description: Retrieve a list of versions for the specified page
