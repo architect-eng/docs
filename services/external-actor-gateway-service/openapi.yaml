@@ -146,10 +146,10 @@ components:
               - form.enriched
               - form.enrichment_failed
         active:
+          default: true
           description: Whether the subscription should be active
           examples:
             - true
-          default: true
           type: boolean
       required:
         - url
@@ -164,8 +164,8 @@ components:
       type: object
       properties:
         success:
-          description: Whether the deletion was successful
           type: boolean
+          description: Whether the deletion was successful
       required:
         - success
       additionalProperties: false
@@ -229,14 +229,14 @@ components:
       type: object
       properties:
         url:
+          type: string
           description: Full shareable URL for the page
-          type: string
         domain:
+          type: string
           description: Domain used in the URL
-          type: string
         path:
-          description: Path portion of the URL
           type: string
+          description: Path portion of the URL
       required:
         - url
         - domain
@@ -440,27 +440,27 @@ components:
       type: object
       properties:
         pageId:
+          type: string
           description: The page ID
-          type: string
         pageGroupId:
+          type: string
           description: The parent page group ID
-          type: string
         tenantId:
+          type: string
           description: The tenant ID
-          type: string
         createdAt:
+          type: string
           description: ISO 8601 creation timestamp
-          type: string
         effectiveName:
-          description: The effective name (custom or computed)
           type: string
+          description: The effective name (custom or computed)
         customName:
           anyOf:
             - type: string
             - type: "null"
         computedName:
-          description: AI-computed name
           type: string
+          description: AI-computed name
         supplementaryContext:
           anyOf:
             - type: string
@@ -625,8 +625,8 @@ components:
       type: object
       properties:
         id:
-          description: Unique subscription identifier
           type: string
+          description: Unique subscription identifier
         url:
           $ref: "#/components/schemas/Url"
         events:
@@ -643,8 +643,8 @@ components:
                   - form.enrichment_failed
             - type: "null"
         active:
-          description: Whether the subscription is active
           type: boolean
+          description: Whether the subscription is active
         createdAt:
           $ref: "#/components/schemas/CreatedAt"
         updatedAt:
@@ -661,21 +661,21 @@ components:
       type: object
       properties:
         pageId:
+          type: string
           description: The created page ID (external pageVariantId)
-          type: string
         pageGroupId:
+          type: string
           description: The parent page group ID
-          type: string
         tenantId:
+          type: string
           description: The tenant ID
-          type: string
         createdAt:
-          description: ISO 8601 creation timestamp
           type: string
+          description: ISO 8601 creation timestamp
         status:
-          description: Version creation status (always 'processing' on create)
           type: string
           const: processing
+          description: Version creation status (always 'processing' on create)
       required:
         - pageId
         - pageGroupId
@@ -687,8 +687,8 @@ components:
       type: object
       properties:
         id:
-          description: Unique subscription identifier
           type: string
+          description: Unique subscription identifier
         url:
           $ref: "#/components/schemas/Url"
         events:
@@ -705,15 +705,15 @@ components:
                   - form.enrichment_failed
             - type: "null"
         active:
-          description: Whether the subscription is active
           type: boolean
+          description: Whether the subscription is active
         createdAt:
           $ref: "#/components/schemas/CreatedAt"
         updatedAt:
           $ref: "#/components/schemas/CreatedAt"
         signingSecret:
-          description: The signing secret for the subscription
           type: string
+          description: The signing secret for the subscription
       required:
         - id
         - url
@@ -743,9 +743,9 @@ components:
           type: boolean
       additionalProperties: false
     Url:
-      description: The webhook endpoint URL
       type: string
       format: uri
+      description: The webhook endpoint URL
   securitySchemes:
     apiKey:
       description: API key authentication for the External Actor Gateway
