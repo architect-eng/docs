@@ -205,26 +205,6 @@ components:
         - message
         - requestId
       type: object
-    GetHealthz:
-      type: object
-      properties:
-        healthy:
-          type: boolean
-        service:
-          type: string
-        timestamp:
-          type: string
-        uptime:
-          type: number
-        version:
-          type: string
-      required:
-        - healthy
-        - service
-        - timestamp
-        - uptime
-        - version
-      additionalProperties: false
     GetLink:
       type: object
       properties:
@@ -753,19 +733,6 @@ components:
       name: x-api-key
       type: apiKey
 paths:
-  /healthz:
-    get:
-      description: Returns service health status
-      operationId: healthCheck
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetHealthz"
-      summary: Health check
-      security: []
   /v0/page_groups:
     get:
       description: Retrieve a list of page groups for the authenticated tenant with optional filtering and pagination
