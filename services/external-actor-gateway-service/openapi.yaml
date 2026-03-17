@@ -19,6 +19,11 @@ security:
 components:
   callbacks: {}
   examples:
+    CreateProspectLogRequestExample:
+      description: Example values extracted from schema defaults
+      summary: CreateProspectLogRequest example
+      value:
+        type: webhook
     CreateWebhookSubscriptionRequestExample:
       description: Example values extracted from schema defaults
       summary: CreateWebhookSubscriptionRequest example
@@ -128,6 +133,42 @@ components:
           type: string
         customName:
           type: string
+      additionalProperties: false
+    CreateProspectLogRequest:
+      type: object
+      properties:
+        prospectId:
+          $ref: "#/components/schemas/ProspectId"
+        email:
+          type: string
+        source:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Identifier for the upstream system sending the prospect activity
+        type:
+          default: webhook
+          description: Prospect activity type. Defaults to 'webhook' when omitted
+          type: string
+          minLength: 1
+          maxLength: 100
+        idempotencyKey:
+          type: string
+          minLength: 1
+          maxLength: 255
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        payload:
+          type: object
+          propertyNames:
+            type: string
+          additionalProperties: {}
+      required:
+        - source
+        - type
+        - payload
       additionalProperties: false
     CreateWebhookSubscriptionRequest:
       type: object
@@ -663,6 +704,36 @@ components:
         - createdAt
         - status
       additionalProperties: false
+    PostProspectLog:
+      type: object
+      properties:
+        prospectId:
+          $ref: "#/components/schemas/ProspectId"
+        prospectLogId:
+          $ref: "#/components/schemas/ProspectId"
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        createdProspect:
+          type: boolean
+          description: Whether the request auto-created a prospect before writing the log
+        source:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: The stored prospect log source
+        type:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: The stored prospect log type
+      required:
+        - prospectId
+        - prospectLogId
+        - createdAt
+        - createdProspect
+        - source
+        - type
+      additionalProperties: false
     PostWebhookSubscription:
       type: object
       properties:
@@ -703,6 +774,10 @@ components:
         - updatedAt
         - signingSecret
       additionalProperties: false
+    ProspectId:
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     UpdateWebhookSubscriptionRequest:
       type: object
       properties:
@@ -904,6 +979,26 @@ paths:
           required: true
           schema:
             type: string
+  /v0/prospect_logs:
+    post:
+      description: Create a prospect log entry using the authenticated API key's tenant context
+      operationId: createProspectLog
+      responses:
+        "201":
+          description: ProspectLog created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostProspectLog"
+      summary: Create prospect log entry
+      tags:
+        - Prospect Logs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProspectLogRequest"
+        required: true
   /v0/templates:
     get:
       description: List templates for the authenticated tenant with pagination
@@ -1035,6 +1130,8 @@ tags:
     description: Page management operations
   - name: Page Versions
     description: Page version management operations
+  - name: Prospect Logs
+    description: Prospect log ingestion operations
   - name: Templates
     description: Template read-only operations
   - name: Webhook Subscriptions
