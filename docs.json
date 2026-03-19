@@ -32,6 +32,12 @@
         ]
       },
       {
+        "tab": "Changelog",
+        "pages": [
+          "changelog"
+        ]
+      },
+      {
         "tab": "Customer API",
         "openapi": "services/external-actor-gateway-service/openapi.yaml"
       },
