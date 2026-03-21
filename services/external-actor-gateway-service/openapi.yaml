@@ -710,7 +710,10 @@ components:
         prospectId:
           $ref: "#/components/schemas/ProspectId"
         prospectLogId:
-          $ref: "#/components/schemas/ProspectId"
+          type: string
+          minLength: 1
+          pattern: ^prospectlog_[a-z0-9]{26}$
+          description: The created prospect log entry ID
         createdAt:
           $ref: "#/components/schemas/CreatedAt"
         createdProspect:
@@ -776,8 +779,8 @@ components:
       additionalProperties: false
     ProspectId:
       type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      minLength: 1
+      pattern: ^prospect_[a-z0-9]{26}$
     UpdateWebhookSubscriptionRequest:
       type: object
       properties:
