@@ -27,12 +27,6 @@
             ]
           },
           {
-            "group": "Webhooks",
-            "pages": [
-              "webhooks"
-            ]
-          },
-          {
             "group": "Documentation",
             "pages": [
               "documentation/documentation",
@@ -60,6 +54,12 @@
               "documentation/integrations/how-to-add-form-submission-into-your-marketo-through-zapier",
               "documentation/faq/how-do-i-add-a-goal-cta-for-my-page",
               "documentation/faq/how-does-architect-cookie-consent-banner-work"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "webhooks"
             ]
           }
         ]
