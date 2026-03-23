@@ -28,10 +28,9 @@
           {
             "group": "Documentation Overview",
             "pages": [
-              "documentation/documentation",
               "documentation/overview/how-pages-are-made",
-              "documentation/overview/different-use-cases",
-              "documentation/assets/different-slices-examples"
+              "documentation/assets/different-slices-examples",
+              "documentation/overview/different-use-cases"
             ]
           },
           {
