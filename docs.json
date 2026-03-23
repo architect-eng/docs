@@ -20,7 +20,6 @@
           {
             "group": "Overview",
             "pages": [
-              "index",
               "documentation/getting-started/quickstart",
               "documentation/getting-started/making-your-first-page",
               "documentation/getting-started/how-to-publish-a-page"
