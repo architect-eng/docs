@@ -20,6 +20,7 @@
           {
             "group": "Overview",
             "pages": [
+              "documentation/overview/what-is-architect",
               "documentation/getting-started/quickstart",
               "documentation/getting-started/making-your-first-page",
               "documentation/getting-started/how-to-publish-a-page"
