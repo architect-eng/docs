@@ -41,7 +41,7 @@
         "tab": "Documentation",
         "groups": [
           {
-            "group": "Overview",
+            "group": "Getting Started",
             "pages": [
               "documentation/documentation",
               "documentation/getting-started/what-knowledge-does-the-agent-need",
