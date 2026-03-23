@@ -26,17 +26,27 @@
             ]
           },
           {
-            "group": "Documentation",
+            "group": "Documentation Overview",
             "pages": [
               "documentation/documentation",
               "documentation/overview/what-is-architect",
               "documentation/overview/how-pages-are-made",
               "documentation/overview/different-use-cases",
-              "documentation/assets/different-slices-examples",
+              "documentation/assets/different-slices-examples"
+            ]
+          },
+          {
+            "group": "Setting up your account",
+            "pages": [
               "documentation/getting-started/what-knowledge-does-the-agent-need",
               "documentation/getting-started/what-kind-of-images-to-add",
               "documentation/getting-started/other-type-of-assets-to-provide",
-              "documentation/getting-started/how-to-set-up-domain",
+              "documentation/getting-started/how-to-set-up-domain"
+            ]
+          },
+          {
+            "group": "Creating pages",
+            "pages": [
               "documentation/creating-pages/different-page-group-types",
               "documentation/faq/what-is-a-page-group",
               "documentation/advanced/creating-personalized-abm-pages",
@@ -44,13 +54,30 @@
               "documentation/advanced/how-to-pull-digital-ad-csv-for-ads",
               "documentation/ad-platforms/google-ads",
               "documentation/ad-platforms/linkedin-ads",
-              "documentation/ad-platforms/linkedin",
               "documentation/analytics-tracking/how-to-set-up-tracking-with-google-tags-manager",
               "documentation/experiments/how-to-set-up-a-b-tests-for-google-ads",
-              "documentation/advanced/how-to-create-architect-pages-from-google-sheets-using-n8n",
+              "documentation/advanced/how-to-create-architect-pages-from-google-sheets-using-n8n"
+            ]
+          },
+          {
+            "group": "Ad Platforms",
+            "pages": [
+              "documentation/ad-platforms/google-ads",
+              "documentation/ad-platforms/linkedin-ads",
+              "documentation/ad-platforms/linkedin"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
               "documentation/integrations/how-to-add-form-submission-into-your-hubspot-crm",
               "documentation/integrations/how-to-find-hubspot-webhook-url-for-enrichment",
-              "documentation/integrations/how-to-add-form-submission-into-your-marketo-through-zapier",
+              "documentation/integrations/how-to-add-form-submission-into-your-marketo-through-zapier"
+            ]
+          },
+          {
+            "group": "FAQ",
+            "pages": [
               "documentation/faq/how-do-i-add-a-goal-cta-for-my-page",
               "documentation/faq/how-does-architect-cookie-consent-banner-work"
             ]
