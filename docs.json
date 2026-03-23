@@ -41,9 +41,14 @@
         "tab": "Documentation",
         "groups": [
           {
+            "group": "Overview",
+            "pages": [
+              "documentation/documentation"
+            ]
+          },
+          {
             "group": "Getting Started",
             "pages": [
-              "documentation/documentation",
               "documentation/getting-started/what-knowledge-does-the-agent-need",
               "documentation/getting-started/what-kind-of-images-to-add",
               "documentation/getting-started/other-type-of-assets-to-provide",
