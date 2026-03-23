@@ -5,20 +5,130 @@ description: "Product updates and announcements"
 <Update label="March 10th, 2026" description="Page Cloning, Better Analytics, and New Components">
     We've shipped features to help you scale your ad campaigns faster, track your leads more accurately, and build beautifully engaging pages.
     
-    ## Functionality Improvements 
+    ## Functionality Improvements
     
     Streamline your workflow, test campaigns faster, and track your data with pinpoint accuracy.
     
     - **Page Cloning:** Duplicate any page right from your dashboard. Easily reuse your highest-converting layouts across different Page Groups or set up quick A/B tests. Just clone the page, tell the agent what to tweak, and hit publish.
     - **Page Group Types:** When creating or editing a Page Group, you can now select a purpose type. This tells our AI exactly what kind of page to build, automatically tailoring the structure, tone, and messaging to match your goal.
     - **Stop the AI Mid-Build:** You can now hit stop mid-generation. It safely saves the draft right where it stopped, allowing you to instantly tweak the design on the fly.
-    - **Full UTM Tracking on Forms:** When a visitor fills out a form, full UTM parameters are now captured and passed directly through your webhook into your CRM. You'll know exactly which ad, email, or campaign drove the conversion. 
+    - **Full UTM Tracking on Forms:** When a visitor fills out a form, full UTM parameters are now captured and passed directly through your webhook into your CRM. You'll know exactly which ad, email, or campaign drove the conversion.
   
-    ## Page Improvements & New Components 
+    ## Page Improvements & New Components
     
     Deliver faster, fully compliant, and seamless experiences to your page visitors.
     
     - **Cookie Banner:** Architect now has its own custom cookie banner. Fully customizable to match your brand's styling, it automatically targets visitors based on their region to ensure compliance. It also works seamlessly with Google Consent Mode v2 to keep your Google Ads and third-party analytics strictly compliant, all while your native Architect conversion metrics continue to track perfectly.
 
     - **Page Image Loading:** We've upgraded how images load on your pages using progressive placeholders and responsive sizing. This gives your visitors a much smoother mobile experience and boosts your page speed (a big win for SEO).
+</Update>
+
+<Update label="March 2nd, 2026" description="Analytics Dashboards, Routing and Smarter Asset Management">
+    Our latest release focuses on giving you more control over your traffic, more clarity in your reporting, and a much faster way to populate your creative library.
+
+    ## Enhanced Asset Library
+
+    We have completely rebuilt the way you manage images and files to speed up your design workflow, separating assets into different categories.
+
+    - **Delete Images:** Keep your workspace tidy by deleting old images, logos, or icons you no longer need.
+    - **Instant Logo Imports:** You can now search for a brand domain and automatically import their official logos directly into your library.
+    - **Image Scraping:** Enter your website URL to instantly pull and bulk-upload existing images from your website.
+
+    ![Asset library image](/changelog/images/image%20(18).png)
+
+    ## Analytics & Reporting
+
+    Gain deeper visibility into how your landing pages are performing across your campaigns.
+
+    - **Analytics Dashboard:** View high-level metrics for all your page groups and pages in one place. Easily track session counts and engagement over time to see which pages are winning.
+    - **Excel & CSV Export:** You can now export your analytics data directly to Excel or CSV. Perfect for sharing campaign results with stakeholders or combining data with your own internal reports.
+
+    ## Routing and Experiments
+
+    Take full control of your traffic distribution and run smarter tests with our new routing and experimentation capabilities.
+
+    - **Weighted Traffic Routing:** Distribute traffic across multiple pages using customizable weights. Perfect for A/B testing, gradual rollouts, or splitting traffic between different pages.
+    - **External URL Experiments:** Compare your existing landing pages against ours using a single, unified link, where you decide how to split the traffic. This is specifically useful if you are running PMAX Campaigns, as you are unable to run these experiments in Google.
+    - **Query Parameter Preservation:** UTM parameters and tracking data automatically flow through redirects, ensuring your attribution stays intact across the entire visitor journey.
+</Update>
+
+<Update label="February 23rd, 2026" description="New Components, Platform Improvements, and a Smarter AI Agent">
+    We've shipped a massive set of updates focused on better data visibility, richer content options, and a smoother experience when building campaigns with our AI agent.
+
+    ## New Components
+
+    We're expanding your design toolkit with highly requested building blocks to make your pages more engaging and conversion-friendly.
+
+    - **Video Component:** Video is one of the highest-converting assets for landing pages. We've added a dedicated workflow to manage and embed YouTube videos onto your page.
+    - **Form Improvements:** We've upgraded our forms, allowing you to include multiple fields, such as phone numbers, first and last names, or multiple-choice questions.
+    - **Feature Cards with Images:** You can now add rich images directly to your feature cards, making it easier to showcase your product's core benefits and break up text-heavy sections.
+
+    ![Feature cards screenshot](/changelog/images/broadcast-images_Kf3L7os_PZvKcKO-FHzzx-Screenshot%202026-02-23%20at%2017.18.47.png)
+
+    ## Platform Improvements
+
+    Keep your workspace clean without fear of losing work.
+
+    - **Archiving:** You can now archive page groups and pages. This removes them from your active dashboard but keeps the data safe if you need to restore an old campaign later.
+    - **CSV Data Exports:** You can now export your data directly to CSV. This includes a Session Summary Export (metrics like duration, scroll depth, and clicks) and a Live Pages Export (stats like views and CTR%).
+    - **Per Page CTA:** A new feature that allows you to set the CTA per page, meaning you can tailor the link destination or form to match the specific goal of that individual landing page.
+    - **OG Image Generator:** The system can now automatically generate Open Graph (social preview) images for your brands using AI, so your links look polished when shared on LinkedIn or Slack.
+
+    ## Faster, Smarter AI Builder
+
+    We've made the page-building agent more intelligent and responsive to help you iterate faster.
+
+    - **Web Search:** The agent can now browse the web to gather context on your company or competitors, resulting in much more relevant copy and design.
+    - **Interrupt the Agent:** You can now stop the AI mid-generation if you see it going in the wrong direction.
+    - **Clarifying Questions:** If your prompt is ambiguous, the agent can now pause to ask you clarifying questions (with quick-reply chips) to ensure it builds exactly what you want.
+</Update>
+
+<Update label="February 5th, 2026" description="V2 Agent, Native Analytics, & Global Knowledge">
+    We've been working hard over the last two weeks to bring you V2 of the Agent. Along with this milestone, we're introducing some major changes to the platform to streamline your experience.
+
+    ## New Agent Experience: Build & Edit in Real-Time
+
+    We are introducing a new AI Chat Agent interface to speed up your page creation workflow.
+
+    - **Chat-to-Build:** Simply chat with the agent to generate or modify landing pages. This allows for rapid iteration when spinning up personalized pages for different target accounts.
+    - **Live Streaming:** Watch your page build itself in real-time. As the agent generates content, the preview updates instantly, no more waiting for the whole page to finish processing.
+    - **Direct Slice Editing:** You can now ask the agent to edit specific sections (slices) of a page directly, making it easier to tweak copy or layout for specific customer segments without rebuilding the whole page.
+
+    ![Agent v2 screenshot](/changelog/images/broadcast-images_2uG6i_jcEwULL7TfGGdxD-Screenshot%202026-02-05%20at%2010.36.29.png)
+
+    ## Analytics Update: Goodbye Metabase, Hello Native Data
+
+    Metabase has been officially shut down and is no longer available. To streamline your workflow, we have moved all analytics directly into the platform.
+
+    - **Full Migration to In-Platform:** You can now access all your campaign data without ever leaving your dashboard. All tracking, including UTM parameters and Date Range filtering, is now exclusively located in the Analytics tab within your page groups.
+    - **Upcoming V2 Agent Metrics:** We are currently integrating deep-dive analytics for the new Agent. Soon, you'll see native tracking for threading, FAQ interactions, clicks, and scroll behavior right alongside your traffic data.
+
+    ## Visual Polish: Highlighting & Animations
+
+    First impressions matter. We've added sophisticated animations to keep visitors engaged and guide their eyes to your key value propositions.
+
+    - **Enhanced Page Animations:** We've improved the motion design throughout the entire page experience. From smooth transitions to subtle entrance effects, the platform now feels more fluid and high-end.
+    - **Tailored Branding:** Customize your look and feel with ease. From custom CSS to specialized font libraries, you can now direct the agent to style your pages to be pixel-perfect and on-brand.
+    - **Coming Soon:** Video components, logo groupings, and icon sets.
+</Update>
+
+<Update label="January 6th, 2026" description="Deep Analytics and Faster AI">
+    We've shipped a massive set of updates this month. From a completely reimagined analytics dashboard to a significantly faster AI engine, we are helping you build and measure high-converting pages better than ever.
+
+    ## Brand New Analytics Dashboard
+
+    We have completely overhauled our in-platform analytics to give you granular, high-definition insights into user behavior.
+
+    - **Individual Session Streams:** You can now drill down into specific visits to see exactly what happened. Track how far a user scrolled, precisely how long they spent on the page, and what actions they took during their session.
+    - **Page Group Analytics:** View aggregate performance data for entire clusters of pages at once or see performance difference between two or more pages to see exactly which variations are converting best.
+    - **Visual Trends:** Spot patterns faster with our new charts and visualizations, helping you identify conversion trends and anomalies over time.
+
+    ![Analytics dashboard screenshot](/changelog/images/broadcast-images_EQjsYx5CVxS0oUb5zlouZ-Screenshot%202026-01-06%20at%2011.48.44.png)
+
+    ## Faster AI & Page Performance
+
+    We've upgraded the engine under the hood to make the platform faster for you and your visitors.
+
+    - **Faster AI Generation:** We've upgraded our AI agent (now using the latest models). You will notice significantly faster speeds when generating new page content, designs, and copy.
+    - **Snappier Page Loads:** We've implemented smart caching for page links and files. This means your landing pages load faster for your prospects, a critical factor for SEO rankings and reducing bounce rates.
 </Update>
