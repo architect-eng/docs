@@ -43,11 +43,23 @@
           {
             "group": "Overview",
             "pages": [
-              "documentation/documentation"
+              "documentation/documentation",
+              "documentation/overview/what-is-architect",
+              "documentation/overview/how-pages-are-made",
+              "documentation/overview/different-use-cases",
+              "documentation/assets/different-slices-examples"
             ]
           },
           {
             "group": "Getting Started",
+            "pages": [
+              "documentation/getting-started/quickstart",
+              "documentation/getting-started/making-your-first-page",
+              "documentation/getting-started/how-to-publish-a-page"
+            ]
+          },
+          {
+            "group": "Setting up your account",
             "pages": [
               "documentation/getting-started/what-knowledge-does-the-agent-need",
               "documentation/getting-started/what-kind-of-images-to-add",
@@ -56,9 +68,16 @@
             ]
           },
           {
-            "group": "Assets",
+            "group": "Creating pages",
             "pages": [
-              "documentation/assets/different-slices-examples"
+              "documentation/creating-pages/different-page-group-types",
+              "documentation/faq/what-is-a-page-group",
+              "documentation/advanced/creating-personalized-abm-pages",
+              "documentation/advanced/how-to-create-abm-pages",
+              "documentation/advanced/how-to-pull-digital-ad-csv-for-ads",
+              "documentation/ad-platforms/google-ads",
+              "documentation/ad-platforms/linkedin-ads",
+              "documentation/advanced/how-to-create-architect-pages-from-google-sheets-using-n8n"
             ]
           },
           {
@@ -92,7 +111,6 @@
           {
             "group": "FAQ",
             "pages": [
-              "documentation/faq/what-is-a-page-group",
               "documentation/faq/how-do-i-add-a-goal-cta-for-my-page",
               "documentation/faq/how-does-architect-cookie-consent-banner-work"
             ]
