@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "name": "Architect API",
+  "name": "Architect",
   "theme": "mint",
   "colors": {
     "primary": "#15803D",
@@ -12,6 +12,7 @@
     "light": "/logo/wide-logo-black-transparent.svg",
     "dark": "/logo/wide-logo-white-transparent.svg"
   },
+  "root": "documentation/overview/what-is-architect",
   "navigation": {
     "tabs": [
       {
@@ -20,17 +21,14 @@
           {
             "group": "Overview",
             "pages": [
-              "documentation/overview/what-is-architect",
               "documentation/getting-started/quickstart",
-              "documentation/getting-started/making-your-first-page",
-              "documentation/getting-started/how-to-publish-a-page"
+              "documentation/getting-started/making-your-first-page"
             ]
           },
           {
             "group": "Documentation Overview",
             "pages": [
               "documentation/documentation",
-              "documentation/overview/what-is-architect",
               "documentation/overview/how-pages-are-made",
               "documentation/overview/different-use-cases",
               "documentation/assets/different-slices-examples"
