@@ -1,0 +1,68 @@
+---
+title: "How to add Form Submission into your Marketo (Through Zapier)"
+description: ""
+---
+
+### Instructions
+
+ **1. Go to Zapier** 
+
+- Click “Create New Zap”
+
+1. **Select Trigger to be Webhook** 
+    
+    ![Screenshot 2026-02-20 at 17.24.13.png](/documentation/images/Screenshot_2026-02-20_at_17.24.13.png)
+    
+- Trigger Event = Catch Hook
+- Click Continue
+- Leave the Child Key Blank and Click Continue
+- Copy the Webhook URL
+
+1. **Go to Architect Platform**
+- Go to Settings, Webhooks and create a new Webhook
+- Paste the URL into the callback URL and  select “form submit”
+- Click “Create Webhook”
+
+![Screenshot 2025-12-19 at 18.17.31.png](/documentation/images/Screenshot_2025-12-19_at_18.17.31.png)
+
+**4. Test Your Trigger**
+
+![Screenshot 2025-12-19 at 20.56.59.png](/documentation/images/Screenshot_2025-12-19_at_20.56.59.png)
+
+- Before moving on, go to your Webhook settings page in the Architect platform and submit a test form. This sends a sample to the webhook.
+
+<aside>
+💡
+
+Note if you are using multi-field forms, you can test directly from the Architect page by submitting the full form. This will help you with mapping all of the fields to the right areas later.
+
+</aside>
+
+- Go back to Zapier and click **Test trigger**.
+- Verify that Zapier successfully caught the hook and displays your test data (e.g., Email, First Name, Last Name).
+- Click Continue.
+
+**5. Set Up the Marketo Action**
+
+- In the "Action" step, search for and select **Marketo**.
+- For the Action Event, choose **Create or Update Lead** (or the specific action that fits your campaign).
+
+**6. Connect Your Marketo Account**
+
+- Click "Sign in" to connect your Marketo instance to Zapier.
+- *Note:* A new window will pop up asking for your Marketo **Client ID**, **Client Secret**, and **Munchkin Account ID / Base URL**. You can find these in your Marketo Admin settings under *Integration > LaunchPoint* and *Integration > Web Services*.
+- Once authenticated, select your account and click Continue.
+
+**7. Map the Webhook Data to Marketo Fields**
+
+- You will now see a list of Marketo fields. You need to tell Zapier which piece of webhook data goes where.
+- Click into the **Email** field (usually required) and select the corresponding email data point from your Step 1 Webhook payload.
+- Map any additional fields you collected on your architect form (e.g., First Name, Last Name, Company, Job Title) to their matching Marketo fields.
+- Choose a Workspace and Partition if your Marketo instance requires it.
+- Click Continue.
+
+**8. Test and Publish Your Zap**
+
+- Try the form on the webpage itself - to send your sample lead data over to Marketo.
+- Log into your Marketo account and search your Lead Database to verify that the test lead was created or updated correctly.
+- Once you confirm it's working, go back to Zapier and click **Publish** to turn your Zap on!

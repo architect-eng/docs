@@ -1,0 +1,118 @@
+---
+title: "Creating Personalized ABM Pages"
+description: ""
+---
+
+## Step 1: Choose Your Granularity
+
+First, decide how personalized you want the page to be. The level of granularity determines how specific the copy and messaging will be for the visitor.
+
+**Your Options:**
+
+1. **By Company Name:** Best for targeting specific accounts where you don't know the exact visitor, but you know the organization (e.g., "Welcome, [Company Name] Team").
+2. **By Job Title:** Best for targeting specific roles across various companies (e.g., tailored messaging specifically for a "VP of Sales").
+3. **By Full Name (Most Extensive):** The highest level of personalization. The page is built for one specific human (e.g., "Hi [First Name], here is a custom Loom workflow for [Company]").
+
+---
+
+## Step 2: Prepare Your Lead Data (CSV)
+
+Once you have chosen your granularity, prepare a `.csv` file containing your leads. The columns required change based on the option you selected in Step 1.
+
+### Option A: If targeting by **Company Name**
+
+*Required Columns:*
+
+- `Company Name`
+- `Company URL`
+
+> **Example Row:**`Acme Corp`, `www.acmecorp.com`
+> 
+
+### Option B: If targeting by **Job Title**
+
+*Required Columns:*
+
+- `Job Title`
+- `Company Name`
+- `Company URL`
+
+> **Example Row:** `Director of Customer Support`, `Acme Corp`, `www.acmecorp.com`
+> 
+
+### Option C: If targeting by **Full Name** (Deepest Personalization)
+
+*Required Columns:*
+
+- `Full Name`
+- `Company Name`
+- `Job Title`
+- `Company URL`
+
+> **Example Row:**`Jordan Lee`, `Acme Corp`,  `VP of Sales`,  `www.acmecorp.com`
+> 
+
+---
+
+### Optional Fields:
+
+The agent will automatically create an SEO Title, Description and Page Link based on the rest of the information and create the page in English. 
+
+*Can be added to each row:*
+
+- `Language`  (e.g., EN, ES, FR)
+- `Buyer Persona`  (e.g., Sales Leader, Support Manager)
+- `SEO Title`  (e.g., Architect)
+- `SEO Description`  (e.g, Personalise Every Visit)
+- `Page Link`  (URL of the final page e.g., tryarchitect.com/jordan-lee)
+
+> **Example Row :**`Jordan Lee`, `Acme Corp`,  `VP of Sales`,  `www.acmecorp.com` , `ES` , `Sales and Marketing`
+> 
+
+---
+
+## Step 3: Provide Context to the Agent
+
+This is the "brain" of the operation. You must provide a clear short brief so the AI understands who we are targeting, whether this is a warm lead or a new lead, and the overall goal.
+
+**What to include:**
+
+1. **Campaign Context:** Who are you targeting and what is the goal? Is this a warm or a cold lead? 
+2. **Design/Language Guard Rails (Optional):** Are there specific words to use or avoid (e.g., framing the product as a "companion" rather than a "replacement")? Are there structural rules to follow (e.g., keeping copy extremely concise to avoid wall-of-text fatigue)?
+3. **Buyer Persona Context (Optional):** If you have buyer personas you are targeting include information on this here. 
+
+### 📝 Best Practice Example
+
+*Below is an example of a context brief for a campaign where Loom (asynchronous video) is targeting heavy Slack users to reduce meeting fatigue.*
+
+> 
+> 
+> 
+> **Campaign Context**
+> 
+> This is a LinkedIn Campaign targeting cold leads who are experiencing "notification overload" and "meeting fatigue" but are not yet using asynchronous video. They have had a briefing on the company but this is the first time they have seen the product.
+> 
+> **Design/Language Guard Rails**
+> 
+> - Never position Loom as a "replacement" for Slack; always refer to it as a "companion" or "integration."
+> - Do not assume the user knows how easy it is to record a video. Avoid technical jargon and assure them that recording does not require a studio setup or a script.
+> - Keep the copy extremely concise. Because we are solving for "wall of text" fatigue, the campaign itself must avoid long, dense paragraphs.
+
+---
+
+## Step 4: Define the Call to Action (CTA)
+
+Finally, tell us where the user should go next. This should be a specific action and a destination URL, or a Form Fill. You can set this on the specific page group settings. 
+
+**Example A (Product Signup):**
+
+- **Text:** "Install Loom for Chrome"
+- **URL:** `https://www.loom.com/signup`
+
+---
+
+### Ready to build?
+
+Please gather your **CSV file** and your **Context Brief** and submit them to start the page generation process.
+
+[CSV Example.csv](Creating%20Personalized%20ABM%20Pages/CSV_Example.csv)
