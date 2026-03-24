@@ -181,7 +181,7 @@ curl -X POST 'https://api.example.com/users' \
 #### Structural Components
 
 **Steps for procedures:**
-```mdx
+````mdx
 <Steps>
 <Step title="Install dependencies">
   Run `npm install` to install required packages.
@@ -203,10 +203,10 @@ curl -X POST 'https://api.example.com/users' \
   </Warning>
 </Step>
 </Steps>
-```
+````
 
 **Tabs for alternative content:**
-```mdx
+````mdx
 <Tabs>
 <Tab title="macOS">
   ```bash
@@ -229,10 +229,10 @@ curl -X POST 'https://api.example.com/users' \
   ```
 </Tab>
 </Tabs>
-```
+````
 
 **Accordions for collapsible content:**
-```mdx
+````mdx
 <AccordionGroup>
 <Accordion title="Troubleshooting connection issues">
   - **Firewall blocking**: Ensure ports 80 and 443 are open
@@ -249,7 +249,7 @@ curl -X POST 'https://api.example.com/users' \
   ```
 </Accordion>
 </AccordionGroup>
-```
+````
 
 #### Cards and Columns
 
