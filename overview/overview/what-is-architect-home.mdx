@@ -4,10 +4,29 @@ description: "An overview of Architect"
 ---
 
 <Frame>
-  <img
-    src="/overview/images/what-is-architect-hero.png"
-    alt="Coral illustration used as an Architect hero image"
-  />
+  <style>{`
+    .reefHero {
+      transform-origin: 50% 60%;
+      transition: transform 220ms ease, filter 220ms ease;
+      will-change: transform;
+    }
+
+    .reefHeroWrap:hover .reefHero {
+      transform: translateY(-2px) scale(1.01);
+      filter: saturate(1.05) contrast(1.02);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reefHero { transition: none; }
+    }
+  `}</style>
+  <div className="reefHeroWrap">
+    <img
+      className="reefHero"
+      src="/overview/images/what-is-architect-hero.png"
+      alt="Coral illustration used as an Architect hero image"
+    />
+  </div>
 </Frame>
 Architect is an agentic website that rebuilds your site around each visitor in real time. It uses your approved knowledge and assets to generate a page that matches who the visitor is, what they care about, and where they came from.
 
