@@ -30,21 +30,23 @@
             ]
           },
           {
-            "group": "Educational Content",
+            "group": "Setting up your account",
             "pages": [
-              "overview/educational-content/how-pages-are-made",
-              "overview/educational-content/different-slices-examples",
-              "overview/educational-content/different-use-cases",
-              "overview/educational-content/different-page-group-types",
-              "overview/educational-content/what-is-a-page-group"
+              "overview/setting-up/overview",
+              "overview/setting-up/what-knowledge-does-the-agent-need",
+              "overview/setting-up/what-kind-of-images-to-add",
+              "overview/setting-up/how-to-set-up-domain",
+              "overview/setting-up/how-to-set-up-brand"
             ]
           },
           {
-            "group": "Setting up your account",
+            "group": "Creating first pages",
             "pages": [
-              "overview/setting-up/what-knowledge-does-the-agent-need",
-              "overview/setting-up/what-kind-of-images-to-add",
-              "overview/setting-up/how-to-set-up-domain"
+              "overview/creating-first-pages/how-pages-are-made",
+              "overview/creating-first-pages/different-slices-examples",
+              "overview/creating-first-pages/different-use-cases",
+              "overview/creating-first-pages/different-page-group-types",
+              "overview/creating-first-pages/what-is-a-page-group"
             ]
           },
           {
@@ -110,6 +112,28 @@
       }
     ]
   },
+  "redirects": [
+    {
+      "source": "/overview/educational-content/how-pages-are-made",
+      "destination": "/overview/creating-first-pages/how-pages-are-made"
+    },
+    {
+      "source": "/overview/educational-content/different-slices-examples",
+      "destination": "/overview/creating-first-pages/different-slices-examples"
+    },
+    {
+      "source": "/overview/educational-content/different-use-cases",
+      "destination": "/overview/creating-first-pages/different-use-cases"
+    },
+    {
+      "source": "/overview/educational-content/different-page-group-types",
+      "destination": "/overview/creating-first-pages/different-page-group-types"
+    },
+    {
+      "source": "/overview/educational-content/what-is-a-page-group",
+      "destination": "/overview/creating-first-pages/what-is-a-page-group"
+    }
+  ],
   "api": {
     "mdx": {
       "auth": {
