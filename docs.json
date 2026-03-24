@@ -12,7 +12,7 @@
     "light": "/logo/wide-logo-black-transparent.svg",
     "dark": "/logo/wide-logo-white-transparent.svg"
   },
-  "root": "documentation/overview/what-is-architect",
+  "root": "overview/overview/what-is-architect",
   "navigation": {
     "tabs": [
       {
@@ -21,64 +21,65 @@
           {
             "group": "Overview",
             "pages": [
-              "documentation/overview/what-is-architect-home",
-              "documentation/getting-started/quickstart"
+              "overview/overview/what-is-architect-home",
+              "overview/overview/what-is-an-agentic-website",
+              "overview/overview/quickstart"
             ]
           },
           {
             "group": "Educational Content",
             "pages": [
-              "documentation/overview/how-pages-are-made",
-              "documentation/assets/different-slices-examples",
-              "documentation/overview/different-use-cases",
-              "documentation/creating-pages/different-page-group-types",
-              "documentation/faq/what-is-a-page-group"
+              "overview/educational-content/how-pages-are-made",
+              "overview/educational-content/different-slices-examples",
+              "overview/educational-content/different-use-cases",
+              "overview/educational-content/different-page-group-types",
+              "overview/educational-content/what-is-a-page-group"
             ]
           },
           {
             "group": "Setting up your account",
             "pages": [
-              "documentation/getting-started/what-knowledge-does-the-agent-need",
-              "documentation/getting-started/what-kind-of-images-to-add",
-              "documentation/getting-started/how-to-set-up-domain"
+              "overview/setting-up/what-knowledge-does-the-agent-need",
+              "overview/setting-up/what-kind-of-images-to-add",
+              "overview/setting-up/how-to-set-up-domain"
             ]
           },
           {
             "group": "For Ads",
             "pages": [
-              "documentation/advanced/how-to-pull-digital-ad-csv-for-ads",
-              "documentation/analytics-tracking/how-to-set-up-tracking-with-google-tags-manager",
-              "documentation/experiments/how-to-set-up-a-b-tests-for-google-ads"
+              "overview/for-ads/how-to-pull-digital-ad-csv-for-ads",
+              "overview/for-ads/how-to-set-up-tracking-with-google-tags-manager",
+              "overview/for-ads/how-to-set-up-a-b-tests-for-google-ads"
             ]
           },
           {
             "group": "For ABM",
             "pages": [
-              "documentation/advanced/creating-personalized-abm-pages",
-              "documentation/advanced/how-to-create-abm-pages"
+              "overview/for-abm/creating-personalized-abm-pages",
+              "overview/for-abm/how-to-create-abm-pages"
             ]
           },
           {
             "group": "Ad Platforms",
             "pages": [
-              "documentation/ad-platforms/google-ads",
-              "documentation/ad-platforms/linkedin-ads",
-              "documentation/ad-platforms/linkedin"
+              "overview/ad-platforms/google-ads",
+              "overview/ad-platforms/linkedin-ads",
+              "overview/ad-platforms/linkedin"
             ]
           },
           {
             "group": "Integrations",
             "pages": [
-              "documentation/integrations/how-to-add-form-submission-into-your-hubspot-crm",
-              "documentation/integrations/how-to-find-hubspot-webhook-url-for-enrichment",
-              "documentation/integrations/how-to-add-form-submission-into-your-marketo-through-zapier"
+              "overview/integrations/how-to-add-form-submission-into-your-hubspot-crm",
+              "overview/integrations/how-to-find-hubspot-webhook-url-for-enrichment",
+              "overview/integrations/how-to-add-form-submission-into-your-marketo-through-zapier"
             ]
           },
           {
             "group": "FAQ",
             "pages": [
-              "documentation/faq/how-do-i-add-a-goal-cta-for-my-page",
-              "documentation/faq/how-does-architect-cookie-consent-banner-work"
+              "overview/faq/how-do-i-add-a-goal-cta-for-my-page",
+              "overview/faq/how-does-architect-cookie-consent-banner-work"
             ]
           },
           {
