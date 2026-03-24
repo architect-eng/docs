@@ -2,6 +2,9 @@
   "$schema": "https://mintlify.com/docs.json",
   "name": "Architect",
   "theme": "mint",
+  "tableOfContents": {
+    "visible": false
+  },
   "colors": {
     "primary": "#15803D",
     "light": "#07C983",
@@ -21,7 +24,7 @@
           {
             "group": "Overview",
             "pages": [
-              "overview/overview/what-is-architect-home",
+              "index",
               "overview/overview/what-is-an-agentic-website",
               "overview/overview/quickstart"
             ]
