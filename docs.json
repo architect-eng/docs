@@ -42,15 +42,12 @@
           {
             "group": "Creating first pages",
             "pages": [
-              "overview/creating-first-pages/how-pages-are-made",
-              "overview/creating-first-pages/different-slices-examples",
               "overview/creating-first-pages/different-use-cases",
-              "overview/creating-first-pages/different-page-group-types",
-              "overview/creating-first-pages/what-is-a-page-group"
+              "overview/creating-first-pages/different-slices-examples"
             ]
           },
           {
-            "group": "For Ads",
+            "group": "For inbound",
             "pages": [
               "overview/for-ads/get-live",
               "overview/for-ads/how-to-pull-digital-ad-csv-for-ads",
@@ -59,32 +56,33 @@
             ]
           },
           {
-            "group": "For ABM",
+            "group": "For outbound",
             "pages": [
               "overview/for-abm/creating-personalized-abm-pages",
-              "overview/for-abm/how-to-create-abm-pages"
-            ]
-          },
-          {
-            "group": "Ad Platforms",
-            "pages": [
-              "overview/ad-platforms/google-ads",
-              "overview/ad-platforms/linkedin-ads",
-              "overview/ad-platforms/linkedin"
+              "overview/for-abm/how-to-choose-granularity",
+              "overview/for-abm/how-to-prepare-csv",
+              "overview/for-abm/how-to-set-the-cta",
+              "overview/for-abm/how-to-use-bulk-create-pages",
+              "overview/for-abm/how-to-export-page-list"
             ]
           },
           {
             "group": "Integrations",
             "pages": [
               "overview/integrations/how-to-add-form-submission-into-your-hubspot-crm",
-              "overview/integrations/how-to-find-hubspot-webhook-url-for-enrichment",
-              "overview/integrations/how-to-add-form-submission-into-your-marketo-through-zapier"
+              "overview/integrations/how-to-add-form-submission-into-your-marketo-through-zapier",
+              "overview/advanced/how-to-create-architect-pages-from-google-sheets-using-n8n"
+            ]
+          },
+          {
+            "group": "Advanced",
+            "pages": [
+              "overview/advanced/how-to-create-architect-pages-from-google-sheets-using-n8n"
             ]
           },
           {
             "group": "FAQ",
             "pages": [
-              "overview/faq/how-do-i-add-a-goal-cta-for-my-page",
               "overview/faq/how-does-architect-cookie-consent-banner-work"
             ]
           },
@@ -127,11 +125,15 @@
     },
     {
       "source": "/overview/educational-content/different-page-group-types",
-      "destination": "/overview/creating-first-pages/different-page-group-types"
+      "destination": "/overview/creating-first-pages/different-slices-examples"
     },
     {
       "source": "/overview/educational-content/what-is-a-page-group",
-      "destination": "/overview/creating-first-pages/what-is-a-page-group"
+      "destination": "/overview/creating-first-pages/different-slices-examples"
+    },
+    {
+      "source": "/overview/for-ads/How%20to%20Pull%20Digital%20Ad%20CSV%20(For%20Ads)/Google%20Ads%2026423d2e6e73806695e9e126b51455ff.md",
+      "destination": "/overview/for-ads/how-to-export-google-ads-csv"
     }
   ],
   "api": {

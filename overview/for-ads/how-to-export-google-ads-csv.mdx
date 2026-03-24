@@ -1,0 +1,61 @@
+---
+title: "How to export a Google Ads CSV"
+description: "Export your ad URLs and UTMs so you can map ad groups and keywords to pages."
+---
+
+Use this flow to export a CSV that includes **Final URL** and (if applicable) your **Tracking Template**.
+
+<Steps>
+  <Step title="Log into Google Ads">
+    Go to `ads.google.com` and log in.
+
+    If you use a manager account (MCC), select the correct **ad account** from the account dropdown.
+  </Step>
+
+  <Step title="Open the Ads view">
+    In the left sidebar, click **Campaigns**.
+
+    In the top bar, switch from **Campaigns** to **Ads**.
+
+    <Info>
+    You need the Ads view to export fields like **Final URL** and **Tracking Template**.
+    </Info>
+  </Step>
+
+  <Step title="Customize columns">
+    Click **Columns** (above the table), then choose **Modify columns**.
+
+    Under **Attributes**, include:
+
+    - **Final URL**
+    - **Tracking Template** (if your UTMs are added via tracking setup)
+    - **Campaign name**
+    - **Ad group**
+    - **Ad ID** (optional)
+
+    Click **Apply**.
+  </Step>
+
+  <Step title="Set your date range">
+    In the top-right date selector, choose a reporting window (commonly **Last 30 days**).
+  </Step>
+
+  <Step title="Export CSV">
+    Click the **Download** icon (down arrow) above the table.
+
+    - Choose **CSV**
+    - Export **Ads performance**
+  </Step>
+
+  <Step title="Find your UTM parameters">
+    Open the CSV in Sheets or Excel.
+
+    Look for UTMs in:
+    - **Final URL**, or
+    - **Tracking Template** (if the account uses templates at the account/campaign level)
+
+    <Tip>
+    If you don't see UTMs in **Final URL**, check **Tracking Template** next.
+    </Tip>
+  </Step>
+</Steps>

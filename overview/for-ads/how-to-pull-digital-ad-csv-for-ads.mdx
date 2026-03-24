@@ -5,11 +5,148 @@ description: "Export your ad data as a CSV so you can create or scale Architect 
 
 Use these guides to export ad data as a CSV.
 
-[Google Ads](How%20to%20Pull%20Digital%20Ad%20CSV%20(For%20Ads)/Google%20Ads%2026423d2e6e73806695e9e126b51455ff.md)
+<Tabs>
+  <Tab title="Google Ads">
+    <Steps>
+      <Step title="Log into Google Ads">
+        Go to `ads.google.com` and log in.
 
-[LinkedIn Ads](How%20to%20Pull%20Digital%20Ad%20CSV%20(For%20Ads)/LinkedIn%20Ads%2026423d2e6e7380029d4de36dd565d256.md)
+        If you use a manager account (MCC), select the correct **ad account** from the account dropdown.
+      </Step>
 
-[Meta Ads ](How%20to%20Pull%20Digital%20Ad%20CSV%20(For%20Ads)/Meta%20Ads%2031d23d2e6e73800d8283da873cba9ac2.md)
+      <Step title="Open the Ads view">
+        In the left sidebar, click **Campaigns**.
+
+        In the top bar, switch from **Campaigns** to **Ads**.
+
+        <Info>
+        You need the Ads view to export fields like **Final URL** and **Tracking Template**.
+        </Info>
+      </Step>
+
+      <Step title="Customize columns">
+        Click **Columns** then **Modify columns**.
+
+        Under **Attributes**, include:
+
+        - **Final URL**
+        - **Tracking Template** (if your UTMs are added via tracking setup)
+        - **Campaign name**
+        - **Ad group**
+        - **Ad ID** (optional)
+
+        Click **Apply**.
+      </Step>
+
+      <Step title="Set your date range">
+        In the top-right date selector, choose a reporting window (commonly **Last 30 days**).
+      </Step>
+
+      <Step title="Export CSV">
+        Click the **Download** icon (down arrow) above the table.
+
+        - Choose **CSV**
+        - Export **Ads performance**
+      </Step>
+
+      <Step title="Find your UTM parameters">
+        Open the CSV in Sheets or Excel.
+
+        Look for UTMs in:
+        - **Final URL**, or
+        - **Tracking Template** (if the account uses templates at the account/campaign level)
+
+        <Tip>
+        If you don't see UTMs in **Final URL**, check **Tracking Template** next.
+        </Tip>
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="LinkedIn Ads">
+    <Steps>
+      <Step title="Select your ad account">
+        Log into [LinkedIn Campaign Manager](https://www.linkedin.com/campaignmanager).
+
+        If you manage multiple accounts, pick the correct ad account from the dropdown.
+      </Step>
+
+      <Step title="Open the Ads view">
+        In the left sidebar, click **Campaigns**.
+
+        Switch from the **Campaigns** tab to the **Ads** tab.
+      </Step>
+
+      <Step title="Customize columns">
+        Click **Columns** then **Customize columns**.
+
+        Make sure these fields are included:
+
+        - **Destination URL** (contains UTM parameters)
+        - **Campaign Name**
+        - **Ad ID** (optional)
+
+        Click **Apply**.
+      </Step>
+
+      <Step title="Set your date range">
+        In the upper-right date selector, choose a reporting window (commonly **Last 30 days**).
+      </Step>
+
+      <Step title="Export CSV">
+        Click **Export**.
+
+        - Choose **CSV**
+        - Select **Ad performance**
+      </Step>
+
+      <Step title="Find your UTM parameters">
+        Open the CSV in Sheets or Excel.
+
+        Look in the **Destination URL** column for UTM parameters like `utm_source=linkedin`.
+
+        <Tip>
+        If the Destination URL looks truncated, widen the column in Sheets/Excel.
+        </Tip>
+
+        <Tip>
+        If UTMs are missing, they likely were not added during campaign setup. Ask your marketing team to standardize UTMs during ad creation.
+        </Tip>
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Meta Ads">
+    <Steps>
+      <Step title="Open the Ads tab">
+        Open **Meta Ads Manager**.
+
+        Click the **Ads** tab (next to Ad Sets).
+
+        Select the ads you want landing pages for. We typically create one page per ad.
+      </Step>
+
+      <Step title="Export CSV">
+        Open **More**.
+
+        Under **Import and export ad configuration**, click **Export**.
+
+        - Choose **Export Selected**
+        - Choose **Export as CSV**
+      </Step>
+
+      <Step title="Import your updated links">
+        After your pages are ready, you can update URLs in bulk using the updated CSV.
+
+        1. In **Meta Ads Manager**, click the **Import** icon (up arrow).
+        2. Click **Ads**.
+        3. Upload your updated CSV file.
+        4. Review the draft changes.
+        5. Click **Publish**.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
 
 <Tip>
 If you are unsure what to export, start with campaign name, ad name, final URL, and any UTM parameters you use. Keeping naming consistent makes it easier to map traffic to Page Groups.

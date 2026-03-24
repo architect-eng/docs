@@ -1,118 +1,197 @@
 ---
 title: "Creating Personalized ABM Pages"
 description: ""
+mode: "wide"
+sidebarTitle: "Create ABM pages"
 ---
 
-## Step 1: Choose Your Granularity
+<div className="not-prose w-full">
+  <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+    <div className="relative">
+      <div className="relative z-10 space-y-10 md:space-y-14">
+        <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16 items-center">
+          <div className="flex-1 w-full">
+            <div className="flex items-center gap-3 mb-4">
+              <span
+                className="inline-flex shrink-0 items-center justify-center rounded-full bg-green-100 text-green-900 border border-green-200 font-semibold text-sm tracking-tight"
+                style={{ width: 32, height: 32 }}
+              >
+                1
+              </span>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Choose granularity</h2>
+            </div>
+            <p className="text-sm md:text-base text-gray-500 mb-3 leading-relaxed">
+              Decide how personalized you want each page to be.
+            </p>
 
-First, decide how personalized you want the page to be. The level of granularity determines how specific the copy and messaging will be for the visitor.
+          </div>
+          <div className="flex-1 w-full">
+            <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+              <div className="p-4">
+                <p className="text-xs font-medium text-gray-600 mb-3">Personalization options</p>
+                <div className="grid gap-3">
+                  <div className="rounded-lg border border-gray-200 bg-white p-3">
+                    <p className="text-sm font-semibold text-gray-900">Company</p>
+                    <p className="text-xs text-gray-600">Account-level page for one company.</p>
+                  </div>
+                  <div className="rounded-lg border border-gray-200 bg-white p-3">
+                    <p className="text-sm font-semibold text-gray-900">Job title</p>
+                    <p className="text-xs text-gray-600">Role-level page across many accounts.</p>
+                  </div>
+                  <div className="rounded-lg border border-gray-200 bg-white p-3">
+                    <p className="text-sm font-semibold text-gray-900">Full name</p>
+                    <p className="text-xs text-gray-600">1:1 page for a specific person.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-**Your Options:**
+        <div className="flex flex-col md:flex-row-reverse gap-8 md:gap-12 lg:gap-16 items-center">
+          <div className="flex-1 w-full">
+            <div className="flex items-center gap-3 mb-4">
+              <span
+                className="inline-flex shrink-0 items-center justify-center rounded-full bg-green-100 text-green-900 border border-green-200 font-semibold text-sm tracking-tight"
+                style={{ width: 32, height: 32 }}
+              >
+                2
+              </span>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Prepare your CSV</h2>
+            </div>
+            <p className="text-sm md:text-base text-gray-500 mb-3 leading-relaxed">
+              Your columns depend on the granularity you picked.
+            </p>
 
-1. **By Company Name:** Best for targeting specific accounts where you don't know the exact visitor, but you know the organization (e.g., "Welcome, [Company Name] Team").
-2. **By Job Title:** Best for targeting specific roles across various companies (e.g., tailored messaging specifically for a "VP of Sales").
-3. **By Full Name (Most Extensive):** The highest level of personalization. The page is built for one specific human (e.g., "Hi [First Name], here is a custom Loom workflow for [Company]").
+          </div>
+          <div className="flex-1 w-full">
+            <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+              <div className="p-4">
+                <p className="text-xs font-medium text-gray-600 mb-3">leads.csv</p>
+                <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-gray-50">
+                      <tr className="text-xs text-gray-600">
+                        <th className="px-3 py-2 font-medium">Company Name</th>
+                        <th className="px-3 py-2 font-medium">Company URL</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-t border-gray-100">
+                        <td className="px-3 py-2 text-gray-900">Acme Corp</td>
+                        <td className="px-3 py-2 text-gray-700">www.acmecorp.com</td>
+                      </tr>
+                      <tr className="border-t border-gray-100">
+                        <td className="px-3 py-2 text-gray-900">Northwind</td>
+                        <td className="px-3 py-2 text-gray-700">www.northwind.com</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
----
+        <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16 items-center">
+          <div className="flex-1 w-full">
+            <div className="flex items-center gap-3 mb-4">
+              <span
+                className="inline-flex shrink-0 items-center justify-center rounded-full bg-green-100 text-green-900 border border-green-200 font-semibold text-sm tracking-tight"
+                style={{ width: 32, height: 32 }}
+              >
+                3
+              </span>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Create a Page Group and set the CTA</h2>
+            </div>
+            <p className="text-sm md:text-base text-gray-500 mb-3 leading-relaxed">
+              Create a new Page Group for the campaign, then set the CTA destination (URL or form).
+            </p>
+            <div className="bg-gray-50 border border-gray-200 p-4 mt-4">
+              <p className="text-sm font-medium text-gray-900 mb-1">Tip</p>
+              <p className="text-sm text-gray-700">
+                Use one Page Group per campaign so you can keep the CTA consistent across all pages.
+              </p>
+            </div>
+          </div>
+          <div className="flex-1 w-full">
+            <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+              <img
+                alt="Page group setup and call-to-action settings"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-auto"
+                src="/overview/images/Screenshot_2026-02-01_at_17.20.06.png"
+              />
+            </div>
+          </div>
+        </div>
 
-## Step 2: Prepare Your Lead Data (CSV)
+        <div className="flex flex-col md:flex-row-reverse gap-8 md:gap-12 lg:gap-16 items-center">
+          <div className="flex-1 w-full">
+            <div className="flex items-center gap-3 mb-4">
+              <span
+                className="inline-flex shrink-0 items-center justify-center rounded-full bg-green-100 text-green-900 border border-green-200 font-semibold text-sm tracking-tight"
+                style={{ width: 32, height: 32 }}
+              >
+                4
+              </span>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Bulk create pages</h2>
+            </div>
+            <p className="text-sm md:text-base text-gray-500 mb-3 leading-relaxed">
+              Use the Bulk Create Pages filter to generate pages from your CSV rows.
+            </p>
+          </div>
+          <div className="flex-1 w-full">
+            <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+              <img
+                alt="Bulk create pages flow"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-auto"
+                src="/overview/images/edit-agent.png"
+              />
+            </div>
+          </div>
+        </div>
 
-Once you have chosen your granularity, prepare a `.csv` file containing your leads. The columns required change based on the option you selected in Step 1.
-
-### Option A: If targeting by **Company Name**
-
-*Required Columns:*
-
-- `Company Name`
-- `Company URL`
-
-> **Example Row:**`Acme Corp`, `www.acmecorp.com`
-> 
-
-### Option B: If targeting by **Job Title**
-
-*Required Columns:*
-
-- `Job Title`
-- `Company Name`
-- `Company URL`
-
-> **Example Row:** `Director of Customer Support`, `Acme Corp`, `www.acmecorp.com`
-> 
-
-### Option C: If targeting by **Full Name** (Deepest Personalization)
-
-*Required Columns:*
-
-- `Full Name`
-- `Company Name`
-- `Job Title`
-- `Company URL`
-
-> **Example Row:**`Jordan Lee`, `Acme Corp`,  `VP of Sales`,  `www.acmecorp.com`
-> 
-
----
-
-### Optional Fields:
-
-The agent will automatically create an SEO Title, Description and Page Link based on the rest of the information and create the page in English. 
-
-*Can be added to each row:*
-
-- `Language`  (e.g., EN, ES, FR)
-- `Buyer Persona`  (e.g., Sales Leader, Support Manager)
-- `SEO Title`  (e.g., Architect)
-- `SEO Description`  (e.g, Personalise Every Visit)
-- `Page Link`  (URL of the final page e.g., tryarchitect.com/jordan-lee)
-
-> **Example Row :**`Jordan Lee`, `Acme Corp`,  `VP of Sales`,  `www.acmecorp.com` , `ES` , `Sales and Marketing`
-> 
-
----
-
-## Step 3: Provide Context to the Agent
-
-This is the "brain" of the operation. You must provide a clear short brief so the AI understands who we are targeting, whether this is a warm lead or a new lead, and the overall goal.
-
-**What to include:**
-
-1. **Campaign Context:** Who are you targeting and what is the goal? Is this a warm or a cold lead? 
-2. **Design/Language Guard Rails (Optional):** Are there specific words to use or avoid (e.g., framing the product as a "companion" rather than a "replacement")? Are there structural rules to follow (e.g., keeping copy extremely concise to avoid wall-of-text fatigue)?
-3. **Buyer Persona Context (Optional):** If you have buyer personas you are targeting include information on this here. 
-
-### 📝 Best Practice Example
-
-*Below is an example of a context brief for a campaign where Loom (asynchronous video) is targeting heavy Slack users to reduce meeting fatigue.*
-
-> 
-> 
-> 
-> **Campaign Context**
-> 
-> This is a LinkedIn Campaign targeting cold leads who are experiencing "notification overload" and "meeting fatigue" but are not yet using asynchronous video. They have had a briefing on the company but this is the first time they have seen the product.
-> 
-> **Design/Language Guard Rails**
-> 
-> - Never position Loom as a "replacement" for Slack; always refer to it as a "companion" or "integration."
-> - Do not assume the user knows how easy it is to record a video. Avoid technical jargon and assure them that recording does not require a studio setup or a script.
-> - Keep the copy extremely concise. Because we are solving for "wall of text" fatigue, the campaign itself must avoid long, dense paragraphs.
-
----
-
-## Step 4: Define the Call to Action (CTA)
-
-Finally, tell us where the user should go next. This should be a specific action and a destination URL, or a Form Fill. You can set this on the specific page group settings. 
-
-**Example A (Product Signup):**
-
-- **Text:** "Install Loom for Chrome"
-- **URL:** `https://www.loom.com/signup`
-
----
-
-### Ready to build?
-
-Please gather your **CSV file** and your **Context Brief** and submit them to start the page generation process.
-
-[CSV Example.csv](Creating%20Personalized%20ABM%20Pages/CSV_Example.csv)
+        <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16 items-center rounded-2xl border border-green-200 bg-white/70 p-4 shadow-[0_0_0_1px_rgba(34,197,94,0.14),0_0_58px_rgba(34,197,94,0.26)]">
+          <div className="flex-1 w-full">
+            <div className="flex items-center gap-3 mb-4">
+              <span
+                className="inline-flex shrink-0 items-center justify-center rounded-full bg-green-100 text-green-900 border border-green-200 font-semibold text-sm tracking-tight"
+                style={{ width: 32, height: 32 }}
+              >
+                5
+              </span>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Publish and export</h2>
+            </div>
+            <p className="text-sm md:text-base text-gray-500 mb-3 leading-relaxed">
+              Publish the pages, export the list of live links, and share it with your team.
+            </p>
+          </div>
+          <div className="flex-1 w-full">
+            <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+              <div className="p-6">
+                <div className="flex items-center gap-3">
+                  <div className="inline-flex items-center justify-center rounded-full bg-green-100 text-green-800 border border-green-200 px-3 py-1 text-sm font-semibold">
+                    Done
+                  </div>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
+                  >
+                    Publish
+                  </button>
+                </div>
+                <p className="text-sm text-gray-600 mt-4">
+                  Export the list of published links and share it with your team.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
