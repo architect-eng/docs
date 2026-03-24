@@ -1,77 +1,35 @@
 ---
-title: "Customer API"
-description: "API documentation for integrating with Architect"
+title: "What is Architect?"
+description: "An overview of Architect"
 ---
 
-The Customer API provides a RESTful API for external systems to integrate with the Architect platform.
-
-## Getting Started
-
-To begin using the API:
-
-1. **Obtain API credentials** - Create an API key in the Architect customer management app
-2. **Authenticate requests** - Include your API key in the `x-api-key` header for all requests
-3. **Explore the API reference** - Browse the available endpoints in the API Reference tab
-
-## Core Concepts
-
-### Page Groups
-Page groups are collections of related pages with shared configuration:
-- Template assignment
-- Business goals and objectives
-- URL slugs and titles
-- Publication status (draft, published, archived)
-- Custom scripts and tracking
-
-**Page groups must be configured ahead of time in the Architect platform.**
-
-### Pages
-Individual page variants within a page group, each with:
-- Version history
-- Statistics and analytics
-- UTM parameter tracking
-- Session counts
-
-### Templates
-Reusable page templates for consistent design:
-- System templates (provided by Architect)
-- Custom templates (created by your team)
-- Template duplication and customization
-- Version control
-
-## Authentication
-
-All API requests require authentication using an API key:
-
-```bash
-curl -X GET 'https://api.tryarchitect.com/v0/page_groups' \
-  -H 'x-api-key: YOUR_API_KEY'
-```
-
-## Rate Limiting
-
-The API implements rate limiting to ensure fair usage. If you exceed the rate limit, you'll receive a `429` error response with details about when you can retry.
-
-## Error Handling
-
-The API uses standard HTTP status codes and returns detailed error responses:
-
-```json
-{
-  "code": "VALIDATION_ERROR",
-  "message": "Validation failed",
-  "requestId": "req_01j5k9m7n8p9q2r3s4t5v6w7x8",
-  "details": {
-    "field": "name",
-    "reason": "Name is required"
-  }
-}
-```
+<Frame>
+  <img
+    src="/overview/images/what-is-architect-hero.png"
+    alt="Coral illustration used as an Architect hero image"
+  />
+</Frame>
+Architect is an agentic website that rebuilds your site around each visitor in real time. It uses your approved knowledge and assets to generate a page that matches who the visitor is, what they care about, and where they came from.
 
 
-## Support
+## What makes it different
 
-For API support or questions:
-- Email: [api-support@tryarchitect.com](mailto:api-support@tryarchitect.com)
-- Website: [tryarchitect.com](https://tryarchitect.com)
-- Contact your account manager via email or Slack
+Architect is different because it treats your website like a living system instead of a set of fixed pages. The structure stays consistent, but the experience adapts in real time based on who is visiting, their intent, and the context you already have (like campaign source or account).
+
+Instead of creating dozens of one-off landing pages, you maintain a single source of truth: the knowledge, positioning, proof points, and visual assets you approve. Architect uses that to assemble the right message for each visitor while keeping everything aligned to your brand.
+
+The result is a site you can actually operate. You can see what’s converting, learn which narratives work for which audiences, and iterate quickly without rebuilding the site every time your go-to-market changes.
+
+## Different use cases
+
+Architect supports multiple go-to-market motions without multiplying your workload.
+
+For ABM, you can create pages that speak directly to a target account with the right industry framing, relevant proof, and a CTA that matches where that account is in the journey.
+
+For paid acquisition, you can route traffic from different campaigns to experiences that mirror the ad’s promise, so visitors land on a page that already feels like the next step.
+
+For sales follow-ups, you can share a link that continues the conversation from the call, reinforcing the points that mattered and guiding the buyer to a clear next action.
+
+## Like a coral reef
+
+Architect is designed to feel like a coral reef: it breathes and moves. The foundation is stable and recognizable, but the surface adapts to the environment. Each visitor gets a version of the page that fits them, while you keep control of what the system can say and show.
