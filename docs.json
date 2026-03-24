@@ -21,16 +21,17 @@
           {
             "group": "Overview",
             "pages": [
-              "documentation/getting-started/quickstart",
-              "documentation/getting-started/how-to-set-up-domain"
+              "documentation/getting-started/quickstart"
             ]
           },
           {
-            "group": "Documentation Overview",
+            "group": "Educational Content",
             "pages": [
               "documentation/overview/how-pages-are-made",
               "documentation/assets/different-slices-examples",
-              "documentation/overview/different-use-cases"
+              "documentation/overview/different-use-cases",
+              "documentation/creating-pages/different-page-group-types",
+              "documentation/faq/what-is-a-page-group"
             ]
           },
           {
@@ -42,18 +43,21 @@
             ]
           },
           {
-            "group": "Creating pages",
+            "group": "For Ads",
             "pages": [
-              "documentation/creating-pages/different-page-group-types",
-              "documentation/faq/what-is-a-page-group",
-              "documentation/advanced/creating-personalized-abm-pages",
-              "documentation/advanced/how-to-create-abm-pages",
               "documentation/advanced/how-to-pull-digital-ad-csv-for-ads",
               "documentation/ad-platforms/google-ads",
               "documentation/ad-platforms/linkedin-ads",
               "documentation/analytics-tracking/how-to-set-up-tracking-with-google-tags-manager",
               "documentation/experiments/how-to-set-up-a-b-tests-for-google-ads",
               "documentation/advanced/how-to-create-architect-pages-from-google-sheets-using-n8n"
+            ]
+          },
+          {
+            "group": "For ABM",
+            "pages": [
+              "documentation/advanced/creating-personalized-abm-pages",
+              "documentation/advanced/how-to-create-abm-pages"
             ]
           },
           {
