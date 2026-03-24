@@ -22,7 +22,7 @@
             "group": "Overview",
             "pages": [
               "documentation/getting-started/quickstart",
-              "documentation/getting-started/making-your-first-page"
+              "documentation/getting-started/how-to-set-up-domain"
             ]
           },
           {
@@ -38,7 +38,6 @@
             "pages": [
               "documentation/getting-started/what-knowledge-does-the-agent-need",
               "documentation/getting-started/what-kind-of-images-to-add",
-              "documentation/getting-started/other-type-of-assets-to-provide",
               "documentation/getting-started/how-to-set-up-domain"
             ]
           },
