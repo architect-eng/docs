@@ -21,6 +21,7 @@
           {
             "group": "Overview",
             "pages": [
+              "documentation/overview/what-is-architect-home",
               "documentation/getting-started/quickstart"
             ]
           },
