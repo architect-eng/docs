@@ -66,8 +66,7 @@
             "group": "Integrations",
             "pages": [
               "overview/integrations/how-to-add-form-submission-into-your-hubspot-crm",
-              "overview/integrations/how-to-add-form-submission-into-your-marketo-through-zapier",
-              "overview/advanced/how-to-create-architect-pages-from-google-sheets-using-n8n"
+              "overview/integrations/how-to-add-form-submission-into-your-marketo-through-zapier"
             ]
           },
           {
