@@ -12,7 +12,6 @@
     "light": "/logo/wide-logo-black-transparent.svg",
     "dark": "/logo/wide-logo-white-transparent.svg"
   },
-  "root": "overview/overview/what-is-architect",
   "navigation": {
     "tabs": [
       {
