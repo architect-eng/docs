@@ -2,9 +2,6 @@
   "$schema": "https://mintlify.com/docs.json",
   "name": "Architect",
   "theme": "mint",
-  "tableOfContents": {
-    "visible": false
-  },
   "colors": {
     "primary": "#15803D",
     "light": "#07C983",
