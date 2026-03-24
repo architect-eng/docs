@@ -3,9 +3,9 @@
   "name": "Architect",
   "theme": "mint",
   "colors": {
-    "primary": "#59d38c",
+    "primary": "#24874d",
     "light": "#59d38c",
-    "dark": "#59d38c"
+    "dark": "#24874d"
   },
   "favicon": "/logo/square-logo-black-transparent.png",
   "logo": {
