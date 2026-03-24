@@ -46,11 +46,8 @@
             "group": "For Ads",
             "pages": [
               "documentation/advanced/how-to-pull-digital-ad-csv-for-ads",
-              "documentation/ad-platforms/google-ads",
-              "documentation/ad-platforms/linkedin-ads",
               "documentation/analytics-tracking/how-to-set-up-tracking-with-google-tags-manager",
-              "documentation/experiments/how-to-set-up-a-b-tests-for-google-ads",
-              "documentation/advanced/how-to-create-architect-pages-from-google-sheets-using-n8n"
+              "documentation/experiments/how-to-set-up-a-b-tests-for-google-ads"
             ]
           },
           {
