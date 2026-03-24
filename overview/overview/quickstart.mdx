@@ -5,6 +5,95 @@ mode: "wide"
 sidebarTitle: "Quickstart"
 ---
 
+<style>{`
+  :root {
+    --qs-green: #59d38c;
+  }
+
+  .qs-muted {
+    color: rgb(107 114 128);
+  }
+
+  .qs-example {
+    background: rgb(249 250 251);
+    border: 1px solid rgb(229 231 235);
+  }
+
+  .qs-exampleTitle {
+    color: rgb(17 24 39);
+  }
+
+  .qs-exampleText {
+    color: rgb(55 65 81);
+  }
+
+  .qs-imgWrap {
+    border: 1px solid rgb(229 231 235);
+    background: rgb(249 250 251);
+  }
+
+  .qs-imgWrap img {
+    filter: none !important;
+  }
+
+  .qs-stepBadge {
+    background: color-mix(in srgb, var(--qs-green) 22%, transparent);
+    border: 1px solid color-mix(in srgb, var(--qs-green) 40%, transparent);
+    color: rgb(17 24 39);
+  }
+
+  .qs-featured {
+    border: 1px solid color-mix(in srgb, var(--qs-green) 36%, rgb(229 231 235));
+    background: color-mix(in srgb, var(--qs-green) 6%, white);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--qs-green) 20%, transparent),
+      0 0 58px color-mix(in srgb, var(--qs-green) 32%, transparent);
+  }
+
+  .dark .qs-muted,
+  [data-theme='dark'] .qs-muted {
+    color: rgb(161 161 170);
+  }
+
+  .dark .qs-example,
+  [data-theme='dark'] .qs-example {
+    background: rgb(24 24 27);
+    border-color: rgb(63 63 70);
+  }
+
+  .dark .qs-exampleTitle,
+  [data-theme='dark'] .qs-exampleTitle {
+    color: rgb(244 244 245);
+  }
+
+  .dark .qs-exampleText,
+  [data-theme='dark'] .qs-exampleText {
+    color: rgb(212 212 216);
+  }
+
+  .dark .qs-imgWrap,
+  [data-theme='dark'] .qs-imgWrap {
+    background: rgb(9 10 11);
+    border-color: rgb(63 63 70);
+  }
+
+  .dark .qs-stepBadge,
+  [data-theme='dark'] .qs-stepBadge {
+    background: color-mix(in srgb, var(--qs-green) 18%, transparent);
+    border-color: color-mix(in srgb, var(--qs-green) 42%, transparent);
+    color: rgb(240 253 244);
+  }
+
+  .dark .qs-featured,
+  [data-theme='dark'] .qs-featured {
+    border-color: color-mix(in srgb, var(--qs-green) 48%, rgb(63 63 70));
+    background: color-mix(in srgb, var(--qs-green) 7%, rgb(9 9 11));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--qs-green) 16%, transparent),
+      0 0 64px color-mix(in srgb, var(--qs-green) 26%, transparent);
+  }
+`}</style>
+
 <div className="not-prose w-full">
   <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 md:py-8">
     <div className="relative">
@@ -13,25 +102,25 @@ sidebarTitle: "Quickstart"
         <div className="flex-1 w-full">
           <div className="flex items-center gap-3 mb-4">
             <span
-              className="inline-flex shrink-0 items-center justify-center rounded-full bg-green-100 text-green-900 border border-green-200 font-semibold text-sm tracking-tight"
+              className="inline-flex shrink-0 items-center justify-center rounded-full qs-stepBadge font-semibold text-sm tracking-tight"
               style={{ width: 32, height: 32 }}
             >
               1
             </span>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Create</h2>
           </div>
-          <p className="text-sm md:text-base text-gray-500 mb-3 leading-relaxed">
+          <p className="text-sm md:text-base qs-muted mb-3 leading-relaxed">
             Tell the agent what page you want to make and what you need. The agent assembles the layout and content for you as you watch it build live.
           </p>
-          <div className="bg-gray-50 border border-gray-200 p-4 mt-4">
-            <p className="text-sm font-medium text-gray-900 mb-1">Example</p>
-            <p className="text-sm text-gray-700">
+          <div className="qs-example p-4 mt-4">
+            <p className="text-sm font-medium qs-exampleTitle mb-1">Example</p>
+            <p className="text-sm qs-exampleText">
               “Create an ad landing page for Access Control. Use a single primary CTA, include social proof, and keep the page focused on demo requests.”
             </p>
           </div>
         </div>
         <div className="flex-1 w-full">
-          <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+          <div className="rounded-xl overflow-hidden qs-imgWrap">
             <img
               alt="Example landing page layout focused on a single CTA"
               loading="lazy"
@@ -47,25 +136,25 @@ sidebarTitle: "Quickstart"
         <div className="flex-1 w-full">
           <div className="flex items-center gap-3 mb-4">
             <span
-              className="inline-flex shrink-0 items-center justify-center rounded-full bg-green-100 text-green-900 border border-green-200 font-semibold text-sm tracking-tight"
+              className="inline-flex shrink-0 items-center justify-center rounded-full qs-stepBadge font-semibold text-sm tracking-tight"
               style={{ width: 32, height: 32 }}
             >
               2
             </span>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Edit</h2>
           </div>
-          <p className="text-sm md:text-base text-gray-500 mb-3 leading-relaxed">
+          <p className="text-sm md:text-base qs-muted mb-3 leading-relaxed">
             Use the agent to iterate fast: tighten the headline, swap sections, adjust the CTA, and tailor the copy to your campaign.
           </p>
-          <div className="bg-gray-50 border border-gray-200 p-4 mt-4">
-            <p className="text-sm font-medium text-gray-900 mb-1">Example</p>
-            <p className="text-sm text-gray-700">
+          <div className="qs-example p-4 mt-4">
+            <p className="text-sm font-medium qs-exampleTitle mb-1">Example</p>
+            <p className="text-sm qs-exampleText">
               “Rewrite this hero for IT directors, shorten the features section, and add a testimonial block above the fold.”
             </p>
           </div>
         </div>
         <div className="flex-1 w-full">
-          <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+          <div className="rounded-xl overflow-hidden qs-imgWrap">
             <img
               alt="Settings checklist for title, description, favicon, and analytics"
               loading="lazy"
@@ -77,27 +166,27 @@ sidebarTitle: "Quickstart"
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16 items-center rounded-2xl border border-green-200 bg-white/70 p-4 shadow-[0_0_0_1px_rgba(34,197,94,0.14),0_0_58px_rgba(34,197,94,0.26)]">
+      <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16 items-center rounded-2xl qs-featured p-4">
         <div className="flex-1 w-full">
           <div className="flex items-center gap-3 mb-4">
             <span
-              className="inline-flex shrink-0 items-center justify-center rounded-full bg-green-100 text-green-900 border border-green-200 font-semibold text-sm tracking-tight"
+              className="inline-flex shrink-0 items-center justify-center rounded-full qs-stepBadge font-semibold text-sm tracking-tight"
               style={{ width: 32, height: 32 }}
             >
               3
             </span>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Publish</h2>
           </div>
-          <p className="text-sm md:text-base text-gray-500 mb-3 leading-relaxed">
+          <p className="text-sm md:text-base qs-muted mb-3 leading-relaxed">
             Click Publish, then copy the URL.
           </p>
-          <p className="text-sm text-gray-500 leading-relaxed">
+          <p className="text-sm qs-muted leading-relaxed">
             Click Publish to generate a live link. Open the page and interact with it to see how the experience changes.
           </p>
           
         </div>
         <div className="flex-1 w-full">
-          <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+          <div className="rounded-xl overflow-hidden qs-imgWrap">
             <img
               alt="Ad setup example showing final URL pointing to a campaign page"
               loading="lazy"

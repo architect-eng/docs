@@ -3,14 +3,14 @@
   "name": "Architect",
   "theme": "mint",
   "colors": {
-    "primary": "#15803D",
-    "light": "#07C983",
-    "dark": "#137035"
+    "primary": "#59d38c",
+    "light": "#59d38c",
+    "dark": "#59d38c"
   },
-  "favicon": "/logo/square-logo-black-transparent.svg",
+  "favicon": "/logo/square-logo-black-transparent.png",
   "logo": {
-    "light": "/logo/wide-logo-black-transparent.svg",
-    "dark": "/logo/wide-logo-white-transparent.svg"
+    "light": "/logo/wide-logo-black-transparent.png",
+    "dark": "/logo/wide-logo-white-transparent.png"
   },
   "navigation": {
     "tabs": [
