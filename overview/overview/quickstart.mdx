@@ -15,8 +15,8 @@ sidebarTitle: "Quickstart"
   }
 
   .qs-example {
-    background: rgb(249 250 251);
-    border: 1px solid rgb(229 231 235);
+    background: color-mix(in srgb, var(--qs-green) 8%, white);
+    border: 1px solid color-mix(in srgb, var(--qs-green) 32%, rgb(229 231 235));
   }
 
   .qs-exampleTitle {
@@ -34,6 +34,11 @@ sidebarTitle: "Quickstart"
 
   .qs-imgWrap img {
     filter: none !important;
+  }
+
+  .qs-scope [class*="w-6"][class*="h-6"][class*="rounded-md"][class*="shadow-sm"][class*="group-focus/link:border-primary"] {
+    background: color-mix(in srgb, var(--qs-green) 6%, white) !important;
+    color: rgb(24 24 27) !important;
   }
 
   .qs-stepBadge {
@@ -57,8 +62,8 @@ sidebarTitle: "Quickstart"
 
   .dark .qs-example,
   [data-theme='dark'] .qs-example {
-    background: rgb(24 24 27);
-    border-color: rgb(63 63 70);
+    background: color-mix(in srgb, var(--qs-green) 10%, rgb(9 9 11));
+    border-color: color-mix(in srgb, var(--qs-green) 36%, rgb(63 63 70));
   }
 
   .dark .qs-exampleTitle,
@@ -75,6 +80,12 @@ sidebarTitle: "Quickstart"
   [data-theme='dark'] .qs-imgWrap {
     background: rgb(9 10 11);
     border-color: rgb(63 63 70);
+  }
+
+  .dark .qs-scope [class*="w-6"][class*="h-6"][class*="rounded-md"][class*="shadow-sm"][class*="group-focus/link:border-primary"],
+  [data-theme='dark'] .qs-scope [class*="w-6"][class*="h-6"][class*="rounded-md"][class*="shadow-sm"][class*="group-focus/link:border-primary"] {
+    background: color-mix(in srgb, var(--qs-green) 12%, rgb(9 9 11)) !important;
+    color: rgba(255, 255, 255, 0.72) !important;
   }
 
   .dark .qs-stepBadge,
@@ -94,7 +105,7 @@ sidebarTitle: "Quickstart"
   }
 `}</style>
 
-<div className="not-prose w-full">
+<div className="not-prose w-full qs-scope">
   <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 md:py-8">
     <div className="relative">
       <div className="relative z-10 space-y-10 md:space-y-14">
