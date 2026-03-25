@@ -3,9 +3,15 @@
   "name": "Architect",
   "theme": "mint",
   "colors": {
-    "primary": "#24874d",
-    "light": "#59d38c",
-    "dark": "#24874d"
+    "primary": "#59D38C",
+    "light": "#59D38C",
+    "dark": "#59D38C"
+  },
+  "fonts": {
+    "family": "KHTeka",
+    "source": "/fonts/KHTeka-Regular.woff",
+    "format": "woff",
+    "weight": 400
   },
   "favicon": "/logo/square-logo-black-transparent.png",
   "logo": {

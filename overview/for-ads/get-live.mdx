@@ -5,132 +5,22 @@ mode: "wide"
 sidebarTitle: "Create Ad Pages"
 ---
 
-<style>{`
-  :root {
-    --flow-accent: #59d38c;
-  }
-
-  .flow-muted {
-    color: rgb(107 114 128);
-  }
-
-  .flow-stepBadge {
-    background: color-mix(in srgb, var(--flow-accent) 22%, transparent);
-    border: 1px solid color-mix(in srgb, var(--flow-accent) 40%, transparent);
-    color: rgb(24 24 27);
-  }
-
-  .flow-featured {
-    border: 1px solid color-mix(in srgb, var(--flow-accent) 36%, rgb(229 231 235));
-    background: color-mix(in srgb, var(--flow-accent) 6%, white);
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--flow-accent) 20%, transparent),
-      0 0 58px color-mix(in srgb, var(--flow-accent) 32%, transparent);
-  }
-
-  .flow-scope img {
-    filter: none !important;
-  }
-
-  .flow-scope [class*="w-6"][class*="h-6"][class*="rounded-md"][class*="shadow-sm"][class*="group-focus/link:border-primary"] {
-    background: color-mix(in srgb, var(--flow-accent) 6%, white) !important;
-    color: rgb(24 24 27) !important;
-  }
-
-  .dark .flow-muted,
-  [data-theme='dark'] .flow-muted {
-    color: rgb(161 161 170);
-  }
-
-  .dark .flow-stepBadge,
-  [data-theme='dark'] .flow-stepBadge {
-    background: color-mix(in srgb, var(--flow-accent) 18%, transparent);
-    border-color: color-mix(in srgb, var(--flow-accent) 42%, transparent);
-    color: rgb(240 253 244);
-  }
-
-  .dark .flow-featured,
-  [data-theme='dark'] .flow-featured {
-    border-color: color-mix(in srgb, var(--flow-accent) 48%, rgb(63 63 70));
-    background: color-mix(in srgb, var(--flow-accent) 7%, rgb(9 9 11));
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--flow-accent) 16%, transparent),
-      0 0 64px color-mix(in srgb, var(--flow-accent) 26%, transparent);
-  }
-
-  .dark .flow-scope [class*="w-6"][class*="h-6"][class*="rounded-md"][class*="shadow-sm"][class*="group-focus/link:border-primary"],
-  [data-theme='dark'] .flow-scope [class*="w-6"][class*="h-6"][class*="rounded-md"][class*="shadow-sm"][class*="group-focus/link:border-primary"] {
-    background: color-mix(in srgb, var(--flow-accent) 12%, rgb(9 9 11)) !important;
-    color: rgba(255, 255, 255, 0.72) !important;
-  }
-
-  .dark .flow-scope .bg-gray-50,
-  [data-theme='dark'] .flow-scope .bg-gray-50 {
-    background: rgb(24 24 27) !important;
-  }
-
-  .dark .flow-scope .bg-white,
-  [data-theme='dark'] .flow-scope .bg-white {
-    background: rgb(9 9 11) !important;
-  }
-
-  .dark .flow-scope .border-gray-200,
-  [data-theme='dark'] .flow-scope .border-gray-200 {
-    border-color: rgb(63 63 70) !important;
-  }
-
-  .dark .flow-scope .border-gray-100,
-  [data-theme='dark'] .flow-scope .border-gray-100 {
-    border-color: rgb(39 39 42) !important;
-  }
-
-  .dark .flow-scope .bg-gray-100,
-  [data-theme='dark'] .flow-scope .bg-gray-100 {
-    background: rgb(39 39 42) !important;
-  }
-
-  .dark .flow-scope .text-gray-900,
-  [data-theme='dark'] .flow-scope .text-gray-900 {
-    color: rgb(244 244 245) !important;
-  }
-
-  .dark .flow-scope .text-gray-800,
-  [data-theme='dark'] .flow-scope .text-gray-800 {
-    color: rgb(244 244 245) !important;
-  }
-
-  .dark .flow-scope .text-gray-700,
-  [data-theme='dark'] .flow-scope .text-gray-700 {
-    color: rgb(212 212 216) !important;
-  }
-
-  .dark .flow-scope .text-gray-600,
-  [data-theme='dark'] .flow-scope .text-gray-600 {
-    color: rgb(161 161 170) !important;
-  }
-
-  .dark .flow-scope .text-gray-500,
-  [data-theme='dark'] .flow-scope .text-gray-500 {
-    color: rgb(161 161 170) !important;
-  }
-`}</style>
-
-<div className="not-prose w-full flow-scope">
+<div className="not-prose w-full">
   <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 md:py-8">
     <div className="relative">
-      <div className="relative z-10 space-y-10 md:space-y-14">
+      <div className="relative z-10 space-y-16 md:space-y-24">
       <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16 items-center">
         <div className="flex-1 w-full">
           <div className="flex items-center gap-3 mb-4">
             <span
-              className="inline-flex shrink-0 items-center justify-center rounded-full flow-stepBadge font-semibold text-sm tracking-tight"
-              style={{ width: 32, height: 32 }}
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg"
+              style={{ background: '#59D38C', color: '#ffffff' }}
             >
               1
             </span>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Choose a campaign</h2>
           </div>
-          <p className="text-sm md:text-base flow-muted mb-3 leading-relaxed">
+          <p className="text-base md:text-lg text-gray-500 mb-4 leading-relaxed">
             Start with a campaign where you already have a good benchmark, so you can measure lift.
           </p>
         </div>
@@ -142,7 +32,7 @@ sidebarTitle: "Create Ad Pages"
                 <div className="rounded-lg border border-gray-200 bg-white p-3">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-sm font-semibold text-gray-900">Access Control - Search</p>
-                    <span className="text-xs font-medium text-green-800 bg-green-100 border border-green-200 rounded-full px-2 py-0.5">Benchmark</span>
+                    <span className="text-xs font-medium rounded-full px-2 py-0.5" style={{color: '#59D38C', background: 'rgba(89,211,140,0.16)', border: '1px solid rgba(89,211,140,0.32)'}}>Benchmark</span>
                   </div>
                   <p className="text-xs text-gray-600 mt-1">Stable spend, consistent conversions</p>
                 </div>
@@ -163,14 +53,14 @@ sidebarTitle: "Create Ad Pages"
         <div className="flex-1 w-full">
           <div className="flex items-center gap-3 mb-4">
             <span
-              className="inline-flex shrink-0 items-center justify-center rounded-full flow-stepBadge font-semibold text-sm tracking-tight"
-              style={{ width: 32, height: 32 }}
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg"
+              style={{ background: '#59D38C', color: '#ffffff' }}
             >
               2
             </span>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Pull your ads CSV</h2>
           </div>
-          <p className="text-sm md:text-base flow-muted mb-3 leading-relaxed">
+          <p className="text-base md:text-lg text-gray-500 mb-4 leading-relaxed">
             Export your ads data so you have the ad groups, keywords, and headlines you want to map to pages.
           </p>
         </div>
@@ -210,14 +100,14 @@ sidebarTitle: "Create Ad Pages"
         <div className="flex-1 w-full">
           <div className="flex items-center gap-3 mb-4">
             <span
-              className="inline-flex shrink-0 items-center justify-center rounded-full flow-stepBadge font-semibold text-sm tracking-tight"
-              style={{ width: 32, height: 32 }}
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg"
+              style={{ background: '#59D38C', color: '#ffffff' }}
             >
               3
             </span>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Create pages for ad groups and keywords</h2>
           </div>
-          <p className="text-sm md:text-base flow-muted mb-3 leading-relaxed">
+          <p className="text-base md:text-lg text-gray-500 mb-4 leading-relaxed">
             Create pages around the specific ad groups and keywords. Make sure you include the keywords in the page context.
           </p>
         </div>
@@ -244,14 +134,14 @@ sidebarTitle: "Create Ad Pages"
         <div className="flex-1 w-full">
           <div className="flex items-center gap-3 mb-4">
             <span
-              className="inline-flex shrink-0 items-center justify-center rounded-full flow-stepBadge font-semibold text-sm tracking-tight"
-              style={{ width: 32, height: 32 }}
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg"
+              style={{ background: '#59D38C', color: '#ffffff' }}
             >
               4
             </span>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Set up CTA tracking</h2>
           </div>
-          <p className="text-sm md:text-base flow-muted mb-3 leading-relaxed">
+          <p className="text-base md:text-lg text-gray-500 mb-4 leading-relaxed">
             Set up tracking (for example, with Google Tag Manager) so you can measure CTA clicks and conversions.
           </p>
         </div>
@@ -272,14 +162,14 @@ sidebarTitle: "Create Ad Pages"
         <div className="flex-1 w-full">
           <div className="flex items-center gap-3 mb-4">
             <span
-              className="inline-flex shrink-0 items-center justify-center rounded-full flow-stepBadge font-semibold text-sm tracking-tight"
-              style={{ width: 32, height: 32 }}
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg"
+              style={{ background: '#59D38C', color: '#ffffff' }}
             >
               5
             </span>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Update your ads</h2>
           </div>
-          <p className="text-sm md:text-base flow-muted mb-3 leading-relaxed">
+          <p className="text-base md:text-lg text-gray-500 mb-4 leading-relaxed">
             Change each ad group, ad, or keyword to point to the final page URLs you generated.
           </p>
         </div>
@@ -312,18 +202,18 @@ sidebarTitle: "Create Ad Pages"
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row-reverse gap-8 md:gap-12 lg:gap-16 items-center rounded-2xl flow-featured p-4">
+      <div className="flex flex-col md:flex-row-reverse gap-8 md:gap-12 lg:gap-16 items-center rounded-2xl p-4" style={{ border: '1px solid #59D38C', background: 'rgba(89,211,140,0.06)', boxShadow: '0 0 0 1px rgba(89,211,140,0.2), 0 0 58px rgba(89,211,140,0.32)' }}>
         <div className="flex-1 w-full">
           <div className="flex items-center gap-3 mb-4">
             <span
-              className="inline-flex shrink-0 items-center justify-center rounded-full flow-stepBadge font-semibold text-sm tracking-tight"
-              style={{ width: 32, height: 32 }}
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg"
+              style={{ background: '#59D38C', color: '#ffffff' }}
             >
               6
             </span>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Track performance</h2>
           </div>
-          <p className="text-sm md:text-base flow-muted mb-3 leading-relaxed">
+          <p className="text-base md:text-lg text-gray-500 mb-4 leading-relaxed">
             Monitor analytics and conversions. Keep the campaign stable and iterate based on what converts.
           </p>
         </div>
@@ -335,7 +225,7 @@ sidebarTitle: "Create Ad Pages"
                 <div className="rounded-lg border border-gray-200 bg-white p-3">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-sm font-semibold text-gray-900">Conversions over time</p>
-                    <span className="text-xs font-medium text-green-800 bg-green-100 border border-green-200 rounded-full px-2 py-0.5">Upward trend</span>
+                    <span className="text-xs font-medium rounded-full px-2 py-0.5" style={{color: '#59D38C', background: 'rgba(89,211,140,0.16)', border: '1px solid rgba(89,211,140,0.32)'}}>Upward trend</span>
                   </div>
                   <svg
                     aria-hidden="true"
@@ -346,14 +236,14 @@ sidebarTitle: "Create Ad Pages"
                     <path
                       d="M 8 58 C 36 56, 44 50, 64 52 S 98 56, 116 44 S 152 24, 176 30 S 210 42, 232 14"
                       fill="none"
-                      stroke="#16a34a"
+                      stroke="#59D38C"
                       strokeWidth="3"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
                     <path
                       d="M 8 58 C 36 56, 44 50, 64 52 S 98 56, 116 44 S 152 24, 176 30 S 210 42, 232 14 L 232 72 L 8 72 Z"
-                      fill="rgba(34,197,94,0.16)"
+                      fill="rgba(89,211,140,0.16)"
                     />
                   </svg>
                   <p className="text-xs text-gray-600 mt-2">Use your benchmark campaign as the baseline.</p>
