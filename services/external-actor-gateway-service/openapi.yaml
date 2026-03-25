@@ -98,12 +98,6 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
       description: Error response - covers authentication, authorization, rate limiting, and server errors
-    GetTemplateResponse:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/GetTemplate"
     GetWebhookSubscriptionResponseResponse:
       description: Successful operation
       content:
@@ -117,9 +111,6 @@ components:
             $ref: "#/components/schemas/Error"
       description: Resource not found
   schemas:
-    UnnamedSchema:
-      type: string
-      pattern: ^pagetemplate_[0-9a-z]{26}$
     ArraySchema:
       type: array
       items:
@@ -127,8 +118,6 @@ components:
     CreatePageRequest:
       type: object
       properties:
-        templateId:
-          type: string
         supplementaryContext:
           type: string
         customName:
@@ -325,6 +314,8 @@ components:
               createdAt:
                 $ref: "#/components/schemas/CreatedAt"
               deletedAt:
+                "0":
+                  $ref: "#/components/schemas/CreatedAt"
                 anyOf:
                   - $ref: "#/components/schemas/CreatedAt"
                   - type: "null"
@@ -341,8 +332,6 @@ components:
                 type: string
               pagesCount:
                 type: number
-              pageTemplateId:
-                type: string
               scripts:
                 type: array
                 items: {}
@@ -364,7 +353,6 @@ components:
               - pageContext
               - pageGroupId
               - pagesCount
-              - pageTemplateId
               - scripts
               - status
               - tenantId
@@ -391,6 +379,8 @@ components:
           type: array
           items: {}
         deletedAt:
+          "0":
+            $ref: "#/components/schemas/CreatedAt"
           anyOf:
             - $ref: "#/components/schemas/CreatedAt"
             - type: "null"
@@ -405,8 +395,6 @@ components:
         pageContext:
           type: string
         pageId:
-          type: string
-        pageTemplateId:
           type: string
         scripts:
           type: array
@@ -426,7 +414,6 @@ components:
         - name
         - pageContext
         - pageId
-        - pageTemplateId
         - scripts
         - tenantId
         - updatedAt
@@ -498,20 +485,10 @@ components:
                   anyOf:
                     - type: string
                     - type: "null"
-                templateId:
-                  anyOf:
-                    - type: string
-                    - type: "null"
-                templateVersion:
-                  anyOf:
-                    - type: number
-                    - type: "null"
               required:
                 - versionId
                 - versionNumber
                 - publishedAt
-                - templateId
-                - templateVersion
               additionalProperties: false
             - type: "null"
       required:
@@ -524,101 +501,6 @@ components:
         - computedName
         - supplementaryContext
         - publishedVersion
-      additionalProperties: false
-    GetTemplate:
-      type: object
-      properties:
-        hasMore:
-          type: boolean
-        items:
-          type: array
-          items:
-            type: object
-            properties:
-              createdAt:
-                type: string
-              description:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              isEditable:
-                type: boolean
-              isSystem:
-                type: boolean
-              name:
-                type: string
-              pageTemplateId:
-                type: string
-              sourcePageTemplateId:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              templateContent:
-                type: string
-              updatedAt:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              version:
-                type: number
-            required:
-              - createdAt
-              - description
-              - isEditable
-              - isSystem
-              - name
-              - pageTemplateId
-              - sourcePageTemplateId
-              - templateContent
-              - updatedAt
-              - version
-            additionalProperties: false
-        nextCursor:
-          type: string
-      required:
-        - hasMore
-        - items
-      additionalProperties: false
-    GetTemplateResponse:
-      type: object
-      properties:
-        createdAt:
-          $ref: "#/components/schemas/CreatedAt"
-        description:
-          anyOf:
-            - type: string
-            - type: "null"
-        isEditable:
-          type: boolean
-        isSystem:
-          type: boolean
-        name:
-          type: string
-        pageTemplateId:
-          $ref: "#/components/schemas/UnnamedSchema"
-        sourcePageTemplateId:
-          anyOf:
-            - $ref: "#/components/schemas/UnnamedSchema"
-            - type: "null"
-        templateContent:
-          type: string
-        updatedAt:
-          anyOf:
-            - $ref: "#/components/schemas/CreatedAt"
-            - type: "null"
-        version:
-          type: number
-      required:
-        - createdAt
-        - description
-        - isEditable
-        - isSystem
-        - name
-        - pageTemplateId
-        - sourcePageTemplateId
-        - templateContent
-        - updatedAt
-        - version
       additionalProperties: false
     GetVersion:
       type: object
@@ -1002,53 +884,6 @@ paths:
             schema:
               $ref: "#/components/schemas/CreateProspectLogRequest"
         required: true
-  /v0/templates:
-    get:
-      description: List templates for the authenticated tenant with pagination
-      operationId: listTenantTemplates
-      responses:
-        "200":
-          $ref: "#/components/responses/GetTemplateResponse"
-      summary: List tenant templates
-      tags:
-        - Templates
-      parameters:
-        - $ref: "#/components/parameters/CursorQuery"
-        - $ref: "#/components/parameters/LimitQuery"
-  /v0/templates/system:
-    get:
-      description: List system templates with pagination
-      operationId: listSystemTemplates
-      responses:
-        "200":
-          $ref: "#/components/responses/GetTemplateResponse"
-      summary: List system templates
-      tags:
-        - Templates
-      parameters:
-        - $ref: "#/components/parameters/CursorQuery"
-        - $ref: "#/components/parameters/LimitQuery"
-  /v0/templates/{template_id}:
-    get:
-      description: Get a specific template by ID
-      operationId: getTemplate
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetTemplateResponse"
-      summary: Get template
-      tags:
-        - Templates
-      parameters:
-        - in: path
-          name: template_id
-          description: template_id parameter
-          required: true
-          schema:
-            type: string
   /v0/webhook_subscriptions:
     get:
       description: List webhook subscriptions for the authenticated tenant
@@ -1135,7 +970,5 @@ tags:
     description: Page version management operations
   - name: Prospect Logs
     description: Prospect log ingestion operations
-  - name: Templates
-    description: Template read-only operations
   - name: Webhook Subscriptions
     description: Webhook subscription management operations
