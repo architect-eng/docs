@@ -1,41 +1,107 @@
 ---
-title: "How to add Form Submission into your Hubspot CRM"
-description: "Send Architect form submissions to HubSpot using a webhook-triggered workflow"
+title: "How to Integrate Leads into HubSpot with Clay"
+description: "Send Architect form submissions to HubSpot contacts using Clay as a middleware"
+sidebarTitle: "HubSpot with Clay"
 ---
 
-You should be able add the form responses into your Hubspot contacts list through the Automation Workflow feature in Hubspot.
+## Part 1: Create and Configure the Legacy App
 
-**Step 1: (Hubspot) Create a New Workflow**
+<Steps>
+  <Step title="Log in to HubSpot">
+    Navigate to **Development > Legacy Apps**.
+  </Step>
 
-- Navigate to Automations → Workflows
-- Create a new workflow from scratch
-- Select Custom trigger type
+  <Step title="Create a Legacy App">
+    Click **Create Legacy App** and choose the **Private** option. Set the app name to **Architect**.
+  </Step>
 
-**Step 2:  (Hubspot) Configure External Event Trigger**
+  <Step title="Add permissions">
+    Under the **Scope** section, add the following permissions:
 
-- Choose "Receive a webhook from an external app" from the custom events and external events options
-- Click "Add a webhook"
-- Name the webhook (e.g., "Architect")
-- Click Continue
-- Copy the generated webhook URL
+    - `crm.objects.contacts.write`
+    - `crm.objects.contacts.read`
+  </Step>
+</Steps>
 
-**Step 3: Set Up the Architect Platform**
+## Part 2: Retrieve Your Access Token
 
-- Go to your Architect platform Settings → Webhooks
-- Create a new webhook
-- Paste the HubSpot webhook URL
-- Subscribe to "form submitted" event
-    
-    ![Screenshot 2025-12-19 at 18.17.31.png](/overview/images/Screenshot_2025-12-19_at_18.17.31.png)
-    
+<Steps>
+  <Step title="Open the Auth tab">
+    Go to the **Auth** tab within your new Legacy App.
+  </Step>
 
-**Step 4: Test the Connection**
+  <Step title="Copy your token">
+    Locate the **Access Token** section, click **Show Token** to reveal it, and copy it. You will use this as a Bearer Token in the `Authorization` header for all your HTTP requests.
+  </Step>
+</Steps>
 
-![Screenshot 2025-12-19 at 20.56.59.png](/overview/images/Screenshot_2025-12-19_at_20.56.59.png)
+## Part 3: Set Up Clay
 
-- In Architect Settings, send a test webhook request. Verify it's received in HubSpot
+<Steps>
+  <Step title="Create a new table in Clay">
+    Go to Clay and create a new custom table.
+  </Step>
 
-**Step 5: Configure Data Fields in HubSpot**
+  <Step title="Add a Webhook column">
+    Click **Add Column > Add Enrichment > Webhook**. Copy the Webhook URL from Clay.
+  </Step>
 
-- Set up the form to capture data.
-- You can optionally add additional fields if your form has multiple fields.
+  <Step title="Connect Architect to Clay">
+    Go to the Architect platform and create a new webhook. Paste the Clay Webhook URL. Send a test example to make sure the connection works.
+  </Step>
+
+  <Step title="Add an HTTP API column">
+    Go back to Clay and add a new column: **Add Column > Add Enrichment > HTTP API**.
+  </Step>
+
+  <Step title="Create an HTTP API account in Clay">
+    Select **HTTP API (Headers)** account and create a new one in Clay.
+  </Step>
+
+  <Step title="Configure the HTTP request">
+    Set up the following inputs:
+
+    - **Method:** `POST`
+    - **Endpoint:** `https://api.hubapi.com/crm/v3/objects/contacts`
+    - **Body:**
+
+    ```json
+    {
+      "properties": {
+        "email": "email",
+        "firstname": "firstName",
+        "lastname": "lastName",
+        "company": "companyName",
+        "hs_google_click_id": "gclid"
+      }
+    }
+    ```
+
+    For each of the fields in the body, select the corresponding properties from the webhook data.
+
+    <Note>
+    If your form only captures emails, the body would look like:
+
+    ```json
+    {
+      "properties": {
+        "email": "email"
+      }
+    }
+    ```
+    </Note>
+  </Step>
+
+  <Step title="Set the headers">
+    Add the following headers:
+
+    | Header | Value |
+    | --- | --- |
+    | `Content-Type` | `application/json` |
+    | `Authorization` | `Bearer YOUR_ACCESS_TOKEN` |
+
+    <Warning>
+    Replace `YOUR_ACCESS_TOKEN` with the token you copied from HubSpot in Part 2.
+    </Warning>
+  </Step>
+</Steps>
