@@ -4,63 +4,41 @@ description: "Send Architect form submissions to HubSpot contacts using Clay as 
 sidebarTitle: "HubSpot with Clay"
 ---
 
-## Part 1: Create and Configure the Legacy App
+## Part 1: Create a HubSpot Legacy App
 
 <Steps>
   <Step title="Log in to HubSpot">
-    Navigate to **Development > Legacy Apps**.
+    Go to **Development > Legacy Apps**.
   </Step>
 
-  <Step title="Create a Legacy App">
-    Click **Create Legacy App** and choose the **Private** option. Set the app name to **Architect**.
-  </Step>
-
-  <Step title="Add permissions">
-    Under the **Scope** section, add the following permissions:
+  <Step title="Create a Private Legacy App">
+    Name it **Architect** and add these scopes:
 
     - `crm.objects.contacts.write`
     - `crm.objects.contacts.read`
   </Step>
-</Steps>
 
-## Part 2: Retrieve Your Access Token
-
-<Steps>
-  <Step title="Open the Auth tab">
-    Go to the **Auth** tab within your new Legacy App.
-  </Step>
-
-  <Step title="Copy your token">
-    Locate the **Access Token** section, click **Show Token** to reveal it, and copy it. You will use this as a Bearer Token in the `Authorization` header for all your HTTP requests.
+  <Step title="Copy your Access Token">
+    Open the **Auth** tab, click **Show Token**, and copy it. This is your Bearer Token.
   </Step>
 </Steps>
 
-## Part 3: Set Up Clay
+## Part 2: Set Up Clay
 
 <Steps>
-  <Step title="Create a new table in Clay">
-    Go to Clay and create a new custom table.
+  <Step title="Create a table and add a Webhook">
+    In Clay, create a new custom table. Add a column: **Add Enrichment > Webhook**. Copy the Webhook URL.
   </Step>
 
-  <Step title="Add a Webhook column">
-    Click **Add Column > Add Enrichment > Webhook**. Copy the Webhook URL from Clay.
-  </Step>
-
-  <Step title="Connect Architect to Clay">
-    Go to the Architect platform and create a new webhook. Paste the Clay Webhook URL. Send a test example to make sure the connection works.
+  <Step title="Connect Architect">
+    In Architect, go to **Settings > Webhooks**, create a new webhook, and paste the Clay Webhook URL. Send a test to confirm it works.
   </Step>
 
   <Step title="Add an HTTP API column">
-    Go back to Clay and add a new column: **Add Column > Add Enrichment > HTTP API**.
+    Back in Clay, add a new column: **Add Enrichment > HTTP API**. Select **HTTP API (Headers)** and create a new account.
   </Step>
 
-  <Step title="Create an HTTP API account in Clay">
-    Select **HTTP API (Headers)** account and create a new one in Clay.
-  </Step>
-
-  <Step title="Configure the HTTP request">
-    Set up the following inputs:
-
+  <Step title="Configure the request">
     - **Method:** `POST`
     - **Endpoint:** `https://api.hubapi.com/crm/v3/objects/contacts`
     - **Body:**
@@ -77,10 +55,10 @@ sidebarTitle: "HubSpot with Clay"
     }
     ```
 
-    For each of the fields in the body, select the corresponding properties from the webhook data.
+    Map each field to the matching property from the webhook data.
 
     <Note>
-    If your form only captures emails, the body would look like:
+    If your form only captures emails:
 
     ```json
     {
@@ -93,15 +71,21 @@ sidebarTitle: "HubSpot with Clay"
   </Step>
 
   <Step title="Set the headers">
-    Add the following headers:
-
     | Header | Value |
     | --- | --- |
     | `Content-Type` | `application/json` |
     | `Authorization` | `Bearer YOUR_ACCESS_TOKEN` |
 
     <Warning>
-    Replace `YOUR_ACCESS_TOKEN` with the token you copied from HubSpot in Part 2.
+    Replace `YOUR_ACCESS_TOKEN` with the token from Part 1.
     </Warning>
   </Step>
 </Steps>
+
+<Tip>
+Architect webhooks also pass UTM parameters (such as `utm_source`, `utm_medium`, `utm_campaign`, and `gclid`) with each form submission, so you can map these to HubSpot contact properties for full attribution tracking.
+</Tip>
+
+<Note>
+Don't have Clay? Reach out to the Architect team and we can set this up for you.
+</Note>
