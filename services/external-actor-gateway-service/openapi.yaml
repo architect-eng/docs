@@ -722,6 +722,10 @@ paths:
           required: false
           schema:
             type: string
+            enum:
+              - archived
+              - draft
+              - published
   /v0/page_groups/{page_group_id}:
     get:
       description: Retrieve a specific page group by ID.
