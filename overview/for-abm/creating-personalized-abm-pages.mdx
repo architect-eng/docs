@@ -18,30 +18,38 @@ sidebarTitle: "Create ABM pages"
               >
                 1
               </span>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Choose granularity</h2>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Upload your Prospects</h2>
             </div>
             <p className="text-base md:text-lg text-gray-500 mb-4 leading-relaxed">
-              Decide how personalized you want each page to be.
+              Add your prospects to the platform so the agent knows who to personalize pages for. You can upload them individually or in bulk via CSV.
             </p>
-
           </div>
           <div className="flex-1 w-full">
             <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
               <div className="p-4">
-                <p className="text-xs font-medium text-gray-600 mb-3">Personalization options</p>
-                <div className="grid gap-3">
-                  <div className="rounded-lg border border-gray-200 bg-white p-3">
-                    <p className="text-sm font-semibold text-gray-900">Company</p>
-                    <p className="text-xs text-gray-600">Account-level page for one company.</p>
-                  </div>
-                  <div className="rounded-lg border border-gray-200 bg-white p-3">
-                    <p className="text-sm font-semibold text-gray-900">Job title</p>
-                    <p className="text-xs text-gray-600">Role-level page across many accounts.</p>
-                  </div>
-                  <div className="rounded-lg border border-gray-200 bg-white p-3">
-                    <p className="text-sm font-semibold text-gray-900">Full name</p>
-                    <p className="text-xs text-gray-600">1:1 page for a specific person.</p>
-                  </div>
+                <p className="text-xs font-medium text-gray-600 mb-3">prospects.csv</p>
+                <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-gray-50">
+                      <tr className="text-xs text-gray-600">
+                        <th className="px-3 py-2 font-medium">Name</th>
+                        <th className="px-3 py-2 font-medium">Company</th>
+                        <th className="px-3 py-2 font-medium">Company URL</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-t border-gray-100">
+                        <td className="px-3 py-2 text-gray-900">Jane Smith</td>
+                        <td className="px-3 py-2 text-gray-700">Acme Corp</td>
+                        <td className="px-3 py-2 text-gray-700">www.acmecorp.com</td>
+                      </tr>
+                      <tr className="border-t border-gray-100">
+                        <td className="px-3 py-2 text-gray-900">Tom Chen</td>
+                        <td className="px-3 py-2 text-gray-700">Northwind</td>
+                        <td className="px-3 py-2 text-gray-700">www.northwind.com</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -57,55 +65,10 @@ sidebarTitle: "Create ABM pages"
               >
                 2
               </span>
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Prepare your CSV</h2>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Create a new Group and choose a final destination</h2>
             </div>
             <p className="text-base md:text-lg text-gray-500 mb-4 leading-relaxed">
-              Your columns depend on the granularity you picked.
-            </p>
-
-          </div>
-          <div className="flex-1 w-full">
-            <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-              <div className="p-4">
-                <p className="text-xs font-medium text-gray-600 mb-3">leads.csv</p>
-                <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-                  <table className="w-full text-left text-sm">
-                    <thead className="bg-gray-50">
-                      <tr className="text-xs text-gray-600">
-                        <th className="px-3 py-2 font-medium">Company Name</th>
-                        <th className="px-3 py-2 font-medium">Company URL</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-t border-gray-100">
-                        <td className="px-3 py-2 text-gray-900">Acme Corp</td>
-                        <td className="px-3 py-2 text-gray-700">www.acmecorp.com</td>
-                      </tr>
-                      <tr className="border-t border-gray-100">
-                        <td className="px-3 py-2 text-gray-900">Northwind</td>
-                        <td className="px-3 py-2 text-gray-700">www.northwind.com</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16 items-center">
-          <div className="flex-1 w-full">
-            <div className="flex items-center gap-3 mb-4">
-              <span
-                className="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg"
-                style={{ background: '#59D38C', color: '#ffffff' }}
-              >
-                3
-              </span>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Create a Page Group and set the CTA</h2>
-            </div>
-            <p className="text-base md:text-lg text-gray-500 mb-4 leading-relaxed">
-              Create a new Page Group for the campaign, then set the CTA destination (URL or form).
+              Create a new Page Group for the campaign, then set the final destination — a URL or form — where you want prospects to convert.
             </p>
             <div className="bg-gray-50 border border-gray-200 p-4 mt-4">
               <p className="text-sm font-medium mb-1">Tip</p>
@@ -127,25 +90,25 @@ sidebarTitle: "Create ABM pages"
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row-reverse gap-8 md:gap-12 lg:gap-16 items-center">
+        <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16 items-center">
           <div className="flex-1 w-full">
             <div className="flex items-center gap-3 mb-4">
               <span
                 className="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg"
                 style={{ background: '#59D38C', color: '#ffffff' }}
               >
-                4
+                3
               </span>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Bulk create pages</h2>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Bulk create pages from the People tab</h2>
             </div>
             <p className="text-base md:text-lg text-gray-500 mb-4 leading-relaxed">
-              Use the Bulk Create Pages filter to generate pages from your CSV rows.
+              Go to the People tab and bulk create pages for each prospect. The agent will generate a personalized page for every person in your list.
             </p>
           </div>
           <div className="flex-1 w-full">
             <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
               <img
-                alt="Bulk create pages flow"
+                alt="Bulk create pages for prospects"
                 loading="lazy"
                 decoding="async"
                 className="w-full h-auto"
@@ -155,14 +118,14 @@ sidebarTitle: "Create ABM pages"
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16 items-center rounded-2xl p-4" style={{ border: '1px solid #59D38C', background: 'rgba(89,211,140,0.06)', boxShadow: '0 0 0 1px rgba(89,211,140,0.2), 0 0 58px rgba(89,211,140,0.32)' }}>
+        <div className="flex flex-col md:flex-row-reverse gap-8 md:gap-12 lg:gap-16 items-center rounded-2xl p-4" style={{ border: '1px solid #59D38C', background: 'rgba(89,211,140,0.06)', boxShadow: '0 0 0 1px rgba(89,211,140,0.2), 0 0 58px rgba(89,211,140,0.32)' }}>
           <div className="flex-1 w-full">
             <div className="flex items-center gap-3 mb-4">
               <span
                 className="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg"
                 style={{ background: '#59D38C', color: '#ffffff' }}
               >
-                5
+                4
               </span>
               <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Publish and export</h2>
             </div>
