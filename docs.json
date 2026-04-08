@@ -61,11 +61,8 @@
             "group": "For outbound",
             "pages": [
               "overview/for-abm/creating-personalized-abm-pages",
-              "overview/for-abm/how-to-choose-granularity",
               "overview/for-abm/how-to-prepare-csv",
-              "overview/for-abm/how-to-set-the-cta",
-              "overview/for-abm/how-to-use-bulk-create-pages",
-              "overview/for-abm/how-to-export-page-list"
+              "overview/for-abm/how-to-set-the-cta"
             ]
           },
           {
@@ -135,6 +132,18 @@
     {
       "source": "/overview/for-ads/How%20to%20Pull%20Digital%20Ad%20CSV%20(For%20Ads)/Google%20Ads%2026423d2e6e73806695e9e126b51455ff.md",
       "destination": "/overview/for-ads/how-to-pull-digital-ad-csv-for-ads"
+    },
+    {
+      "source": "/overview/for-abm/how-to-choose-granularity",
+      "destination": "/overview/for-abm/how-to-prepare-csv"
+    },
+    {
+      "source": "/overview/for-abm/how-to-use-bulk-create-pages",
+      "destination": "/overview/for-abm/creating-personalized-abm-pages"
+    },
+    {
+      "source": "/overview/for-abm/how-to-export-page-list",
+      "destination": "/overview/for-abm/creating-personalized-abm-pages"
     }
   ],
   "api": {

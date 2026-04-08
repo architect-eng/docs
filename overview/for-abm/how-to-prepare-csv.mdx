@@ -1,44 +1,27 @@
 ---
 title: "How to prepare a CSV"
-description: "Format your lead list so you can bulk create ABM pages."
+description: "Format your prospect list so you can bulk create outbound pages."
 ---
 
-Create a `.csv` file. Your required columns depend on the granularity you chose.
+Create a `.csv` file with one row per prospect.
 
-## Company
+## Required columns
 
-Required columns:
+Each row must include:
 
-- `Company Name`
-- `Company URL`
+- `Name`
+- At least one of the following contact fields:
 
-## Job title
+| Column       | Format              |
+| ------------ | ------------------- |
+| `Email`      | Email address       |
+| `Phone`      | `+14155551234`      |
+| `LinkedIn`   | Profile URL         |
 
-Required columns:
+## Optional columns
 
-- `Job Title`
-- `Company Name`
-- `Company URL`
+- `Domain` — auto-detected from email when not provided.
 
-## Full name
+## Additional columns
 
-Required columns:
-
-- `Full Name`
-- `Company Name`
-- `Job Title`
-- `Company URL`
-
-## Optional fields
-
-You can add these columns to each row to control how pages are generated.
-
-- `Language` (for example: `EN`, `ES`, `FR`)
-- `Buyer Persona` (for example: `Sales Leader`, `Support Manager`)
-- `SEO Title`
-- `SEO Description`
-- `Page Link` (the final URL path for the page, for example: `jordan-lee`)
-
-<Tip>
-If you include optional fields (like language or persona), keep the values consistent (for example: `EN`, `ES`).
-</Tip>
+Any extra columns you include will be saved as context for the agent on each prospect. Use them to pass details like company name, role, talking points, or anything else the agent should know when generating the page.
