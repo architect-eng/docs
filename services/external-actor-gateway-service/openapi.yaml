@@ -19,9 +19,9 @@ security:
 components:
   callbacks: {}
   examples:
-    CreateProspectLogRequestExample:
+    CreatePersonLogRequestExample:
       description: Example values extracted from schema defaults
-      summary: CreateProspectLogRequest example
+      summary: CreatePersonLogRequest example
       value:
         type: webhook
     CreateWebhookSubscriptionRequestExample:
@@ -32,6 +32,13 @@ components:
   headers: {}
   links: {}
   parameters:
+    AudienceIdPath:
+      in: path
+      name: audience_id
+      description: audience_id parameter
+      required: true
+      schema:
+        type: string
     Cursor:
       description: Opaque cursor for pagination - use nextCursor from previous response
       in: query
@@ -59,17 +66,10 @@ components:
     LimitQuery:
       in: query
       name: limit
-      description: Number of page groups to return (1-100, default 20)
+      description: Number of pages to return (1-100, default 20)
       required: false
       schema:
         type: number
-    PageGroupIdPath:
-      in: path
-      name: page_group_id
-      description: page_group_id parameter
-      required: true
-      schema:
-        type: string
     PageIdPath:
       in: path
       name: page_id
@@ -115,7 +115,7 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/GetWebhookSubscriptionResponse"
-    CreatePageRequest:
+    CreateAudienceRequest:
       type: object
       properties:
         supplementaryContext:
@@ -123,11 +123,11 @@ components:
         customName:
           type: string
       additionalProperties: false
-    CreateProspectLogRequest:
+    CreatePersonLogRequest:
       type: object
       properties:
-        prospectId:
-          $ref: "#/components/schemas/ProspectId"
+        personId:
+          $ref: "#/components/schemas/PersonId"
         email:
           type: string
         phoneNumber:
@@ -140,10 +140,10 @@ components:
           type: string
           minLength: 1
           maxLength: 100
-          description: Identifier for the upstream system sending the prospect activity
+          description: Identifier for the upstream system sending the person activity
         type:
           default: webhook
-          description: Prospect activity type. Defaults to 'webhook' when omitted
+          description: Person activity type. Defaults to 'webhook' when omitted
           type: string
           minLength: 1
           maxLength: 100
@@ -241,24 +241,7 @@ components:
         - message
         - requestId
       type: object
-    GetLink:
-      type: object
-      properties:
-        url:
-          type: string
-          description: Full shareable URL for the page
-        domain:
-          type: string
-          description: Domain used in the URL
-        path:
-          type: string
-          description: Path portion of the URL
-      required:
-        - url
-        - domain
-        - path
-      additionalProperties: false
-    GetPage:
+    GetAudience:
       type: object
       properties:
         hasMore:
@@ -270,9 +253,9 @@ components:
             properties:
               createdAt:
                 type: string
-              pageGroupId:
-                type: string
               pageId:
+                type: string
+              audienceId:
                 type: string
               tenantId:
                 type: string
@@ -288,8 +271,8 @@ components:
                 type: string
             required:
               - createdAt
-              - pageGroupId
               - pageId
+              - audienceId
               - tenantId
               - updatedAt
               - effectiveName
@@ -302,163 +285,15 @@ components:
         - hasMore
         - items
       additionalProperties: false
-    GetPageGroup:
+    GetAudienceResponse:
       type: object
       properties:
-        hasMore:
-          type: boolean
-        items:
-          type: array
-          items:
-            type: object
-            properties:
-              actions:
-                type: array
-                items: {}
-              brandId:
-                type: string
-              createdAt:
-                $ref: "#/components/schemas/CreatedAt"
-              deletedAt:
-                "0":
-                  $ref: "#/components/schemas/CreatedAt"
-                anyOf:
-                  - $ref: "#/components/schemas/CreatedAt"
-                  - type: "null"
-              footerLinks:
-                type: array
-                items: {}
-              headerActionId:
-                type: string
-              name:
-                type: string
-              pageContext:
-                type: string
-              pageGroupId:
-                type: string
-              pagesCount:
-                type: number
-              scripts:
-                type: array
-                items: {}
-              status:
-                type: string
-              tenantId:
-                type: string
-              title:
-                type: string
-              updatedAt:
-                $ref: "#/components/schemas/CreatedAt"
-            required:
-              - actions
-              - brandId
-              - createdAt
-              - deletedAt
-              - footerLinks
-              - name
-              - pageContext
-              - pageGroupId
-              - pagesCount
-              - scripts
-              - status
-              - tenantId
-              - title
-              - updatedAt
-            additionalProperties: false
-        limit:
-          type: number
-        nextCursor:
+        audienceId:
           type: string
-      required:
-        - hasMore
-        - items
-        - limit
-      additionalProperties: false
-    GetPageGroupResponse:
-      type: object
-      properties:
-        brandId:
-          type: string
-        createdAt:
-          $ref: "#/components/schemas/CreatedAt"
-        actions:
-          type: array
-          items: {}
-        deletedAt:
-          "0":
-            $ref: "#/components/schemas/CreatedAt"
-          anyOf:
-            - $ref: "#/components/schemas/CreatedAt"
-            - type: "null"
-        footerLinks:
-          type: array
-          items: {}
-        headerActionId:
-          type: string
-        metadata: {}
-        name:
-          type: string
-        pageContext:
-          type: string
+          description: The audience ID
         pageId:
           type: string
-        scripts:
-          type: array
-          items: {}
-        tenantId:
-          type: string
-        updatedAt:
-          $ref: "#/components/schemas/CreatedAt"
-        variantsCount:
-          type: number
-      required:
-        - brandId
-        - createdAt
-        - actions
-        - deletedAt
-        - footerLinks
-        - name
-        - pageContext
-        - pageId
-        - scripts
-        - tenantId
-        - updatedAt
-        - variantsCount
-      additionalProperties: false
-    GetPageVersionResponse:
-      type: object
-      properties:
-        createdAt:
-          type: string
-        id:
-          type: string
-        status:
-          type: string
-          enum:
-            - pending
-            - queued
-            - processing
-            - draft
-            - published
-            - archived
-            - cancelled
-        versionNumber:
-          type: number
-      required:
-        - createdAt
-        - id
-        - status
-        - versionNumber
-      additionalProperties: false
-    GetPageWithVersionResponse:
-      type: object
-      properties:
-        pageId:
-          type: string
-          description: The page ID
-        pageGroupId:
-          type: string
-          description: The parent page group ID
+          description: The parent page ID
         tenantId:
           type: string
           description: The tenant ID
@@ -498,8 +333,8 @@ components:
               additionalProperties: false
             - type: "null"
       required:
+        - audienceId
         - pageId
-        - pageGroupId
         - tenantId
         - createdAt
         - effectiveName
@@ -508,13 +343,178 @@ components:
         - supplementaryContext
         - publishedVersion
       additionalProperties: false
+    GetAudienceVersionResponse:
+      type: object
+      properties:
+        createdAt:
+          type: string
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+            - pending
+            - queued
+            - processing
+            - draft
+            - published
+            - archived
+            - cancelled
+        versionNumber:
+          type: number
+      required:
+        - createdAt
+        - id
+        - status
+        - versionNumber
+      additionalProperties: false
+    GetLink:
+      type: object
+      properties:
+        url:
+          type: string
+          description: Full shareable URL for the page
+        domain:
+          type: string
+          description: Domain used in the URL
+        path:
+          type: string
+          description: Path portion of the URL
+      required:
+        - url
+        - domain
+        - path
+      additionalProperties: false
+    GetPage:
+      type: object
+      properties:
+        hasMore:
+          type: boolean
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              actions:
+                type: array
+                items: {}
+              audiencesCount:
+                type: number
+              brandId:
+                type: string
+              createdAt:
+                $ref: "#/components/schemas/CreatedAt"
+              deletedAt:
+                "0":
+                  $ref: "#/components/schemas/CreatedAt"
+                anyOf:
+                  - $ref: "#/components/schemas/CreatedAt"
+                  - type: "null"
+              footerLinks:
+                type: array
+                items: {}
+              headerActionId:
+                type: string
+              name:
+                type: string
+              pageContext:
+                type: string
+              pageId:
+                type: string
+              scripts:
+                type: array
+                items: {}
+              status:
+                type: string
+              tenantId:
+                type: string
+              title:
+                type: string
+              updatedAt:
+                $ref: "#/components/schemas/CreatedAt"
+            required:
+              - actions
+              - audiencesCount
+              - brandId
+              - createdAt
+              - deletedAt
+              - footerLinks
+              - name
+              - pageContext
+              - pageId
+              - scripts
+              - status
+              - tenantId
+              - title
+              - updatedAt
+            additionalProperties: false
+        limit:
+          type: number
+        nextCursor:
+          type: string
+      required:
+        - hasMore
+        - items
+        - limit
+      additionalProperties: false
+    GetPageResponse:
+      type: object
+      properties:
+        brandId:
+          type: string
+        createdAt:
+          $ref: "#/components/schemas/CreatedAt"
+        actions:
+          type: array
+          items: {}
+        deletedAt:
+          "0":
+            $ref: "#/components/schemas/CreatedAt"
+          anyOf:
+            - $ref: "#/components/schemas/CreatedAt"
+            - type: "null"
+        footerLinks:
+          type: array
+          items: {}
+        headerActionId:
+          type: string
+        metadata: {}
+        name:
+          type: string
+        pageContext:
+          type: string
+        pageId:
+          type: string
+        scripts:
+          type: array
+          items: {}
+        tenantId:
+          type: string
+        updatedAt:
+          $ref: "#/components/schemas/CreatedAt"
+        audiencesCount:
+          type: number
+      required:
+        - brandId
+        - createdAt
+        - actions
+        - deletedAt
+        - footerLinks
+        - name
+        - pageContext
+        - pageId
+        - scripts
+        - tenantId
+        - updatedAt
+        - audiencesCount
+      additionalProperties: false
     GetVersion:
       type: object
       properties:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/GetPageVersionResponse"
+            $ref: "#/components/schemas/GetAudienceVersionResponse"
         page:
           type: object
           properties:
@@ -566,15 +566,19 @@ components:
         - createdAt
         - updatedAt
       additionalProperties: false
-    PostPage:
+    PersonId:
+      type: string
+      minLength: 1
+      pattern: ^prospect_[a-z0-9]{26}$
+    PostAudience:
       type: object
       properties:
+        audienceId:
+          type: string
+          description: The created audience ID
         pageId:
           type: string
-          description: The created page ID (external pageVariantId)
-        pageGroupId:
-          type: string
-          description: The parent page group ID
+          description: The parent page ID
         tenantId:
           type: string
           description: The tenant ID
@@ -584,44 +588,44 @@ components:
         status:
           type: string
           const: processing
-          description: Version creation status (always 'processing' on create)
+          description: Audience version creation status (always 'processing' on create)
       required:
+        - audienceId
         - pageId
-        - pageGroupId
         - tenantId
         - createdAt
         - status
       additionalProperties: false
-    PostProspectLog:
+    PostPersonLog:
       type: object
       properties:
-        prospectId:
-          $ref: "#/components/schemas/ProspectId"
-        prospectLogId:
+        personId:
+          $ref: "#/components/schemas/PersonId"
+        personLogId:
           type: string
           minLength: 1
           pattern: ^prospectlog_[a-z0-9]{26}$
-          description: The created prospect log entry ID
+          description: The created person log entry ID
         createdAt:
           $ref: "#/components/schemas/CreatedAt"
-        createdProspect:
+        createdPerson:
           type: boolean
-          description: Whether the request auto-created a prospect before writing the log
+          description: Whether the request auto-created a person before writing the log
         source:
           type: string
           minLength: 1
           maxLength: 100
-          description: The stored prospect log source
+          description: The stored person log source
         type:
           type: string
           minLength: 1
           maxLength: 100
-          description: The stored prospect log type
+          description: The stored person log type
       required:
-        - prospectId
-        - prospectLogId
+        - personId
+        - personLogId
         - createdAt
-        - createdProspect
+        - createdPerson
         - source
         - type
       additionalProperties: false
@@ -665,10 +669,6 @@ components:
         - updatedAt
         - signingSecret
       additionalProperties: false
-    ProspectId:
-      type: string
-      minLength: 1
-      pattern: ^prospect_[a-z0-9]{26}$
     UpdateWebhookSubscriptionRequest:
       type: object
       properties:
@@ -699,20 +699,20 @@ components:
       name: x-api-key
       type: apiKey
 paths:
-  /v0/page_groups:
+  /v0/pages:
     get:
-      description: Retrieve a list of page groups for the authenticated tenant with optional filtering and pagination
-      operationId: listPageGroups
+      description: Retrieve a list of pages for the authenticated tenant with optional filtering and pagination
+      operationId: listPages
       responses:
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetPageGroup"
-      summary: List page groups
+                $ref: "#/components/schemas/GetPage"
+      summary: List pages
       tags:
-        - Page Groups
+        - Pages
       parameters:
         - $ref: "#/components/parameters/CursorQuery"
         - $ref: "#/components/parameters/LimitQuery"
@@ -726,82 +726,82 @@ paths:
               - archived
               - draft
               - published
-  /v0/page_groups/{page_group_id}:
+  /v0/pages/{page_id}:
     get:
-      description: Retrieve a specific page group by ID.
-      operationId: getPageGroup
+      description: Retrieve a specific page by ID.
+      operationId: getPage
       responses:
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetPageGroupResponse"
-      summary: Get page group by ID
-      tags:
-        - Page Groups
-      parameters:
-        - $ref: "#/components/parameters/PageGroupIdPath"
-  /v0/page_groups/{page_group_id}/pages:
-    get:
-      description: Retrieve a paginated list of pages within the specified page group
-      operationId: listPagesInGroup
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetPage"
-      summary: List pages in a page group
+                $ref: "#/components/schemas/GetPageResponse"
+      summary: Get page by ID
       tags:
         - Pages
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+  /v0/pages/{page_id}/audiences:
+    get:
+      description: Retrieve a paginated list of audiences within the specified page
+      operationId: listAudiences
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAudience"
+      summary: List audiences in a page
+      tags:
+        - Audiences
       parameters:
         - $ref: "#/components/parameters/CursorQuery"
         - $ref: "#/components/parameters/LimitQuery"
-        - $ref: "#/components/parameters/PageGroupIdPath"
+        - $ref: "#/components/parameters/PageIdPath"
     post:
-      description: Create a new page in the page group and trigger version creation/publishing
-      operationId: createPageInGroup
+      description: Create a new audience in the page and trigger version creation/publishing
+      operationId: createAudience
       responses:
         "201":
-          description: PageInGroup created successfully
+          description: Audience created successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PostPage"
-      summary: Create page with version
+                $ref: "#/components/schemas/PostAudience"
+      summary: Create audience with version
       tags:
-        - Pages
+        - Audiences
       parameters:
-        - $ref: "#/components/parameters/PageGroupIdPath"
+        - $ref: "#/components/parameters/PageIdPath"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreatePageRequest"
+              $ref: "#/components/schemas/CreateAudienceRequest"
         required: true
-  /v0/page_groups/{page_group_id}/pages/{page_id}:
+  /v0/pages/{page_id}/audiences/{audience_id}:
     get:
-      description: Retrieve page details including published version information
-      operationId: getPageWithVersion
+      description: Retrieve audience details including published version information
+      operationId: getAudience
       responses:
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetPageWithVersionResponse"
-      summary: Get page with published version
+                $ref: "#/components/schemas/GetAudienceResponse"
+      summary: Get audience with published version
       tags:
-        - Pages
+        - Audiences
       parameters:
-        - $ref: "#/components/parameters/PageGroupIdPath"
         - $ref: "#/components/parameters/PageIdPath"
-  /v0/page_groups/{page_group_id}/pages/{page_id}/link:
+        - $ref: "#/components/parameters/AudienceIdPath"
+  /v0/pages/{page_id}/audiences/{audience_id}/link:
     get:
-      description: Generate shareable link for a page. Fails if page version not yet published.
-      operationId: getPageLink
+      description: Generate a shareable link for an audience. Fails if the audience version is not yet published.
+      operationId: getAudienceLink
       responses:
         "200":
           description: Successful operation
@@ -809,9 +809,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetLink"
-      summary: Get page link
+      summary: Get audience link
       tags:
-        - Pages
+        - Audiences
       parameters:
         - in: query
           name: tenantDomainId
@@ -819,12 +819,12 @@ paths:
           required: false
           schema:
             type: string
-        - $ref: "#/components/parameters/PageGroupIdPath"
         - $ref: "#/components/parameters/PageIdPath"
-  /v0/page_groups/{page_group_id}/pages/{page_id}/versions:
+        - $ref: "#/components/parameters/AudienceIdPath"
+  /v0/pages/{page_id}/audiences/{audience_id}/versions:
     get:
-      description: Retrieve a list of versions for the specified page
-      operationId: listPageVersions
+      description: Retrieve a list of versions for the specified audience
+      operationId: listAudienceVersions
       responses:
         "200":
           description: Successful operation
@@ -832,9 +832,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetVersion"
-      summary: List page versions
+      summary: List audience versions
       tags:
-        - Page Versions
+        - Audience Versions
       parameters:
         - in: query
           name: include
@@ -849,50 +849,50 @@ paths:
           required: false
           schema:
             type: number
-        - $ref: "#/components/parameters/PageGroupIdPath"
         - $ref: "#/components/parameters/PageIdPath"
-  /v0/page_groups/{page_group_id}/pages/{page_id}/versions/{version_id}:
+        - $ref: "#/components/parameters/AudienceIdPath"
+  /v0/pages/{page_id}/audiences/{audience_id}/versions/{version_id}:
     get:
-      description: Retrieve a specific version of a page with optional additional fields
-      operationId: getPageVersion
+      description: Retrieve a specific version of an audience
+      operationId: getAudienceVersion
       responses:
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetPageVersionResponse"
-      summary: Get page version
+                $ref: "#/components/schemas/GetAudienceVersionResponse"
+      summary: Get audience version
       tags:
-        - Page Versions
+        - Audience Versions
       parameters:
-        - $ref: "#/components/parameters/PageGroupIdPath"
         - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
         - in: path
           name: version_id
           description: version_id parameter
           required: true
           schema:
             type: string
-  /v0/prospect_logs:
+  /v0/person_logs:
     post:
-      description: Create a prospect log entry using the authenticated API key's tenant context
-      operationId: createProspectLog
+      description: Create a person log entry using the authenticated API key tenant context
+      operationId: createPersonLog
       responses:
         "201":
-          description: ProspectLog created successfully
+          description: PersonLog created successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PostProspectLog"
-      summary: Create prospect log entry
+                $ref: "#/components/schemas/PostPersonLog"
+      summary: Create person log entry
       tags:
-        - Prospect Logs
+        - Person Logs
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateProspectLogRequest"
+              $ref: "#/components/schemas/CreatePersonLogRequest"
         required: true
   /v0/webhook_subscriptions:
     get:
@@ -972,13 +972,13 @@ paths:
       parameters:
         - $ref: "#/components/parameters/SubscriptionIdPath"
 tags:
-  - name: Page Groups
-    description: Page group management operations
   - name: Pages
     description: Page management operations
-  - name: Page Versions
-    description: Page version management operations
-  - name: Prospect Logs
-    description: Prospect log ingestion operations
+  - name: Audiences
+    description: Audience management operations
+  - name: Audience Versions
+    description: Audience version management operations
+  - name: Person Logs
+    description: Person log ingestion operations
   - name: Webhook Subscriptions
     description: Webhook subscription management operations
