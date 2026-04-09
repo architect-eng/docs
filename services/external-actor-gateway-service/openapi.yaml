@@ -177,6 +177,8 @@ components:
           $ref: "#/components/schemas/PersonId"
         email:
           type: string
+          format: email
+          pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
         phoneNumber:
           type: string
           pattern: ^\+[1-9]\d{1,14}$
@@ -292,6 +294,7 @@ components:
         domain:
           type: string
           minLength: 1
+          description: Canonical account domain
         name:
           anyOf:
             - type: string
@@ -406,13 +409,9 @@ components:
                   - type: string
                   - type: "null"
               source:
-                type: string
-                minLength: 1
-                maxLength: 100
+                $ref: "#/components/schemas/Source"
               type:
-                type: string
-                minLength: 1
-                maxLength: 100
+                $ref: "#/components/schemas/Source"
               payload:
                 type: object
                 propertyNames:
@@ -909,7 +908,7 @@ components:
       minLength: 1
       maxLength: 100
       pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
-      description: Kebab-case identifier for the upstream system sending the person activity (e.g. 'crm-hubspot')
+      description: Stored activity source
     Type:
       default: webhook
       description: Kebab-case person activity type. Defaults to 'webhook' when omitted (e.g. 'contact-update')
