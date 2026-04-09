@@ -19,16 +19,6 @@ security:
 components:
   callbacks: {}
   examples:
-    CreateAccountLogRequestExample:
-      description: Example values extracted from schema defaults
-      summary: CreateAccountLogRequest example
-      value:
-        type: webhook
-    CreatePersonLogRequestExample:
-      description: Example values extracted from schema defaults
-      summary: CreatePersonLogRequest example
-      value:
-        type: webhook
     CreateWebhookSubscriptionRequestExample:
       description: Example values extracted from schema defaults
       summary: CreateWebhookSubscriptionRequest example
@@ -155,16 +145,9 @@ components:
           minLength: 1
           maxLength: 255
         source:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: Identifier for the upstream system sending the account activity
+          $ref: "#/components/schemas/Source"
         type:
-          default: webhook
-          description: Account activity type. Defaults to 'webhook' when omitted
-          type: string
-          minLength: 1
-          maxLength: 100
+          $ref: "#/components/schemas/Type"
         idempotencyKey:
           type: string
           minLength: 1
@@ -201,16 +184,9 @@ components:
           type: string
           minLength: 1
         source:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: Identifier for the upstream system sending the person activity
+          $ref: "#/components/schemas/Source"
         type:
-          default: webhook
-          description: Person activity type. Defaults to 'webhook' when omitted
-          type: string
-          minLength: 1
-          maxLength: 100
+          $ref: "#/components/schemas/Type"
         idempotencyKey:
           type: string
           minLength: 1
@@ -433,12 +409,10 @@ components:
                 type: string
                 minLength: 1
                 maxLength: 100
-                description: Stored activity source
               type:
                 type: string
                 minLength: 1
                 maxLength: 100
-                description: Stored activity type
               payload:
                 type: object
                 propertyNames:
@@ -830,15 +804,9 @@ components:
         createdAt:
           $ref: "#/components/schemas/CreatedAt"
         source:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: The stored account log source
+          $ref: "#/components/schemas/Source"
         type:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: The stored account log type
+          $ref: "#/components/schemas/Source"
       required:
         - accountId
         - accountLogId
@@ -885,15 +853,9 @@ components:
           type: boolean
           description: Whether the request auto-created a person before writing the log
         source:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: The stored person log source
+          $ref: "#/components/schemas/Source"
         type:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: The stored person log type
+          $ref: "#/components/schemas/Source"
       required:
         - personId
         - personLogId
@@ -942,6 +904,19 @@ components:
         - updatedAt
         - signingSecret
       additionalProperties: false
+    Source:
+      type: string
+      minLength: 1
+      maxLength: 100
+      pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
+      description: Kebab-case identifier for the upstream system sending the person activity (e.g. 'crm-hubspot')
+    Type:
+      default: webhook
+      description: Kebab-case person activity type. Defaults to 'webhook' when omitted (e.g. 'contact-update')
+      type: string
+      minLength: 1
+      maxLength: 100
+      pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
     UpdateAccountRequest:
       type: object
       properties:
