@@ -1,0 +1,98 @@
+---
+title: "How to route between multiple pages"
+description: "Route traffic between two or more landing pages using Architect Page Links to run A/B tests and split traffic"
+---
+
+Architect lets you route traffic between two or more landing pages using a single URL. You define the split, and Architect handles the routing automatically -- no changes needed in your ad platform after initial setup.
+
+## How it works
+
+With Architect Page Links, you create a single URL that routes visitors to different landing pages based on the split you define. For example:
+
+- **50/50 split** -- half of traffic goes to Page A, half goes to Page B
+- **Custom split** -- send 70% to one page and 30% to another
+- **Multi-variant** -- split traffic evenly across three or more pages
+
+You use this single link as your final URL in your ad campaign. Architect handles the routing automatically.
+
+<Info>
+You can also split traffic between an Architect landing page and an external URL (such as your existing website), so you can test your Architect page against your current landing page.
+</Info>
+
+## Set up traffic routing
+
+<Steps>
+<Step title="Navigate to Page Links">
+  Go to **Pages** in the left sidebar, select the page group you want to test, and click the **Page Links** tab.
+
+  <Frame caption="The Page Links tab shows all existing links for your page group">
+    <img src="/overview/images/pmax-ab-test-page-links-tab.png" alt="Architect Page Links tab showing existing page links for a page group" />
+  </Frame>
+</Step>
+
+<Step title="Create a new page link">
+  Click **+ Add page link** at the bottom of the links list. A new page link panel opens on the right.
+
+  Set the following:
+  - **Domain** -- choose your connected domain or use the default Architect domain
+  - **Path** -- enter the URL path for this link (for example, `/pricing`)
+
+  <Frame caption="A new page link with URL, path, and destination configured">
+    <img src="/overview/images/pmax-ab-test-new-page-link.png" alt="New Page Link configuration showing domain, path, and destination fields" />
+  </Frame>
+</Step>
+
+<Step title="Select pages and set routing">
+  Under **Routing**, select the pages you want to include in the test. You have two options:
+
+  **Option A: Route evenly**
+
+  Toggle **Route evenly** on to split traffic equally across all published pages in the group. If you have three pages, each gets 33.3% of traffic.
+
+  <Frame caption="Route evenly enabled, splitting traffic equally across three pages at 33.3% each">
+    <img src="/overview/images/pmax-ab-test-route-evenly.png" alt="Routing section with Route evenly toggle enabled showing three pages at 33.3% each" />
+  </Frame>
+
+  **Option B: Custom split**
+
+  Leave **Route evenly** off and use the routing presets (Equal, 80/20, 70/30, 90/10, 50/25/25) or manually adjust the percentage for each page.
+</Step>
+
+<Step title="(Optional) Add an external redirect">
+  If you want to test your Architect page against your existing website, expand the **Advanced** section and add an external redirect under **External Redirects**:
+
+  1. Click **Add** next to External Redirects
+  2. Enter the URL of your existing page (for example, `https://acme.com/`)
+  3. Enable **Preserve query params** if you need to pass UTM parameters or tracking data through to the external URL
+  4. Adjust the traffic split between your Architect page and the external URL using the `+` and `-` controls
+
+  <Frame caption="External redirect configured with a 50/50 split between an Architect page and an external URL">
+    <img src="/overview/images/pmax-ab-test-external-redirect.png" alt="Advanced routing with external redirect showing a 50/50 traffic split between an Architect page and an external URL" />
+  </Frame>
+
+  <Tip>
+  External redirects are particularly useful if you want to A/B test landing pages for Performance Max (PMAX) campaigns, since Google Ads does not support landing page experiments for PMAX natively.
+  </Tip>
+</Step>
+
+<Step title="Publish your changes">
+  Click **Publish changes** at the bottom right to make the page link live. Copy the preview URL and use it as the final URL in your ad campaign.
+
+</Step>
+</Steps>
+
+## Tips for running A/B tests
+
+- **Start with a 50/50 split** to get statistically significant results faster.
+- **Run the test for at least 2 weeks** before drawing conclusions -- ad campaigns need time to optimize.
+- **Change one variable at a time** (headline, layout, CTA) so you can attribute performance differences to a specific change.
+- **Monitor results in Architect Analytics** to track page views and conversions for each variant.
+- **Use the same page link URL** throughout the test. Changing the URL mid-test resets campaign learning.
+
+## FAQ
+
+<AccordionGroup>
+<Accordion title="Will tracking work for external links?">
+Yes. Architect passes all UTM parameters to both pages. As long as you have the script for tracking conversions set up on your page, this will work.
+</Accordion>
+</AccordionGroup>

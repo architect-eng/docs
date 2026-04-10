@@ -75,7 +75,8 @@
           {
             "group": "Advanced",
             "pages": [
-              "overview/advanced/how-to-create-architect-pages-from-google-sheets-using-n8n"
+              "overview/advanced/how-to-create-architect-pages-from-google-sheets-using-n8n",
+              "overview/advanced/how-to-route-between-multiple-pages"
             ]
           },
           {
