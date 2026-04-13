@@ -1,6 +1,6 @@
 ---
 title: "Connect MCP with Claude Desktop"
-description: "Set up Architect's MCP server in Claude Desktop to manage pages, audiences, and prospects from chat"
+description: "Set up Architect's MCP server in Claude Desktop to read docs and call the Customer API from chat"
 sidebarTitle: "Claude Desktop"
 ---
 
@@ -30,7 +30,7 @@ sidebarTitle: "Claude Desktop"
           "command": "npx",
           "args": [
             "mcp-remote",
-            "https://mcp.tryarchitect.com/sse"
+            "https://mcp.dev.tryarchitect.com/mcp"
           ]
         }
       }
@@ -50,7 +50,7 @@ sidebarTitle: "Claude Desktop"
           "command": "npx",
           "args": [
             "mcp-remote",
-            "https://mcp.tryarchitect.com/sse"
+            "https://mcp.dev.tryarchitect.com/mcp"
           ]
         }
       }
@@ -77,68 +77,52 @@ sidebarTitle: "Claude Desktop"
   </Step>
 
   <Step title="Start using Architect tools">
-    You can now ask Claude to interact with your Architect workspace. Try prompts like:
+    You can now ask Claude to interact with your Architect workspace. Start by exploring the docs:
 
-    - *"Search my prospects for anyone at Acme Corp"*
-    - *"Create a personalized landing page for John at acme.com"*
-    - *"What pages do I have in my workspace?"*
-    - *"Send a message to the agent on my product demo page to update the headline"*
+    - *"Use architect_docs to show me the available API endpoints"*
+    - *"Look up how to create a page via the Architect API"*
+    - *"List my pages using the Architect API"*
+    - *"Create a new prospect via the Architect API"*
   </Step>
 </Steps>
 
 ## Available tools
 
-Once connected, Claude Desktop has access to all Architect MCP tools:
+Once connected, Claude Desktop has access to two Architect MCP tools:
 
 | Tool | Description |
 | --- | --- |
-| `architect_person_get` | Get details for a specific person |
-| `architect_person_search` | Search people in your workspace |
-| `architect_person_create` | Create a new person with name and identifiers |
-| `architect_person_append_log` | Add a log entry to a person's timeline |
-| `architect_page_group_list` | List all pages in your workspace |
-| `architect_audience_search` | Search audiences across pages |
-| `architect_audience_get` | Get details for a specific audience |
-| `architect_audience_create_for_person` | Create a person-linked audience |
-| `architect_audience_get_url` | Get the published URL for an audience |
-| `architect_audience_send_agent_message` | Send a message to the page agent |
-| `architect_page_link_list` | List page links for your domains |
-| `architect_page_link_create` | Create a new page link |
-| `architect_page_link_get` | Get details for a page link |
-| `architect_page_link_update_routing_table` | Update routing weights on a page link |
-| `architect_page_link_delete` | Remove a page link |
-| `architect_api_reference` | Browse the Architect Customer API spec |
-| `architect_api` | Call any Customer API endpoint directly |
+| `architect_docs` | Read Architect MCP docs plus targeted Customer API reference slices before you make a request. |
+| `architect_api` | Call Customer API endpoints for the authenticated tenant after you know the exact method, path, and payload. |
+
+The recommended workflow is: use `architect_docs` first to understand what's available, then use `architect_api` to execute.
 
 ## Example workflows
 
-### Create a personalized page for a prospect
+### Explore the API and list pages
 
 ```
-"Find the prospect John Smith at acme.com, then create a personalized 
-audience for him on my Enterprise Demo page. Include context about 
-their 500-person engineering team."
+"Use architect_docs to find out how to list pages, 
+then list all my pages using architect_api."
 ```
 
 Claude will:
-1. Search your prospects for John Smith
-2. Find your Enterprise Demo page
-3. Create a person-linked audience with the extra context
-4. Return the published URL once the page is ready
+1. Call `architect_docs` to look up the correct API endpoint
+2. Call `architect_api` with a GET request to list your pages
+3. Display the results
 
-### Bulk-update page copy
+### Create a prospect via the API
 
 ```
-"Search for all audiences on my Product Launch page and send a message 
-to the agent on each one to change the CTA from 'Get Started' to 
-'Start Free Trial'."
+"Look up how to create a prospect in the Architect API docs, 
+then create one for Jane Doe at jane@acme.com."
 ```
 
 ## Troubleshooting
 
 <AccordionGroup>
   <Accordion title="Error: 'invalid_type' or 'command is required'">
-    Claude Desktop doesn't support remote `url` configs directly. Make sure your config uses `"command": "npx"` with `"args": ["mcp-remote", "https://mcp.tryarchitect.com/sse"]` — not a `"url"` field. See the config example above.
+    Claude Desktop doesn't support remote `url` configs directly. Make sure your config uses `"command": "npx"` with `"args": ["mcp-remote", "https://mcp.dev.tryarchitect.com/mcp"]` — not a `"url"` field. See the config example above.
   </Accordion>
 
   <Accordion title="Error: Expected ',' or '}' after property value in JSON">

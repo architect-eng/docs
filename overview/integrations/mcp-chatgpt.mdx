@@ -1,6 +1,6 @@
 ---
 title: "Connect MCP with ChatGPT"
-description: "Set up Architect's MCP server in ChatGPT to manage pages, audiences, and prospects"
+description: "Set up Architect's MCP server in ChatGPT to read docs and call the Customer API"
 sidebarTitle: "ChatGPT"
 ---
 
@@ -20,7 +20,7 @@ sidebarTitle: "ChatGPT"
     Click **"+ Add Custom Integration"** and enter:
 
     - **Integration Name:** `Architect`
-    - **Integration URL:** `https://mcp.tryarchitect.com/sse`
+    - **Integration URL:** `https://mcp.dev.tryarchitect.com/mcp`
 
     Click **Save**.
   </Step>
@@ -32,9 +32,9 @@ sidebarTitle: "ChatGPT"
   <Step title="Start using Architect tools">
     You can now ask ChatGPT to interact with your Architect workspace:
 
-    - *"Search my Architect prospects for anyone at Acme Corp"*
-    - *"List all my pages in Architect"*
-    - *"Create a personalized landing page for John at acme.com"*
+    - *"Use architect_docs to show me the available API endpoints"*
+    - *"List all my pages using the Architect API"*
+    - *"Look up how to create a prospect, then create one for jane@acme.com"*
 
     <Note>
     Architect tools will appear in the integrations menu at the bottom of the chat input. You may need to select "Architect" from the integration picker for your first use.
@@ -55,38 +55,25 @@ If you prefer more control, you can connect via Developer Mode:
     In the Developer Mode menu, add a new connector with the URL:
 
     ```
-    https://mcp.tryarchitect.com/sse
+    https://mcp.dev.tryarchitect.com/mcp
     ```
   </Step>
 
   <Step title="Test the connection">
-    Open a new chat and use the Developer Mode menu to select Architect tools. Try a simple prompt like *"List my Architect pages"* to verify the connection.
+    Open a new chat and use the Developer Mode menu to select Architect tools. Try a simple prompt like *"Use architect_docs to show me what's available"* to verify the connection.
   </Step>
 </Steps>
 
 ## Available tools
 
-Once connected, ChatGPT has access to all Architect MCP tools:
+Once connected, ChatGPT has access to two Architect MCP tools:
 
 | Tool | Description |
 | --- | --- |
-| `architect_person_get` | Get details for a specific person |
-| `architect_person_search` | Search people in your workspace |
-| `architect_person_create` | Create a new person with name and identifiers |
-| `architect_person_append_log` | Add a log entry to a person's timeline |
-| `architect_page_group_list` | List all pages in your workspace |
-| `architect_audience_search` | Search audiences across pages |
-| `architect_audience_get` | Get details for a specific audience |
-| `architect_audience_create_for_person` | Create a person-linked audience |
-| `architect_audience_get_url` | Get the published URL for an audience |
-| `architect_audience_send_agent_message` | Send a message to the page agent |
-| `architect_page_link_list` | List page links for your domains |
-| `architect_page_link_create` | Create a new page link |
-| `architect_page_link_get` | Get details for a page link |
-| `architect_page_link_update_routing_table` | Update routing weights on a page link |
-| `architect_page_link_delete` | Remove a page link |
-| `architect_api_reference` | Browse the Architect Customer API spec |
-| `architect_api` | Call any Customer API endpoint directly |
+| `architect_docs` | Read Architect MCP docs plus targeted Customer API reference slices before you make a request. |
+| `architect_api` | Call Customer API endpoints for the authenticated tenant after you know the exact method, path, and payload. |
+
+The recommended workflow is: use `architect_docs` first to understand what's available, then use `architect_api` to execute.
 
 ## Troubleshooting
 
