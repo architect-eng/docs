@@ -6,65 +6,80 @@ sidebarTitle: "MCP Overview"
 
 ## What is MCP?
 
-The **Model Context Protocol (MCP)** is an open standard that lets AI assistants — like Claude, Cursor, Windsurf, and other tools — interact directly with external services through a secure, structured interface.
+The **Model Context Protocol (MCP)** is an open standard that lets AI assistants — like Claude, Cursor, ChatGPT, and other tools — interact directly with external services through a secure, structured interface.
 
-Architect exposes an MCP server at `https://mcp.tryarchitect.com` that lets your AI tools manage your pages, audiences, prospects, and more — without needing to write any code.
+Architect exposes a hosted MCP server that lets your AI tools read documentation, explore the Customer API, and make tenant-scoped API calls — without needing to run anything locally.
 
 ## What can you do with Architect's MCP?
 
-With the MCP integration, your AI assistant can:
+Architect's MCP server exposes two tools:
 
-- **Search and browse prospects** — Find people in your account, view their details, and check recent activity.
-- **Create new prospects** — Add people with names, emails, phone numbers, or LinkedIn profiles.
-- **Log activity on prospects** — Append structured log entries to a person's timeline.
-- **Search and browse pages** — Find pages and audiences across your workspace.
-- **Create personalized audiences** — Generate person-linked audiences on any page for 1:1 personalization.
-- **Send messages to the page agent** — Instruct the agent to edit an audience's content, layout, or copy.
-- **Get published page URLs** — Retrieve the live, customer-facing link for any audience.
-- **Manage page links** — Create, list, update routing tables, and delete page links for your domains.
-- **Call the Customer API** — Use the full Architect API directly from your AI tool for advanced operations.
+| Tool | Description |
+| --- | --- |
+| `architect_docs` | Read Architect MCP docs plus targeted Customer API reference slices before you make a request. |
+| `architect_api` | Call Customer API endpoints for the authenticated tenant after you know the exact method, path, and payload. |
+
+The recommended workflow is: use `architect_docs` first to understand the available API endpoints, then use `architect_api` to execute the calls.
 
 ## How authentication works
 
-Architect's MCP uses **OAuth 2.0** via [WorkOS AuthKit](https://workos.com/docs/authkit). When you connect your AI tool to Architect's MCP server, you'll be redirected to sign in with your Architect account. Once authenticated, the tool receives scoped access to your workspace.
+Architect's MCP uses **OAuth 2.0** via [WorkOS AuthKit](https://workos.com/docs/authkit). When you connect your AI tool to Architect's MCP server, you'll be redirected to sign in with your Architect account. The MCP server automatically scopes all requests to the tenant tied to the account you authorize.
 
 ### Available scopes
 
 | Scope | Description |
 | --- | --- |
-| `prospect:read` | Read prospect/people data |
-| `prospect:write` | Create and update prospects |
-| `page:read` | Read pages and audiences |
-| `page:write` | Create audiences and send agent messages |
-| `page-link:read` | Read page link configurations |
-| `page-link:write` | Create, update, and delete page links |
-| `api:read` | Read via the Customer API |
-| `api:write` | Write via the Customer API |
+| `api:read` | Required for documentation reads and GET requests through `architect_api`. |
+| `api:write` | Required for POST, PATCH, and DELETE requests that change Customer API state. |
 
 ## Getting started
 
+<Steps>
+  <Step title="Create a new remote MCP server in your client">
+    Look for an MCP, integrations, or developer tools settings screen in your AI tool.
+  </Step>
+
+  <Step title="Paste the server URL">
+    Architect uses a hosted Streamable HTTP MCP endpoint, so you do not need to run anything locally.
+
+    ```
+    https://mcp.dev.tryarchitect.com/mcp
+    ```
+  </Step>
+
+  <Step title="Sign in with Architect when prompted">
+    The MCP server automatically scopes requests to the tenant tied to the account you authorize.
+  </Step>
+
+  <Step title="Start with the built-in docs and API tools">
+    Use `architect_docs` to inspect guidance and API reference, then use `architect_api` for tenant-scoped API calls.
+  </Step>
+</Steps>
+
+## Client-specific guides
+
 <CardGroup cols={2}>
-  <Card title="Connect with Claude Desktop" icon="message-bot" href="/overview/integrations/mcp-claude-desktop">
+  <Card title="Claude Desktop" icon="message-bot" href="/overview/integrations/mcp-claude-desktop">
     Step-by-step setup for Anthropic's Claude Desktop app.
   </Card>
-  <Card title="Connect with Cursor" icon="code" href="/overview/integrations/mcp-cursor">
+  <Card title="Cursor" icon="code" href="/overview/integrations/mcp-cursor">
     Step-by-step setup for the Cursor AI code editor.
   </Card>
-  <Card title="Connect with ChatGPT" icon="comments" href="/overview/integrations/mcp-chatgpt">
+  <Card title="ChatGPT" icon="comments" href="/overview/integrations/mcp-chatgpt">
     Step-by-step setup for OpenAI's ChatGPT (Plus, Pro, Business, or Enterprise).
   </Card>
-  <Card title="Connect with Gemini CLI" icon="terminal" href="/overview/integrations/mcp-gemini">
+  <Card title="Gemini CLI" icon="terminal" href="/overview/integrations/mcp-gemini">
     Step-by-step setup for Google's Gemini CLI.
   </Card>
 </CardGroup>
 
-## MCP server URL
+## Advanced setup
 
-```
-https://mcp.tryarchitect.com/sse
-```
+Most clients discover OAuth metadata automatically. Use these only if your client asks for them.
 
-This is the SSE endpoint you'll provide to any MCP-compatible AI tool to connect to Architect.
+| URL | Purpose |
+| --- | --- |
+| `https://mcp.dev.tryarchitect.com/.well-known/oauth-protected-resource` | Advertises the MCP resource server and supported scopes for OAuth-aware clients. |
 
 <Note>
 Some tools (like Claude Desktop) don't support remote URLs directly and require a bridge like [`mcp-remote`](https://www.npmjs.com/package/mcp-remote). See the individual setup guides for exact instructions.
