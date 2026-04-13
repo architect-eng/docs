@@ -43,7 +43,7 @@ Architect's MCP uses **OAuth 2.0** via [WorkOS AuthKit](https://workos.com/docs/
     Architect uses a hosted Streamable HTTP MCP endpoint, so you do not need to run anything locally.
 
     ```
-    https://mcp.dev.tryarchitect.com/mcp
+    https://mcp.tryarchitect.com/mcp
     ```
   </Step>
 
@@ -79,7 +79,7 @@ Most clients discover OAuth metadata automatically. Use these only if your clien
 
 | URL | Purpose |
 | --- | --- |
-| `https://mcp.dev.tryarchitect.com/.well-known/oauth-protected-resource` | Advertises the MCP resource server and supported scopes for OAuth-aware clients. |
+| `https://mcp.tryarchitect.com/.well-known/oauth-protected-resource` | Advertises the MCP resource server and supported scopes for OAuth-aware clients. |
 
 <Note>
 Some tools (like Claude Desktop) don't support remote URLs directly and require a bridge like [`mcp-remote`](https://www.npmjs.com/package/mcp-remote). See the individual setup guides for exact instructions.
