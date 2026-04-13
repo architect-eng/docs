@@ -8,18 +8,68 @@ sidebarTitle: "MCP Overview"
 
 The **Model Context Protocol (MCP)** is an open standard that lets AI assistants — like Claude, Cursor, ChatGPT, and other tools — interact directly with external services through a secure, structured interface.
 
-Architect exposes a hosted MCP server that lets your AI tools read documentation, explore the Customer API, and make tenant-scoped API calls — without needing to run anything locally.
+Architect exposes a hosted MCP server that lets your AI tools manage pages, audiences, prospects, analytics, and more — without needing to run anything locally.
 
 ## What can you do with Architect's MCP?
 
+### 📄 Pages
+
+Create, read, update, delete, archive, and restore pages — the core content units in Architect. Pages can be of various types (inbound, outbound, call follow-up, sales deck, custom) and support actions (open URL, submit a form, copy text), widgets (logo marquees, videos), scripts, footer links, and rich SEO metadata.
+
+### 👥 Audiences
+
+For each page, you can manage audiences — specific versions of a page targeted at different segments. You can create, update, archive, restore, and search audiences. Each audience can have overrides for actions, URLs, metadata, and supplementary context.
+
+### 📝 Audience Versions
+
+Audiences are versioned. You can list, get, create, publish, cancel, and manage the lifecycle of audience versions — moving them through draft → queued → processing → published states.
+
+### 💬 Audience Messages (AI Editing)
+
+You can send messages to an audience's draft editor (an AI-powered interface), retrieve conversation history, check on active AI runs, and interrupt them mid-stream. This enables programmatic AI-assisted content editing.
+
+### 🔗 Page Links
+
+Create and manage shareable URLs for pages and audiences — mapping custom paths to pages or audiences, with optional routing tables for A/B-style traffic splitting across multiple targets.
+
+### 👤 Persons
+
+Full CRUD on person records (prospects) — create, list, search, update, delete, and restore. Fields include name, email, domain, phone number, and LinkedIn profile URL.
+
+### 🏢 Accounts
+
+Manage company/account records by domain — create, list, search, update, and retrieve accounts along with their linked persons and activity history.
+
+### 📋 Activity Logs
+
+Ingest structured activity events via person logs and account logs — useful for syncing CRM events, form submissions, webhook data, or any custom activity into Architect from external systems.
+
+### 📊 Analytics
+
+Query analytics data including page summary stats (bounce rate, conversion rate, session time, scroll depth), per-audience breakdowns, individual audience session details, and interaction histories for sessions.
+
+### 🔔 Webhook Subscriptions
+
+Subscribe to real-time events from Architect — including `page.version.published`, `form.submitted`, `form.enriched`, and `form.enrichment_failed`. You can create, list, update, and delete subscriptions.
+
+## How do you use all of this?
+
 Architect's MCP server exposes two tools:
 
-| Tool | Description |
+| Tool | What it does |
 | --- | --- |
-| `architect_docs` | Read Architect MCP docs plus targeted Customer API reference slices before you make a request. |
-| `architect_api` | Call Customer API endpoints for the authenticated tenant after you know the exact method, path, and payload. |
+| `architect_docs` | Read Architect MCP documentation and targeted Customer API reference slices. Use this first to discover available endpoints, learn the request/response shapes, and understand how resources relate to each other. |
+| `architect_api` | Call any Customer API endpoint for the authenticated tenant. Once you know the method, path, and payload from the docs, use this tool to execute the actual request. |
 
-The recommended workflow is: use `architect_docs` first to understand the available API endpoints, then use `architect_api` to execute the calls.
+**The recommended workflow:**
+
+1. Ask your AI tool to use `architect_docs` to look up what you want to do.
+2. Then ask it to use `architect_api` to execute the call.
+
+For example:
+- *"Use architect_docs to find out how to create a page, then create one for my new campaign."*
+- *"Look up the analytics endpoints in architect_docs, then pull my page stats for this month."*
+- *"Check architect_docs for how person records work, then create a prospect for jane@acme.com."*
 
 ## How authentication works
 
@@ -51,14 +101,14 @@ Architect's MCP uses **OAuth 2.0** via [WorkOS AuthKit](https://workos.com/docs/
     The MCP server automatically scopes requests to the tenant tied to the account you authorize.
   </Step>
 
-  <Step title="Start with the built-in docs and API tools">
-    Use `architect_docs` to inspect guidance and API reference, then use `architect_api` for tenant-scoped API calls.
+  <Step title="Start with architect_docs">
+    Ask your AI tool: *"Use architect_docs to show me what I can do with the Architect API."*
   </Step>
 </Steps>
 
-## Client-specific guides
+## Client-specific setup guides
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card title="Claude Desktop" icon="message-bot" href="/overview/integrations/mcp-claude-desktop">
     Step-by-step setup for Anthropic's Claude Desktop app.
   </Card>
@@ -66,7 +116,7 @@ Architect's MCP uses **OAuth 2.0** via [WorkOS AuthKit](https://workos.com/docs/
     Step-by-step setup for the Cursor AI code editor.
   </Card>
   <Card title="ChatGPT" icon="comments" href="/overview/integrations/mcp-chatgpt">
-    Step-by-step setup for OpenAI's ChatGPT (Plus, Pro, Business, or Enterprise).
+    Step-by-step setup for OpenAI's ChatGPT.
   </Card>
 </CardGroup>
 
