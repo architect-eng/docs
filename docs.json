@@ -68,6 +68,9 @@
           {
             "group": "Integrations",
             "pages": [
+              "overview/integrations/mcp-overview",
+              "overview/integrations/mcp-claude-desktop",
+              "overview/integrations/mcp-cursor",
               "overview/integrations/how-to-add-form-submission-into-your-hubspot-crm",
               "overview/integrations/how-to-add-form-submission-into-your-marketo-through-zapier"
             ]
