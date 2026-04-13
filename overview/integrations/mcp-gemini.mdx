@@ -1,0 +1,97 @@
+---
+title: "Connect MCP with Gemini CLI"
+description: "Set up Architect's MCP server with Google's Gemini CLI to manage pages, audiences, and prospects"
+sidebarTitle: "Gemini CLI"
+---
+
+## Prerequisites
+
+- [Gemini CLI](https://github.com/google-gemini/gemini-cli) installed
+- An Architect account with access to a workspace
+
+## Setup
+
+<Steps>
+  <Step title="Open your Gemini CLI settings">
+    Gemini CLI stores MCP server configuration in a `settings.json` file. Open it at:
+
+    - **macOS/Linux:** `~/.gemini/settings.json`
+    - **Windows:** `%USERPROFILE%\.gemini\settings.json`
+
+    Create the file if it doesn't exist.
+  </Step>
+
+  <Step title="Add the Architect MCP server">
+    Add the following to your `settings.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "architect": {
+          "url": "https://mcp.tryarchitect.com/sse"
+        }
+      }
+    }
+    ```
+
+    <Note>
+    If you already have other MCP servers configured, add `"architect"` as a new key inside the existing `mcpServers` object.
+    </Note>
+  </Step>
+
+  <Step title="Restart Gemini CLI">
+    Close and reopen Gemini CLI for the new configuration to take effect. You can verify the server is connected by running `/mcp` in the CLI.
+  </Step>
+
+  <Step title="Authenticate with Architect">
+    The first time you use an Architect tool, Gemini CLI will open a browser window asking you to sign in to your Architect account. Grant the requested permissions and your session will be saved.
+  </Step>
+
+  <Step title="Start using Architect tools">
+    You can now ask Gemini to interact with your Architect workspace:
+
+    - *"Search my Architect prospects for anyone at Acme Corp"*
+    - *"List all my pages"*
+    - *"Create a personalized landing page for the prospect at globex.com"*
+  </Step>
+</Steps>
+
+## Available tools
+
+Once connected, Gemini CLI has access to all Architect MCP tools:
+
+| Tool | Description |
+| --- | --- |
+| `architect_person_get` | Get details for a specific person |
+| `architect_person_search` | Search people in your workspace |
+| `architect_person_create` | Create a new person with name and identifiers |
+| `architect_person_append_log` | Add a log entry to a person's timeline |
+| `architect_page_group_list` | List all pages in your workspace |
+| `architect_audience_search` | Search audiences across pages |
+| `architect_audience_get` | Get details for a specific audience |
+| `architect_audience_create_for_person` | Create a person-linked audience |
+| `architect_audience_get_url` | Get the published URL for an audience |
+| `architect_audience_send_agent_message` | Send a message to the page agent |
+| `architect_page_link_list` | List page links for your domains |
+| `architect_page_link_create` | Create a new page link |
+| `architect_page_link_get` | Get details for a page link |
+| `architect_page_link_update_routing_table` | Update routing weights on a page link |
+| `architect_page_link_delete` | Remove a page link |
+| `architect_api_reference` | Browse the Architect Customer API spec |
+| `architect_api` | Call any Customer API endpoint directly |
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Gemini CLI doesn't see Architect tools">
+    Run `/mcp` to check if the Architect server is listed. If not, verify your `settings.json` file is saved correctly and restart Gemini CLI.
+  </Accordion>
+
+  <Accordion title="Connection times out">
+    Make sure the URL is exactly `https://mcp.tryarchitect.com/sse`. Gemini CLI supports SSE transport natively, so no bridge is needed.
+  </Accordion>
+
+  <Accordion title="Authentication window doesn't appear">
+    Make sure your default browser isn't blocking pop-ups. Try opening `https://mcp.tryarchitect.com/sse` directly in your browser to verify the server is reachable.
+  </Accordion>
+</AccordionGroup>

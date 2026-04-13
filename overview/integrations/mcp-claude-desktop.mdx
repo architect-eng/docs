@@ -19,7 +19,9 @@ sidebarTitle: "Claude Desktop"
   </Step>
 
   <Step title="Add the Architect MCP server">
-    Add the following to the `mcpServers` section of your config file:
+    Add the following to the `mcpServers` section of your config file.
+
+    **If this is your first MCP server** (empty or new config file):
 
     ```json
     {
@@ -35,10 +37,34 @@ sidebarTitle: "Claude Desktop"
     }
     ```
 
+    **If you already have other MCP servers**, add `"architect"` inside the existing `mcpServers` object. Make sure there's a comma between each server entry:
+
+    ```json
+    {
+      "mcpServers": {
+        "some-other-server": {
+          "command": "npx",
+          "args": ["other-server"]
+        },
+        "architect": {
+          "command": "npx",
+          "args": [
+            "mcp-remote",
+            "https://mcp.tryarchitect.com/sse"
+          ]
+        }
+      }
+    }
+    ```
+
+    <Warning>
+    **Common error:** If you see `Expected ',' or '}' after property value in JSON`, you're missing a comma between server entries. Every server block must be separated by a comma — but the **last** entry must **not** have a trailing comma.
+    </Warning>
+
     This uses [`mcp-remote`](https://www.npmjs.com/package/mcp-remote) to bridge Claude Desktop's local transport to Architect's remote MCP server.
 
     <Note>
-    You need [Node.js](https://nodejs.org) installed for `npx` to work. If you already have other MCP servers configured, add `"architect"` as a new key inside the existing `mcpServers` object.
+    You need [Node.js](https://nodejs.org) installed for `npx` to work.
     </Note>
   </Step>
 
@@ -113,6 +139,10 @@ to the agent on each one to change the CTA from 'Get Started' to
 <AccordionGroup>
   <Accordion title="Error: 'invalid_type' or 'command is required'">
     Claude Desktop doesn't support remote `url` configs directly. Make sure your config uses `"command": "npx"` with `"args": ["mcp-remote", "https://mcp.tryarchitect.com/sse"]` — not a `"url"` field. See the config example above.
+  </Accordion>
+
+  <Accordion title="Error: Expected ',' or '}' after property value in JSON">
+    Your `claude_desktop_config.json` has a JSON syntax error. This usually means you're missing a comma between MCP server entries. Make sure each server block is separated by a comma, and that the **last** entry does **not** have a trailing comma. Use a [JSON validator](https://jsonlint.com/) to check your file.
   </Accordion>
 
   <Accordion title="Claude says it can't find Architect tools">
