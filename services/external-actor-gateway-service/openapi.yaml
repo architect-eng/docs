@@ -216,6 +216,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/GetAccount"
+    GetLinkResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetLink"
     GetPersonResponse:
       description: Successful operation
       content:
@@ -3419,11 +3425,7 @@ paths:
       operationId: getAudienceLink
       responses:
         "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetLink"
+          $ref: "#/components/responses/GetLinkResponse"
       summary: Get audience link
       tags:
         - Audiences
@@ -3606,6 +3608,19 @@ paths:
         - $ref: "#/components/parameters/VersionIdPath"
       requestBody:
         $ref: "#/components/requestBodies/VersionsBody"
+  /v0/pages/{page_id}/link:
+    get:
+      description: Generate a shareable link for a page. Fails if the page version is not yet published.
+      operationId: getPageLink
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLinkResponse"
+      summary: Get page link
+      tags:
+        - Pages
+      parameters:
+        - $ref: "#/components/parameters/TenantDomainIdQuery"
+        - $ref: "#/components/parameters/PageIdPath"
   /v0/pages/{page_id}/restore:
     post:
       description: Restore an archived page.
