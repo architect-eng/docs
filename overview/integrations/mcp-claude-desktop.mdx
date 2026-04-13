@@ -25,14 +25,20 @@ sidebarTitle: "Claude Desktop"
     {
       "mcpServers": {
         "architect": {
-          "url": "https://mcp.tryarchitect.com/sse"
+          "command": "npx",
+          "args": [
+            "mcp-remote",
+            "https://mcp.tryarchitect.com/sse"
+          ]
         }
       }
     }
     ```
 
+    This uses [`mcp-remote`](https://www.npmjs.com/package/mcp-remote) to bridge Claude Desktop's local transport to Architect's remote MCP server.
+
     <Note>
-    If you already have other MCP servers configured, add `"architect"` as a new key inside the existing `mcpServers` object.
+    You need [Node.js](https://nodejs.org) installed for `npx` to work. If you already have other MCP servers configured, add `"architect"` as a new key inside the existing `mcpServers` object.
     </Note>
   </Step>
 
@@ -105,8 +111,12 @@ to the agent on each one to change the CTA from 'Get Started' to
 ## Troubleshooting
 
 <AccordionGroup>
+  <Accordion title="Error: 'invalid_type' or 'command is required'">
+    Claude Desktop doesn't support remote `url` configs directly. Make sure your config uses `"command": "npx"` with `"args": ["mcp-remote", "https://mcp.tryarchitect.com/sse"]` — not a `"url"` field. See the config example above.
+  </Accordion>
+
   <Accordion title="Claude says it can't find Architect tools">
-    Make sure you've added the server config to `claude_desktop_config.json` and restarted Claude Desktop. Check that the URL is exactly `https://mcp.tryarchitect.com/sse`.
+    Make sure you've added the server config to `claude_desktop_config.json` and restarted Claude Desktop. Verify Node.js is installed by running `node --version` in your terminal.
   </Accordion>
 
   <Accordion title="Authentication keeps failing">
