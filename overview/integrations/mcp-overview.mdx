@@ -55,7 +55,11 @@ Architect's MCP uses **OAuth 2.0** via [WorkOS AuthKit](https://workos.com/docs/
 ## MCP server URL
 
 ```
-https://mcp.tryarchitect.com
+https://mcp.tryarchitect.com/sse
 ```
 
-This is the URL you'll provide to any MCP-compatible AI tool to connect to Architect.
+This is the SSE endpoint you'll provide to any MCP-compatible AI tool to connect to Architect.
+
+<Note>
+Some tools (like Claude Desktop) don't support remote URLs directly and require a bridge like [`mcp-remote`](https://www.npmjs.com/package/mcp-remote). See the individual setup guides for exact instructions.
+</Note>
