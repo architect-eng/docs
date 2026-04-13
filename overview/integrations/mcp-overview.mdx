@@ -1,0 +1,61 @@
+---
+title: "MCP Integration"
+description: "Connect your AI tools to Architect using the Model Context Protocol (MCP)"
+sidebarTitle: "MCP Overview"
+---
+
+## What is MCP?
+
+The **Model Context Protocol (MCP)** is an open standard that lets AI assistants — like Claude, Cursor, Windsurf, and other tools — interact directly with external services through a secure, structured interface.
+
+Architect exposes an MCP server at `https://mcp.tryarchitect.com` that lets your AI tools manage your pages, audiences, prospects, and more — without needing to write any code.
+
+## What can you do with Architect's MCP?
+
+With the MCP integration, your AI assistant can:
+
+- **Search and browse prospects** — Find people in your account, view their details, and check recent activity.
+- **Create new prospects** — Add people with names, emails, phone numbers, or LinkedIn profiles.
+- **Log activity on prospects** — Append structured log entries to a person's timeline.
+- **Search and browse pages** — Find pages and audiences across your workspace.
+- **Create personalized audiences** — Generate person-linked audiences on any page for 1:1 personalization.
+- **Send messages to the page agent** — Instruct the agent to edit an audience's content, layout, or copy.
+- **Get published page URLs** — Retrieve the live, customer-facing link for any audience.
+- **Manage page links** — Create, list, update routing tables, and delete page links for your domains.
+- **Call the Customer API** — Use the full Architect API directly from your AI tool for advanced operations.
+
+## How authentication works
+
+Architect's MCP uses **OAuth 2.0** via [WorkOS AuthKit](https://workos.com/docs/authkit). When you connect your AI tool to Architect's MCP server, you'll be redirected to sign in with your Architect account. Once authenticated, the tool receives scoped access to your workspace.
+
+### Available scopes
+
+| Scope | Description |
+| --- | --- |
+| `prospect:read` | Read prospect/people data |
+| `prospect:write` | Create and update prospects |
+| `page:read` | Read pages and audiences |
+| `page:write` | Create audiences and send agent messages |
+| `page-link:read` | Read page link configurations |
+| `page-link:write` | Create, update, and delete page links |
+| `api:read` | Read via the Customer API |
+| `api:write` | Write via the Customer API |
+
+## Getting started
+
+<CardGroup cols={2}>
+  <Card title="Connect with Claude Desktop" icon="message-bot" href="/overview/integrations/mcp-claude-desktop">
+    Step-by-step setup for Anthropic's Claude Desktop app.
+  </Card>
+  <Card title="Connect with Cursor" icon="code" href="/overview/integrations/mcp-cursor">
+    Step-by-step setup for the Cursor AI code editor.
+  </Card>
+</CardGroup>
+
+## MCP server URL
+
+```
+https://mcp.tryarchitect.com
+```
+
+This is the URL you'll provide to any MCP-compatible AI tool to connect to Architect.

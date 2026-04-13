@@ -1,0 +1,89 @@
+---
+title: "Connect MCP with Cursor"
+description: "Set up Architect's MCP server in Cursor to manage pages, audiences, and prospects from your editor"
+sidebarTitle: "Cursor"
+---
+
+## Prerequisites
+
+- [Cursor](https://cursor.com) installed
+- An Architect account with access to a workspace
+
+## Setup
+
+<Steps>
+  <Step title="Open Cursor MCP settings">
+    Open Cursor and go to **Settings** → **MCP**.
+
+    You can also press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux) and search for **"MCP: Settings"**.
+  </Step>
+
+  <Step title="Add the Architect MCP server">
+    Click **"Add new MCP server"** and enter:
+
+    - **Name:** `Architect`
+    - **Type:** `sse`
+    - **URL:** `https://mcp.tryarchitect.com/sse`
+
+    Alternatively, add it manually to your `.cursor/mcp.json` file:
+
+    ```json
+    {
+      "mcpServers": {
+        "architect": {
+          "url": "https://mcp.tryarchitect.com/sse"
+        }
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="Authenticate with Architect">
+    When you first use an Architect tool in Cursor's Agent mode, a browser window will open asking you to sign in to your Architect account. Grant the requested permissions and your session will be saved.
+  </Step>
+
+  <Step title="Start using Architect tools">
+    In Cursor's **Agent mode** (not regular chat), you can now ask it to interact with your Architect workspace:
+
+    - *"List all pages in my Architect workspace"*
+    - *"Search for prospects with the domain acme.com"*
+    - *"Create a new prospect called Jane Doe with email jane@acme.com"*
+    - *"Get the published URL for my product demo audience"*
+
+    <Note>
+    MCP tools are only available in **Agent mode** (Cmd+I / Ctrl+I), not in regular chat.
+    </Note>
+  </Step>
+</Steps>
+
+## Example: Build and personalize pages from your editor
+
+With Architect's MCP connected to Cursor, you can manage your entire page workflow without leaving your editor:
+
+```
+"Search my Architect pages for the Enterprise landing page, then create 
+a personalized audience for the prospect at globex.com. Add context 
+about their focus on supply chain automation."
+```
+
+Cursor's agent will use the MCP tools to:
+1. List your pages and find the right one
+2. Search your prospects or create a new one
+3. Create a person-linked audience with your custom context
+4. Return the live URL once published
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Tools don't appear in Cursor">
+    MCP tools only work in **Agent mode**. Make sure you're using `Cmd+I` / `Ctrl+I`, not regular chat. Also verify the MCP server shows a green status indicator in **Settings → MCP**.
+  </Accordion>
+
+  <Accordion title="Server shows as disconnected">
+    Check that the URL is exactly `https://mcp.tryarchitect.com/sse`. Try removing the server and re-adding it. If it still fails, restart Cursor.
+  </Accordion>
+
+  <Accordion title="Authentication window doesn't appear">
+    Make sure your browser isn't blocking pop-ups from Cursor. Try opening `https://mcp.tryarchitect.com/sse` directly in your browser to verify the server is reachable.
+  </Accordion>
+</AccordionGroup>
