@@ -19,11 +19,51 @@ security:
 components:
   callbacks: {}
   examples:
+    01Example:
+      description: Example values extracted from schema defaults
+      summary: 01 example
+      value:
+        title: null
+    CreateAudienceRequestExample:
+      description: Example values extracted from schema defaults
+      summary: CreateAudienceRequest example
+      value:
+        publishBehavior: publish
+    CreatePageRequestExample:
+      description: Example values extracted from schema defaults
+      summary: CreatePageRequest example
+      value:
+        actionCardWidgets: []
+        pageType: inbound
+        scripts: []
     CreateWebhookSubscriptionRequestExample:
       description: Example values extracted from schema defaults
       summary: CreateWebhookSubscriptionRequest example
       value:
         active: true
+    ImageExample:
+      description: Example values extracted from schema defaults
+      summary: Image example
+      value:
+        altText: null
+        url: null
+        fileId: null
+        assetId: null
+    ScriptExample:
+      description: Example values extracted from schema defaults
+      summary: Script example
+      value:
+        enabled: true
+    VideoExample:
+      description: Example values extracted from schema defaults
+      summary: Video example
+      value:
+        title: null
+        youtubeUrl: null
+        autoplay: false
+        loop: false
+        controls: true
+        muted: null
   headers: {}
   links: {}
   parameters:
@@ -55,6 +95,21 @@ components:
       required: false
       schema:
         type: string
+    EndDateQuery:
+      in: query
+      name: endDate
+      description: endDate parameter
+      required: false
+      schema:
+        type: string
+        format: date-time
+    IncludeEmptyOnlyQuery:
+      in: query
+      name: includeEmptyOnly
+      description: includeEmptyOnly parameter
+      required: false
+      schema:
+        type: string
     Limit:
       description: Number of items to return (1-100, default 20)
       in: query
@@ -68,7 +123,7 @@ components:
     LimitQuery:
       in: query
       name: limit
-      description: Number of pages to return (1-100, default 20)
+      description: limit parameter
       required: false
       schema:
         type: number
@@ -79,6 +134,35 @@ components:
       required: true
       schema:
         type: string
+    PageLinkIdPath:
+      in: path
+      name: page_link_id
+      description: page_link_id parameter
+      required: true
+      schema:
+        type: string
+    PersonIdPath:
+      in: path
+      name: person_id
+      description: person_id parameter
+      required: true
+      schema:
+        type: string
+    QueryQuery:
+      in: query
+      name: query
+      description: query parameter
+      required: false
+      schema:
+        type: string
+    StartDateQuery:
+      in: query
+      name: startDate
+      description: startDate parameter
+      required: false
+      schema:
+        type: string
+        format: date-time
     SubscriptionIdPath:
       in: path
       name: subscription_id
@@ -86,7 +170,33 @@ components:
       required: true
       schema:
         type: string
-  requestBodies: {}
+    TenantDomainIdQuery:
+      in: query
+      name: tenantDomainId
+      description: Optional tenant domain ID for custom domain. If not provided, uses fallback subdomain.
+      required: false
+      schema:
+        type: string
+    VersionIdPath:
+      in: path
+      name: version_id
+      description: version_id parameter
+      required: true
+      schema:
+        type: string
+  requestBodies:
+    ArchiveBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateArchiveRequest"
+      required: true
+    VersionsBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateVersionRequest"
+      required: true
   responses:
     BadRequest:
       content:
@@ -100,12 +210,18 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
       description: Error response - covers authentication, authorization, rate limiting, and server errors
-    GetAccountResponseResponse:
+    GetAccountResponse:
       description: Successful operation
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/GetAccountResponse"
+            $ref: "#/components/schemas/GetAccount"
+    GetPersonResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetPerson"
     GetWebhookSubscriptionResponseResponse:
       description: Successful operation
       content:
@@ -118,16 +234,299 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
       description: Resource not found
+    PostAccountResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PostAccount"
+    PostAudienceResponse:
+      description: Audience created successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PostAudience"
+    PostInterruptResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PostInterrupt"
+    PostPageLinkResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PostPageLink"
+    PostPageResponse:
+      description: Page created successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PostPage"
+    PostPersonResponse:
+      description: Person created successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PostPerson"
+    PostVersionResponse:
+      description: AudienceVersion created successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PostVersion"
   schemas:
+    ActionIdActionIndexActionTypeButtonTitlePurposeUrlSchema:
+      type: object
+      properties:
+        actionId:
+          $ref: "#/components/schemas/ActionId"
+        actionIndex:
+          type: number
+          description: Position in actions array
+        purpose:
+          type: string
+          description: Business purpose or goal of this action
+        buttonTitle:
+          type: string
+          description: Text displayed on the action button
+        actionType:
+          type: string
+          const: open-url
+        url:
+          $ref: "#/components/schemas/Url"
+      required:
+        - actionId
+        - actionIndex
+        - purpose
+        - buttonTitle
+        - actionType
+        - url
+      additionalProperties: false
+    ActionIdActionIndexActionTypeButtonTitleFormIdFormInstructionsPurposeSchema:
+      type: object
+      properties:
+        actionId:
+          $ref: "#/components/schemas/ActionId"
+        actionIndex:
+          type: number
+          description: Position in actions array
+        purpose:
+          type: string
+          description: Business purpose or goal of this action
+        buttonTitle:
+          type: string
+          description: Text displayed on the action button
+        actionType:
+          type: string
+          const: form
+        formId:
+          $ref: "#/components/schemas/FormId"
+        formInstructions:
+          type: string
+      required:
+        - actionId
+        - actionIndex
+        - purpose
+        - buttonTitle
+        - actionType
+        - formId
+      additionalProperties: false
+    ActionIdActionIndexActionTypeButtonTitleCopyTextPurposeSchema:
+      type: object
+      properties:
+        actionId:
+          $ref: "#/components/schemas/ActionId"
+        actionIndex:
+          type: number
+          description: Position in actions array
+        purpose:
+          type: string
+          description: Business purpose or goal of this action
+        buttonTitle:
+          type: string
+          description: Text displayed on the action button
+        actionType:
+          type: string
+          const: copy-text
+        copyText:
+          type: string
+          description: Text to copy to the visitor's clipboard when the action is triggered
+      required:
+        - actionId
+        - actionIndex
+        - purpose
+        - buttonTitle
+        - actionType
+        - copyText
+      additionalProperties: false
+    TypeVideoSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: video
+        video:
+          $ref: "#/components/schemas/Video"
+      required:
+        - type
+        - video
+      additionalProperties: false
+    ActionIdActionTypeButtonTitleFormIdFormInstructionsPurposeSchema:
+      type: object
+      properties:
+        actionId:
+          $ref: "#/components/schemas/ActionId"
+        purpose:
+          type: string
+        buttonTitle:
+          type: string
+        actionType:
+          type: string
+          const: form
+        formId:
+          $ref: "#/components/schemas/FormId1"
+        formInstructions:
+          type: string
+      required:
+        - purpose
+        - buttonTitle
+        - actionType
+        - formId
+      additionalProperties: false
+    PageIdRoutingTableTargetTypeSchema:
+      type: object
+      properties:
+        targetType:
+          type: string
+          const: page
+        pageId:
+          type: string
+        routingTable:
+          anyOf:
+            - type: array
+              items:
+                anyOf:
+                  - $ref: "#/components/schemas/AudienceIdWeightSchema"
+                  - $ref: "#/components/schemas/PreserveQueryParamsTargetUrlWeightSchema"
+            - type: "null"
+      required:
+        - targetType
+        - pageId
+      additionalProperties: false
+    PreserveQueryParamsTargetUrlWeightSchema:
+      type: object
+      properties:
+        targetUrl:
+          $ref: "#/components/schemas/Url"
+        weight:
+          type: integer
+          exclusiveMinimum: 0
+          maximum: 9007199254740991
+        preserveQueryParams:
+          type: boolean
+      required:
+        - targetUrl
+        - weight
+      additionalProperties: false
+    ActionIdActionTypeButtonTitleCopyTextPurposeSchema:
+      type: object
+      properties:
+        actionId:
+          $ref: "#/components/schemas/ActionId"
+        purpose:
+          type: string
+        buttonTitle:
+          type: string
+        actionType:
+          type: string
+          const: copy-text
+        copyText:
+          type: string
+      required:
+        - purpose
+        - buttonTitle
+        - actionType
+        - copyText
+      additionalProperties: false
+    LogosTitleTypeSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: marquee
+        title:
+          default: null
+          anyOf:
+            - type: string
+            - type: "null"
+        logos:
+          type: array
+          items:
+            $ref: "#/components/schemas/NestedObject"
+      required:
+        - type
+        - title
+        - logos
+      additionalProperties: false
     UnnamedSchema:
       type: string
       minLength: 1
-      pattern: ^prospectlog_[a-z0-9]{26}$
+      pattern: ^accountlog_[a-z0-9]{26}$
+    ActionIdActionTypeButtonTitlePurposeUrlSchema:
+      type: object
+      properties:
+        actionId:
+          $ref: "#/components/schemas/ActionId"
+        purpose:
+          type: string
+        buttonTitle:
+          type: string
+        actionType:
+          type: string
+          const: open-url
+        url:
+          $ref: "#/components/schemas/Url"
+      required:
+        - purpose
+        - buttonTitle
+        - actionType
+        - url
+      additionalProperties: false
+    AudienceIdTargetTypeSchema:
+      type: object
+      properties:
+        targetType:
+          type: string
+          const: audience
+        audienceId:
+          type: string
+      required:
+        - targetType
+        - audienceId
+      additionalProperties: false
+    AudienceIdWeightSchema:
+      type: object
+      properties:
+        audienceId:
+          type: string
+        weight:
+          type: integer
+          exclusiveMinimum: 0
+          maximum: 9007199254740991
+      required:
+        - audienceId
+        - weight
+      additionalProperties: false
     AccountId:
       type: string
       minLength: 1
       pattern: ^account_[a-z0-9]{26}$
-      description: Account ID
+    ActionId:
+      type: string
+      pattern: ^pagegroupaction_
+      description: TypeID identifier for the action
     ArraySchema:
       type: array
       items:
@@ -162,13 +561,206 @@ components:
         - type
         - payload
       additionalProperties: false
+    CreateAccountRequest:
+      type: object
+      properties:
+        domain:
+          type: string
+          minLength: 1
+          description: Canonical account domain
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+        - domain
+      additionalProperties: false
+    CreateArchiveRequest:
+      type: object
+      properties: {}
+      additionalProperties: false
     CreateAudienceRequest:
       type: object
       properties:
-        supplementaryContext:
+        actionFormIdOverride:
           type: string
+        actionFormInstructionsOverride:
+          type: string
+        actionUrlOverride:
+          $ref: "#/components/schemas/Url"
         customName:
           type: string
+          minLength: 1
+        metadataOverride:
+          $ref: "#/components/schemas/Metadata1"
+        publishBehavior:
+          default: publish
+          type: string
+          enum:
+            - draft
+            - publish
+        supplementaryContext:
+          type: string
+          minLength: 1
+      required:
+        - publishBehavior
+      additionalProperties: false
+    CreateInterruptRequest:
+      type: object
+      properties:
+        partialText:
+          type: string
+          maxLength: 100000
+      additionalProperties: false
+    CreateMessageRequest:
+      type: object
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        clientMessageId:
+          type: string
+          minLength: 1
+          maxLength: 100
+        selectedElement:
+          type: object
+          properties:
+            sectionId:
+              type: string
+              maxLength: 200
+            elementId:
+              type: string
+              maxLength: 200
+            elementType:
+              type: string
+              maxLength: 100
+            sectionTitle:
+              anyOf:
+                - type: string
+                  maxLength: 1000
+                - type: "null"
+            content:
+              anyOf:
+                - type: string
+                  maxLength: 1000
+                - type: "null"
+            selectedText:
+              anyOf:
+                - type: string
+                  maxLength: 1000
+                - type: "null"
+            componentIndex:
+              type: integer
+              minimum: 0
+              maximum: 9007199254740991
+            jsonPath:
+              anyOf:
+                - type: string
+                  maxLength: 500
+                - type: "null"
+          required:
+            - sectionId
+            - elementId
+            - elementType
+            - sectionTitle
+            - content
+          additionalProperties: false
+      required:
+        - message
+      additionalProperties: false
+    CreatePageLinkRequest:
+      type: object
+      properties:
+        tenantDomainId:
+          anyOf:
+            - type: string
+            - type: "null"
+        path:
+          type: string
+          minLength: 1
+        target:
+          anyOf:
+            - $ref: "#/components/schemas/AudienceIdTargetTypeSchema"
+            - type: object
+              properties:
+                targetType:
+                  type: string
+                  const: page
+                pageId:
+                  type: string
+                routingTable:
+                  anyOf:
+                    - type: array
+                      items:
+                        anyOf:
+                          - $ref: "#/components/schemas/AudienceIdWeightSchema"
+                          - $ref: "#/components/schemas/PreserveQueryParamsTargetUrlWeightSchema"
+                    - type: "null"
+              required:
+                - targetType
+                - pageId
+              additionalProperties: false
+      required:
+        - path
+        - target
+      additionalProperties: false
+    CreatePageRequest:
+      type: object
+      properties:
+        actions:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/ActionIdActionTypeButtonTitlePurposeUrlSchema"
+              - $ref: "#/components/schemas/ActionIdActionTypeButtonTitleFormIdFormInstructionsPurposeSchema"
+              - $ref: "#/components/schemas/ActionIdActionTypeButtonTitleCopyTextPurposeSchema"
+        actionCardWidgets:
+          default: []
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/LogosTitleTypeSchema"
+              - $ref: "#/components/schemas/TypeVideoSchema"
+        brandId:
+          type: string
+        footerLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/FooterLink"
+        headerActionId:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/Metadata1"
+        name:
+          type: string
+          minLength: 1
+        pageContext:
+          type: string
+          minLength: 1
+        pageType:
+          default: inbound
+          type: string
+          enum:
+            - inbound
+            - outbound
+            - call_followup
+            - sales_deck
+            - custom
+        scripts:
+          default: []
+          type: array
+          items:
+            $ref: "#/components/schemas/Script"
+      required:
+        - actions
+        - actionCardWidgets
+        - brandId
+        - footerLinks
+        - name
+        - pageContext
+        - pageType
+        - scripts
       additionalProperties: false
     CreatePersonLogRequest:
       type: object
@@ -178,8 +770,7 @@ components:
         email:
           type: string
         phoneNumber:
-          type: string
-          pattern: ^\+[1-9]\d{1,14}$
+          $ref: "#/components/schemas/UnnamedSchema"
         linkedinProfileUrl:
           type: string
           minLength: 1
@@ -204,6 +795,34 @@ components:
         - source
         - type
         - payload
+      additionalProperties: false
+    CreatePersonRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        email:
+          type: string
+        domain:
+          type: string
+          minLength: 1
+        phoneNumber:
+          $ref: "#/components/schemas/UnnamedSchema"
+        linkedinProfileUrl:
+          type: string
+          minLength: 1
+      required:
+        - name
+      additionalProperties: false
+    CreateVersionRequest:
+      type: object
+      properties:
+        operationKey:
+          type: string
+          minLength: 1
+          maxLength: 128
       additionalProperties: false
     CreateWebhookSubscriptionRequest:
       type: object
@@ -232,16 +851,12 @@ components:
         - events
         - active
       additionalProperties: false
-    CreatedAt:
-      type: string
-      format: date-time
-      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-    DeleteWebhookSubscriptionResponse:
+    DeletePageResponse:
       type: object
       properties:
         success:
           type: boolean
-          description: Whether the deletion was successful
+          const: true
       required:
         - success
       additionalProperties: false
@@ -281,94 +896,87 @@ components:
         - message
         - requestId
       type: object
-    GetAccountResponse:
+    FooterLink:
       type: object
       properties:
-        accountId:
-          $ref: "#/components/schemas/AccountId"
-        tenantId:
+        id:
           type: string
-          description: Tenant ID that owns the account
-        domain:
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/NestedObject1"
+        title:
           type: string
-          minLength: 1
-          description: Canonical account domain
-        name:
-          anyOf:
-            - type: string
-              minLength: 1
-              maxLength: 255
-            - type: "null"
-        createdAt:
-          $ref: "#/components/schemas/CreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/CreatedAt"
-        latestActivityAt:
-          anyOf:
-            - $ref: "#/components/schemas/CreatedAt"
-            - type: "null"
-        linkedProspects:
+      required:
+        - links
+        - title
+      additionalProperties: false
+    FormId:
+      type: string
+      pattern: ^form_
+      description: TypeID identifier for the form to display
+    FormId1:
+      type: string
+      minLength: 1
+      pattern: ^form_[a-z0-9]{26}$
+    GetAccount:
+      type: object
+      properties:
+        hasMore:
+          type: boolean
+        items:
           type: array
           items:
             type: object
             properties:
-              prospectId:
-                $ref: "#/components/schemas/PersonId"
+              accountId:
+                $ref: "#/components/schemas/AccountId"
               tenantId:
                 type: string
-                description: Tenant ID that owns the prospect
-              name:
+              domain:
                 type: string
                 minLength: 1
-                maxLength: 255
-                description: Prospect display name
-              email:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              domain:
+              name:
                 anyOf:
                   - type: string
                     minLength: 1
-                  - type: "null"
-              slug:
-                type: string
-                minLength: 1
-                maxLength: 255
-                description: Prospect routing slug
-              phoneNumber:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              linkedinProfileUrl:
-                anyOf:
-                  - type: string
+                    maxLength: 255
                   - type: "null"
               createdAt:
-                $ref: "#/components/schemas/CreatedAt"
+                $ref: "#/components/schemas/UnnamedSchema"
               updatedAt:
-                $ref: "#/components/schemas/CreatedAt"
+                $ref: "#/components/schemas/UnnamedSchema"
+              latestActivityAt:
+                anyOf:
+                  - $ref: "#/components/schemas/UnnamedSchema"
+                  - type: "null"
+              linkedPersonsCount:
+                type: integer
+                minimum: 0
+                maximum: 9007199254740991
             required:
-              - prospectId
+              - accountId
               - tenantId
-              - name
-              - email
               - domain
-              - slug
-              - phoneNumber
-              - linkedinProfileUrl
+              - name
               - createdAt
               - updatedAt
+              - latestActivityAt
+              - linkedPersonsCount
             additionalProperties: false
+        nextCursor:
+          anyOf:
+            - type: string
+            - type: "null"
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
       required:
-        - accountId
-        - tenantId
-        - domain
-        - name
-        - createdAt
-        - updatedAt
-        - latestActivityAt
-        - linkedProspects
+        - hasMore
+        - items
+        - nextCursor
+        - totalCount
       additionalProperties: false
     GetActivity:
       type: object
@@ -386,23 +994,23 @@ components:
                 type: string
                 enum:
                   - account-log-entry
-                  - prospect-log-entry
-                description: Whether the activity originated from the account itself or a linked prospect
+                  - person-log-entry
+                description: Whether the activity originated from the account itself or a linked person
               accountId:
                 $ref: "#/components/schemas/AccountId"
               accountLogId:
                 anyOf:
                   - $ref: "#/components/schemas/UnnamedSchema"
                   - type: "null"
-              prospectId:
+              personId:
                 anyOf:
                   - $ref: "#/components/schemas/PersonId"
                   - type: "null"
-              prospectLogId:
+              personLogId:
                 anyOf:
                   - $ref: "#/components/schemas/UnnamedSchema"
                   - type: "null"
-              prospectName:
+              personName:
                 anyOf:
                   - type: string
                   - type: "null"
@@ -422,23 +1030,23 @@ components:
                     maxLength: 255
                   - type: "null"
               createdAt:
-                $ref: "#/components/schemas/CreatedAt"
+                $ref: "#/components/schemas/UnnamedSchema"
               updatedAt:
                 anyOf:
-                  - $ref: "#/components/schemas/CreatedAt"
+                  - $ref: "#/components/schemas/UnnamedSchema"
                   - type: "null"
               deletedAt:
                 anyOf:
-                  - $ref: "#/components/schemas/CreatedAt"
+                  - $ref: "#/components/schemas/UnnamedSchema"
                   - type: "null"
             required:
               - activityId
               - activityType
               - accountId
               - accountLogId
-              - prospectId
-              - prospectLogId
-              - prospectName
+              - personId
+              - personLogId
+              - personName
               - source
               - type
               - payload
@@ -468,6 +1076,62 @@ components:
     GetAudience:
       type: object
       properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              avgInteractionsPerSession:
+                type: number
+              avgScrollDepthPercentage:
+                anyOf:
+                  - type: number
+                  - type: "null"
+              avgTimeSpentSeconds:
+                anyOf:
+                  - type: number
+                  - type: "null"
+              bounceRate:
+                type: number
+              conversionRate:
+                type: number
+              formSubmitRate:
+                type: number
+              totalSessions:
+                type: number
+              audienceId:
+                type: string
+              bounceCount:
+                type: number
+              bounceEligibleSessions:
+                type: number
+              conversionCount:
+                type: number
+              ctaSessions:
+                type: number
+              formSubmitCount:
+                type: number
+            required:
+              - avgInteractionsPerSession
+              - avgScrollDepthPercentage
+              - avgTimeSpentSeconds
+              - bounceRate
+              - conversionRate
+              - formSubmitRate
+              - totalSessions
+              - audienceId
+              - bounceCount
+              - bounceEligibleSessions
+              - conversionCount
+              - ctaSessions
+              - formSubmitCount
+            additionalProperties: false
+      required:
+        - items
+      additionalProperties: false
+    GetAudienceSession:
+      type: object
+      properties:
         hasMore:
           type: boolean
         items:
@@ -475,122 +1139,206 @@ components:
           items:
             type: object
             properties:
-              createdAt:
-                type: string
-              pageId:
+              analyticsSessionId:
                 type: string
               audienceId:
-                type: string
-              tenantId:
-                type: string
-              updatedAt:
-                type: string
-              effectiveName:
-                type: string
-              customName:
                 anyOf:
                   - type: string
                   - type: "null"
-              computedName:
+              audienceSessionId:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              computationStatus:
                 type: string
+                enum:
+                  - pending
+                  - completed
+                  - failed
+              formSubmissionEmail:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              formSubmissionId:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              formSubmissionIdentifier:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              formSubmissionIdentifierType:
+                anyOf:
+                  - type: string
+                    enum:
+                      - email
+                      - linkedin
+                      - tel
+                  - type: "null"
+              formSubmissionPhone:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              hasConversion:
+                type: boolean
+              hasFormSubmit:
+                type: boolean
+              isBounce:
+                type: boolean
+              maxScrollDepthPercentage:
+                anyOf:
+                  - type: number
+                  - type: "null"
+              pageId:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              pageTitle:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              pageUrl:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              questionsAskedCount:
+                type: number
+              sessionEndedAt:
+                anyOf:
+                  - $ref: "#/components/schemas/UnnamedSchema"
+                  - type: "null"
+              sessionStartedAt:
+                $ref: "#/components/schemas/UnnamedSchema"
+              timeSpentSeconds:
+                anyOf:
+                  - type: number
+                  - type: "null"
+              totalClicksCount:
+                type: number
+              utmCampaign:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              utmContent:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              utmMedium:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              utmSource:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              utmTerm:
+                anyOf:
+                  - type: string
+                  - type: "null"
             required:
-              - createdAt
-              - pageId
+              - analyticsSessionId
               - audienceId
-              - tenantId
-              - updatedAt
-              - effectiveName
-              - customName
-              - computedName
+              - audienceSessionId
+              - computationStatus
+              - formSubmissionEmail
+              - formSubmissionId
+              - formSubmissionIdentifier
+              - formSubmissionIdentifierType
+              - formSubmissionPhone
+              - hasConversion
+              - hasFormSubmit
+              - isBounce
+              - maxScrollDepthPercentage
+              - pageId
+              - pageTitle
+              - pageUrl
+              - questionsAskedCount
+              - sessionEndedAt
+              - sessionStartedAt
+              - timeSpentSeconds
+              - totalClicksCount
+              - utmCampaign
+              - utmContent
+              - utmMedium
+              - utmSource
+              - utmTerm
             additionalProperties: false
         nextCursor:
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
       required:
         - hasMore
         - items
+        - nextCursor
+        - totalCount
       additionalProperties: false
-    GetAudienceResponse:
+    GetAudience_0:
       type: object
       properties:
-        audienceId:
+        hasMore:
+          type: boolean
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostAudience"
+        nextCursor:
           type: string
-          description: The audience ID
-        pageId:
-          type: string
-          description: The parent page ID
-        tenantId:
-          type: string
-          description: The tenant ID
-        createdAt:
-          type: string
-          description: ISO 8601 creation timestamp
-        effectiveName:
-          type: string
-          description: The effective name (custom or computed)
-        customName:
-          anyOf:
-            - type: string
-            - type: "null"
-        computedName:
-          type: string
-          description: AI-computed name
-        supplementaryContext:
-          anyOf:
-            - type: string
-            - type: "null"
-        publishedVersion:
-          anyOf:
-            - type: object
-              properties:
-                versionId:
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - hasMore
+        - items
+        - totalCount
+      additionalProperties: false
+    GetInteraction:
+      type: object
+      properties:
+        found:
+          type: boolean
+        interactions:
+          type: array
+          items:
+            type: object
+            properties:
+              componentContext:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              componentId:
+                type: string
+              groundingChunkIds:
+                type: array
+                items:
                   type: string
-                versionNumber:
-                  type: number
-                publishedAt:
-                  anyOf:
-                    - type: string
-                    - type: "null"
-              required:
-                - versionId
-                - versionNumber
-                - publishedAt
-              additionalProperties: false
-            - type: "null"
+              label:
+                type: string
+              options:
+                type: array
+                items:
+                  type: string
+              responseText:
+                type: string
+              timestamp:
+                type: number
+            required:
+              - componentContext
+              - componentId
+              - groundingChunkIds
+              - label
+              - options
+              - responseText
+              - timestamp
+            additionalProperties: false
       required:
-        - audienceId
-        - pageId
-        - tenantId
-        - createdAt
-        - effectiveName
-        - customName
-        - computedName
-        - supplementaryContext
-        - publishedVersion
-      additionalProperties: false
-    GetAudienceVersionResponse:
-      type: object
-      properties:
-        createdAt:
-          type: string
-        id:
-          type: string
-        status:
-          type: string
-          enum:
-            - pending
-            - queued
-            - processing
-            - draft
-            - published
-            - archived
-            - cancelled
-        versionNumber:
-          type: number
-      required:
-        - createdAt
-        - id
-        - status
-        - versionNumber
+        - found
+        - interactions
       additionalProperties: false
     GetLink:
       type: object
@@ -609,7 +1357,226 @@ components:
         - domain
         - path
       additionalProperties: false
+    GetMessage:
+      type: object
+      properties:
+        conversation:
+          anyOf:
+            - type: object
+              properties:
+                conversationId:
+                  type: string
+                audienceId:
+                  type: string
+                publishedMessageId:
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                createdAt:
+                  $ref: "#/components/schemas/UnnamedSchema"
+                updatedAt:
+                  $ref: "#/components/schemas/UnnamedSchema"
+              required:
+                - conversationId
+                - audienceId
+                - publishedMessageId
+                - createdAt
+                - updatedAt
+              additionalProperties: false
+            - type: "null"
+        messages:
+          type: array
+          items:
+            type: object
+            properties:
+              messageId:
+                type: string
+              role:
+                type: string
+                enum:
+                  - user
+                  - assistant
+              content:
+                type: string
+              timestamp:
+                type: number
+              hasSnapshot:
+                type: boolean
+              toolCalls:
+                anyOf:
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        arguments:
+                          type: object
+                          propertyNames:
+                            type: string
+                          additionalProperties: {}
+                        status:
+                          type: string
+                          enum:
+                            - running
+                            - complete
+                        result: {}
+                        error:
+                          type: string
+                      required:
+                        - id
+                        - name
+                        - status
+                      additionalProperties: false
+                  - type: "null"
+              changes:
+                anyOf:
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/NestedObject2"
+                  - type: "null"
+              contentParts:
+                anyOf:
+                  - type: array
+                    items:
+                      anyOf:
+                        - type: object
+                          properties:
+                            type:
+                              type: string
+                              const: text
+                            text:
+                              type: string
+                          required:
+                            - type
+                            - text
+                          additionalProperties: false
+                        - type: object
+                          properties:
+                            type:
+                              type: string
+                              const: tool-call
+                            toolCallId:
+                              type: string
+                          required:
+                            - type
+                            - toolCallId
+                          additionalProperties: false
+                        - type: object
+                          properties:
+                            type:
+                              type: string
+                              const: error
+                            variant:
+                              type: string
+                              enum:
+                                - generic
+                                - provider-outage
+                            title:
+                              type: string
+                            message:
+                              type: string
+                            provider:
+                              type: string
+                            incidentTitle:
+                              type: string
+                            statusPageUrl:
+                              type: string
+                          required:
+                            - type
+                            - variant
+                            - title
+                            - message
+                          additionalProperties: false
+                  - type: "null"
+              reasoning:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              isInterrupted:
+                type: boolean
+            required:
+              - messageId
+              - role
+              - content
+              - timestamp
+              - hasSnapshot
+              - toolCalls
+              - changes
+              - contentParts
+              - reasoning
+              - isInterrupted
+            additionalProperties: false
+        context:
+          type: object
+          properties:
+            audienceId:
+              type: string
+            pageId:
+              type: string
+            tenantId:
+              type: string
+            currentSupplementaryContext:
+              anyOf:
+                - type: string
+                - type: "null"
+            currentMetaTitle:
+              anyOf:
+                - type: string
+                - type: "null"
+            currentMetaDescription:
+              anyOf:
+                - type: string
+                - type: "null"
+            currentMetaKeywords:
+              anyOf:
+                - type: string
+                - type: "null"
+            pageContext:
+              type: string
+          required:
+            - audienceId
+            - pageId
+            - tenantId
+            - currentSupplementaryContext
+            - currentMetaTitle
+            - currentMetaDescription
+            - currentMetaKeywords
+            - pageContext
+          additionalProperties: false
+        pendingChanges:
+          type: array
+          items:
+            $ref: "#/components/schemas/NestedObject2"
+      required:
+        - conversation
+        - messages
+        - context
+        - pendingChanges
+      additionalProperties: false
     GetPage:
+      type: object
+      properties:
+        hasMore:
+          type: boolean
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostPage"
+        nextCursor:
+          type: string
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - hasMore
+        - items
+        - totalCount
+      additionalProperties: false
+    GetPageLink:
       type: object
       properties:
         hasMore:
@@ -619,141 +1586,188 @@ components:
           items:
             type: object
             properties:
-              actions:
-                type: array
-                items: {}
-              audiencesCount:
-                type: number
-              brandId:
+              pageLinkId:
                 type: string
+              tenantDomainId:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              path:
+                type: string
+              target:
+                anyOf:
+                  - anyOf:
+                      - $ref: "#/components/schemas/AudienceIdTargetTypeSchema"
+                      - $ref: "#/components/schemas/PageIdRoutingTableTargetTypeSchema"
+                  - type: "null"
               createdAt:
-                $ref: "#/components/schemas/CreatedAt"
+                $ref: "#/components/schemas/UnnamedSchema"
+              updatedAt:
+                $ref: "#/components/schemas/UnnamedSchema"
               deletedAt:
                 anyOf:
-                  - $ref: "#/components/schemas/CreatedAt"
+                  - $ref: "#/components/schemas/UnnamedSchema"
                   - type: "null"
-              footerLinks:
-                type: array
-                items: {}
-              headerActionId:
-                type: string
-              name:
-                type: string
-              pageContext:
-                type: string
-              pageId:
-                type: string
-              scripts:
-                type: array
-                items: {}
-              status:
-                type: string
-              tenantId:
-                type: string
-              title:
-                type: string
-              updatedAt:
-                $ref: "#/components/schemas/CreatedAt"
             required:
-              - actions
-              - audiencesCount
-              - brandId
+              - pageLinkId
+              - tenantDomainId
+              - path
+              - target
               - createdAt
-              - deletedAt
-              - footerLinks
-              - name
-              - pageContext
-              - pageId
-              - scripts
-              - status
-              - tenantId
-              - title
               - updatedAt
+              - deletedAt
             additionalProperties: false
-        limit:
-          type: number
         nextCursor:
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
       required:
         - hasMore
         - items
-        - limit
+        - nextCursor
+        - totalCount
       additionalProperties: false
-    GetPageResponse:
+    GetPerson:
       type: object
       properties:
-        brandId:
-          type: string
-        createdAt:
-          $ref: "#/components/schemas/CreatedAt"
-        actions:
+        hasMore:
+          type: boolean
+        items:
           type: array
-          items: {}
-        deletedAt:
+          items:
+            $ref: "#/components/schemas/PostPerson"
+        nextCursor:
           anyOf:
-            - $ref: "#/components/schemas/CreatedAt"
+            - $ref: "#/components/schemas/PersonId"
             - type: "null"
-        footerLinks:
-          type: array
-          items: {}
-        headerActionId:
-          type: string
-        metadata: {}
-        name:
-          type: string
-        pageContext:
-          type: string
-        pageId:
-          type: string
-        scripts:
-          type: array
-          items: {}
-        tenantId:
-          type: string
-        updatedAt:
-          $ref: "#/components/schemas/CreatedAt"
-        audiencesCount:
-          type: number
+        totalCount:
+          anyOf:
+            - type: integer
+              minimum: 0
+              maximum: 9007199254740991
+            - type: "null"
       required:
-        - brandId
-        - createdAt
-        - actions
-        - deletedAt
-        - footerLinks
-        - name
-        - pageContext
-        - pageId
-        - scripts
-        - tenantId
-        - updatedAt
-        - audiencesCount
+        - hasMore
+        - items
+        - nextCursor
+        - totalCount
       additionalProperties: false
-    GetVersion:
+    GetSearch:
       type: object
       properties:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/GetAudienceVersionResponse"
-        page:
-          type: object
-          properties:
-            hasMore:
-              type: boolean
-            totalCount:
-              type: number
-          required:
-            - hasMore
-            - totalCount
-          additionalProperties: false
+            type: object
+            properties:
+              audiencesCount:
+                type: integer
+                minimum: 0
+                maximum: 9007199254740991
+              name:
+                type: string
+              pageId:
+                type: string
+              pageType:
+                type: string
+                enum:
+                  - inbound
+                  - outbound
+                  - call_followup
+                  - sales_deck
+                  - custom
+            required:
+              - audiencesCount
+              - name
+              - pageId
+              - pageType
+            additionalProperties: false
       required:
         - items
-        - page
+      additionalProperties: false
+    GetSearch_0:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              audienceId:
+                type: string
+              effectiveName:
+                type: string
+              pageId:
+                type: string
+              pageName:
+                type: string
+            required:
+              - audienceId
+              - effectiveName
+              - pageId
+              - pageName
+            additionalProperties: false
+      required:
+        - items
+      additionalProperties: false
+    GetSummary:
+      type: object
+      properties:
+        avgInteractionsPerSession:
+          type: number
+        avgScrollDepthPercentage:
+          anyOf:
+            - type: number
+            - type: "null"
+        avgTimeSpentSeconds:
+          anyOf:
+            - type: number
+            - type: "null"
+        bounceRate:
+          type: number
+        conversionRate:
+          type: number
+        formSubmitRate:
+          type: number
+        totalSessions:
+          type: number
+      required:
+        - avgInteractionsPerSession
+        - avgScrollDepthPercentage
+        - avgTimeSpentSeconds
+        - bounceRate
+        - conversionRate
+        - formSubmitRate
+        - totalSessions
+      additionalProperties: false
+    GetVersion:
+      type: object
+      properties:
+        hasMore:
+          type: boolean
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostVersion"
+        nextCursor:
+          type: string
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - hasMore
+        - items
+        - totalCount
       additionalProperties: false
     GetWebhookSubscriptionResponse:
       type: object
       properties:
-        id:
+        subscriptionId:
           type: string
           description: Unique subscription identifier
         url:
@@ -775,22 +1789,403 @@ components:
           type: boolean
           description: Whether the subscription is active
         createdAt:
-          $ref: "#/components/schemas/CreatedAt"
+          $ref: "#/components/schemas/UnnamedSchema"
         updatedAt:
-          $ref: "#/components/schemas/CreatedAt"
+          $ref: "#/components/schemas/UnnamedSchema"
       required:
-        - id
+        - subscriptionId
         - url
         - events
         - active
         - createdAt
         - updatedAt
       additionalProperties: false
+    Image:
+      type: object
+      properties:
+        altText:
+          default: null
+          anyOf:
+            - type: string
+            - type: "null"
+        url:
+          default: null
+          anyOf:
+            - type: string
+            - type: "null"
+        fileId:
+          default: null
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        assetId:
+          default: null
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+      required:
+        - altText
+        - url
+        - fileId
+        - assetId
+      additionalProperties: false
+    Metadata:
+      type: object
+      properties:
+        title:
+          anyOf:
+            - type: string
+            - type: "null"
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+        keywords:
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: "null"
+        author:
+          anyOf:
+            - type: string
+            - type: "null"
+        robots:
+          anyOf:
+            - type: array
+              items:
+                type: string
+                enum:
+                  - index
+                  - noindex
+                  - follow
+                  - nofollow
+                  - noarchive
+                  - nosnippet
+                  - noimageindex
+                  - none
+            - type: "null"
+        canonicalUrl:
+          anyOf:
+            - type: string
+            - type: "null"
+        ogTitle:
+          anyOf:
+            - type: string
+            - type: "null"
+        ogDescription:
+          anyOf:
+            - type: string
+            - type: "null"
+        ogType:
+          anyOf:
+            - type: string
+              enum:
+                - website
+                - article
+                - product
+                - profile
+            - type: "null"
+        ogImageUrl:
+          anyOf:
+            - type: string
+            - type: "null"
+        ogImageFileId:
+          anyOf:
+            - type: string
+            - type: "null"
+        ogImageAlt:
+          anyOf:
+            - type: string
+            - type: "null"
+        ogSiteName:
+          anyOf:
+            - type: string
+            - type: "null"
+        ogUrl:
+          anyOf:
+            - type: string
+            - type: "null"
+        twitterCard:
+          anyOf:
+            - type: string
+              enum:
+                - summary
+                - summary_large_image
+                - app
+                - player
+            - type: "null"
+        twitterTitle:
+          anyOf:
+            - type: string
+            - type: "null"
+        twitterDescription:
+          anyOf:
+            - type: string
+            - type: "null"
+        twitterImageUrl:
+          anyOf:
+            - type: string
+            - type: "null"
+        twitterImageFileId:
+          anyOf:
+            - type: string
+            - type: "null"
+        twitterImageAlt:
+          anyOf:
+            - type: string
+            - type: "null"
+        twitterSite:
+          anyOf:
+            - type: string
+            - type: "null"
+        twitterCreator:
+          anyOf:
+            - type: string
+            - type: "null"
+        themeColor:
+          anyOf:
+            - type: string
+            - type: "null"
+      additionalProperties: false
+    Metadata1:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 70
+        description:
+          type: string
+          maxLength: 160
+        keywords:
+          type: array
+          items:
+            type: string
+        author:
+          type: string
+          maxLength: 100
+        robots:
+          type: array
+          items:
+            type: string
+            enum:
+              - index
+              - noindex
+              - follow
+              - nofollow
+              - noarchive
+              - nosnippet
+              - noimageindex
+              - none
+        canonicalUrl:
+          $ref: "#/components/schemas/Url"
+        ogTitle:
+          type: string
+          maxLength: 60
+        ogDescription:
+          type: string
+          maxLength: 110
+        ogType:
+          type: string
+          enum:
+            - website
+            - article
+            - product
+            - profile
+        ogImage:
+          $ref: "#/components/schemas/OgImage"
+        ogImageAlt:
+          type: string
+          maxLength: 420
+        ogSiteName:
+          type: string
+          maxLength: 100
+        ogUrl:
+          $ref: "#/components/schemas/Url"
+        twitterCard:
+          type: string
+          enum:
+            - summary
+            - summary_large_image
+            - app
+            - player
+        twitterTitle:
+          type: string
+          maxLength: 70
+        twitterDescription:
+          type: string
+          maxLength: 200
+        twitterImage:
+          $ref: "#/components/schemas/OgImage"
+        twitterImageAlt:
+          type: string
+          maxLength: 420
+        twitterSite:
+          $ref: "#/components/schemas/TwitterSite"
+        twitterCreator:
+          $ref: "#/components/schemas/TwitterSite"
+        themeColor:
+          $ref: "#/components/schemas/ThemeColor"
+      additionalProperties: false
+    NestedObject:
+      type: object
+      properties:
+        image:
+          $ref: "#/components/schemas/Image"
+      required:
+        - image
+      additionalProperties: false
+    NestedObject1:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        url:
+          type: string
+      required:
+        - text
+        - url
+      additionalProperties: false
+    NestedObject2:
+      type: object
+      properties:
+        changeId:
+          type: string
+        field:
+          type: string
+          enum:
+            - supplementaryContext
+            - metaTitle
+            - metaDescription
+            - metaKeywords
+        previousValue:
+          anyOf:
+            - type: string
+            - type: "null"
+        newValue:
+          anyOf:
+            - type: string
+            - type: "null"
+        status:
+          type: string
+          enum:
+            - applied
+            - reverted
+            - saved
+      required:
+        - changeId
+        - field
+        - previousValue
+        - newValue
+        - status
+      additionalProperties: false
+    OgImage:
+      type: object
+      properties:
+        type:
+          type: string
+          const: file
+        fileId:
+          type: string
+      required:
+        - type
+        - fileId
+      additionalProperties: false
     PersonId:
       type: string
       minLength: 1
       pattern: ^prospect_[a-z0-9]{26}$
-      description: Linked prospect ID
+    PostAccount:
+      type: object
+      properties:
+        accountId:
+          $ref: "#/components/schemas/AccountId"
+        tenantId:
+          type: string
+          description: Tenant ID that owns the account
+        domain:
+          type: string
+          minLength: 1
+          description: Canonical account domain
+        name:
+          anyOf:
+            - type: string
+              minLength: 1
+              maxLength: 255
+            - type: "null"
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        updatedAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        latestActivityAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        linkedPersons:
+          type: array
+          items:
+            type: object
+            properties:
+              personId:
+                $ref: "#/components/schemas/PersonId"
+              tenantId:
+                type: string
+                description: Tenant ID that owns the person
+              name:
+                type: string
+                minLength: 1
+                maxLength: 255
+                description: Person display name
+              email:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              domain:
+                anyOf:
+                  - type: string
+                    minLength: 1
+                  - type: "null"
+              slug:
+                type: string
+                minLength: 1
+                maxLength: 255
+                description: Person routing slug
+              phoneNumber:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              linkedinProfileUrl:
+                anyOf:
+                  - type: string
+                  - type: "null"
+              createdAt:
+                $ref: "#/components/schemas/UnnamedSchema"
+              updatedAt:
+                $ref: "#/components/schemas/UnnamedSchema"
+            required:
+              - personId
+              - tenantId
+              - name
+              - email
+              - domain
+              - slug
+              - phoneNumber
+              - linkedinProfileUrl
+              - createdAt
+              - updatedAt
+            additionalProperties: false
+      required:
+        - accountId
+        - tenantId
+        - domain
+        - name
+        - createdAt
+        - updatedAt
+        - latestActivityAt
+        - linkedPersons
+      additionalProperties: false
     PostAccountLog:
       type: object
       properties:
@@ -799,7 +2194,7 @@ components:
         accountLogId:
           $ref: "#/components/schemas/UnnamedSchema"
         createdAt:
-          $ref: "#/components/schemas/CreatedAt"
+          $ref: "#/components/schemas/UnnamedSchema"
         source:
           $ref: "#/components/schemas/Source"
         type:
@@ -814,28 +2209,305 @@ components:
     PostAudience:
       type: object
       properties:
+        actionFormIdOverride:
+          anyOf:
+            - type: string
+            - type: "null"
+        actionFormInstructionsOverride:
+          anyOf:
+            - type: string
+            - type: "null"
+        actionUrlOverride:
+          anyOf:
+            - type: string
+            - type: "null"
+        archivedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
         audienceId:
           type: string
-          description: The created audience ID
+        computedName:
+          type: string
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        customName:
+          anyOf:
+            - type: string
+            - type: "null"
+        effectiveMetadata:
+          $ref: "#/components/schemas/Metadata"
+        effectiveName:
+          type: string
+        isNewPageAgent:
+          type: boolean
+        latestVersion:
+          anyOf:
+            - $ref: "#/components/schemas/PostVersion"
+            - type: "null"
+        metadataOverride:
+          $ref: "#/components/schemas/Metadata"
         pageId:
           type: string
-          description: The parent page ID
-        tenantId:
-          type: string
-          description: The tenant ID
-        createdAt:
-          type: string
-          description: ISO 8601 creation timestamp
+        prospectId:
+          anyOf:
+            - type: string
+            - type: "null"
+        prospectRouteKey:
+          anyOf:
+            - type: string
+            - type: "null"
+        publishedVersion:
+          anyOf:
+            - $ref: "#/components/schemas/PostVersion"
+            - type: "null"
         status:
           type: string
-          const: processing
-          description: Audience version creation status (always 'processing' on create)
+          enum:
+            - archived
+            - cancelled
+            - draft
+            - pending
+            - processing
+            - published
+            - queued
+        supplementaryContext:
+          anyOf:
+            - type: string
+            - type: "null"
+        tenantId:
+          type: string
       required:
+        - actionFormIdOverride
+        - actionFormInstructionsOverride
+        - actionUrlOverride
+        - archivedAt
         - audienceId
-        - pageId
-        - tenantId
+        - computedName
         - createdAt
+        - customName
+        - effectiveName
+        - isNewPageAgent
+        - latestVersion
+        - pageId
+        - prospectId
+        - prospectRouteKey
+        - publishedVersion
         - status
+        - supplementaryContext
+        - tenantId
+      additionalProperties: false
+    PostInterrupt:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required:
+        - success
+      additionalProperties: false
+    PostMessage:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+          const: true
+        audienceId:
+          type: string
+        clientMessageId:
+          type: string
+        versionId:
+          type: string
+      required:
+        - accepted
+        - audienceId
+        - clientMessageId
+        - versionId
+      additionalProperties: false
+    PostPage:
+      type: object
+      properties:
+        actions:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/ActionIdActionIndexActionTypeButtonTitlePurposeUrlSchema"
+              - $ref: "#/components/schemas/ActionIdActionIndexActionTypeButtonTitleFormIdFormInstructionsPurposeSchema"
+              - $ref: "#/components/schemas/ActionIdActionIndexActionTypeButtonTitleCopyTextPurposeSchema"
+        actionCardWidgets:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/LogosTitleTypeSchema"
+              - $ref: "#/components/schemas/TypeVideoSchema"
+        archivedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        audiencesCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        brandId:
+          type: string
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        deletedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        footerLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/FooterLink"
+        headerActionId:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+        name:
+          type: string
+        pageContext:
+          type: string
+        pageId:
+          type: string
+        pageType:
+          type: string
+          enum:
+            - inbound
+            - outbound
+            - call_followup
+            - sales_deck
+            - custom
+        scripts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Script"
+        status:
+          type: string
+          enum:
+            - archived
+            - draft
+            - published
+        tenantId:
+          type: string
+        title:
+          type: string
+        updatedAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+      required:
+        - actions
+        - actionCardWidgets
+        - archivedAt
+        - audiencesCount
+        - brandId
+        - createdAt
+        - deletedAt
+        - footerLinks
+        - name
+        - pageContext
+        - pageId
+        - pageType
+        - scripts
+        - status
+        - tenantId
+        - title
+        - updatedAt
+      additionalProperties: false
+    PostPageLink:
+      type: object
+      properties:
+        pageLinkId:
+          type: string
+        tenantDomainId:
+          anyOf:
+            - type: string
+            - type: "null"
+        path:
+          type: string
+        target:
+          anyOf:
+            - anyOf:
+                - $ref: "#/components/schemas/AudienceIdTargetTypeSchema"
+                - type: object
+                  properties:
+                    targetType:
+                      type: string
+                      const: page
+                    pageId:
+                      type: string
+                    routingTable:
+                      anyOf:
+                        - type: array
+                          items:
+                            anyOf:
+                              - $ref: "#/components/schemas/AudienceIdWeightSchema"
+                              - $ref: "#/components/schemas/PreserveQueryParamsTargetUrlWeightSchema"
+                        - type: "null"
+                  required:
+                    - targetType
+                    - pageId
+                  additionalProperties: false
+            - type: "null"
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        updatedAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        deletedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+      required:
+        - pageLinkId
+        - tenantDomainId
+        - path
+        - target
+        - createdAt
+        - updatedAt
+        - deletedAt
+      additionalProperties: false
+    PostPerson:
+      type: object
+      properties:
+        personId:
+          $ref: "#/components/schemas/PersonId"
+        tenantId:
+          type: string
+        name:
+          type: string
+        email:
+          anyOf:
+            - type: string
+            - type: "null"
+        domain:
+          anyOf:
+            - type: string
+              minLength: 1
+            - type: "null"
+        slug:
+          type: string
+        phoneNumber:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        linkedinProfileUrl:
+          anyOf:
+            - type: string
+              minLength: 1
+            - type: "null"
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        updatedAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+      required:
+        - personId
+        - tenantId
+        - name
+        - email
+        - domain
+        - slug
+        - phoneNumber
+        - linkedinProfileUrl
+        - createdAt
+        - updatedAt
       additionalProperties: false
     PostPersonLog:
       type: object
@@ -845,7 +2517,7 @@ components:
         personLogId:
           $ref: "#/components/schemas/UnnamedSchema"
         createdAt:
-          $ref: "#/components/schemas/CreatedAt"
+          $ref: "#/components/schemas/UnnamedSchema"
         createdPerson:
           type: boolean
           description: Whether the request auto-created a person before writing the log
@@ -861,10 +2533,86 @@ components:
         - source
         - type
       additionalProperties: false
+    PostVersion:
+      type: object
+      properties:
+        archivedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        audienceId:
+          type: string
+        becameDraftAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        cancelledAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        isNewPageAgent:
+          type: boolean
+        obsoleteAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        publishedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        queueDurationMs:
+          anyOf:
+            - type: number
+            - type: "null"
+        queuedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        status:
+          type: string
+          enum:
+            - archived
+            - cancelled
+            - draft
+            - pending
+            - processing
+            - published
+            - queued
+        supplementaryContext:
+          anyOf:
+            - type: string
+            - type: "null"
+        tenantId:
+          type: string
+        versionId:
+          type: string
+        versionNumber:
+          type: integer
+          exclusiveMinimum: 0
+          maximum: 9007199254740991
+      required:
+        - archivedAt
+        - audienceId
+        - becameDraftAt
+        - cancelledAt
+        - createdAt
+        - isNewPageAgent
+        - obsoleteAt
+        - publishedAt
+        - queueDurationMs
+        - queuedAt
+        - status
+        - supplementaryContext
+        - tenantId
+        - versionId
+        - versionNumber
+      additionalProperties: false
     PostWebhookSubscription:
       type: object
       properties:
-        id:
+        subscriptionId:
           type: string
           description: Unique subscription identifier
         url:
@@ -886,14 +2634,14 @@ components:
           type: boolean
           description: Whether the subscription is active
         createdAt:
-          $ref: "#/components/schemas/CreatedAt"
+          $ref: "#/components/schemas/UnnamedSchema"
         updatedAt:
-          $ref: "#/components/schemas/CreatedAt"
+          $ref: "#/components/schemas/UnnamedSchema"
         signingSecret:
           type: string
           description: The signing secret for the subscription
       required:
-        - id
+        - subscriptionId
         - url
         - events
         - active
@@ -901,12 +2649,61 @@ components:
         - updatedAt
         - signingSecret
       additionalProperties: false
+    Schema:
+      anyOf:
+        - type: object
+          properties:
+            messagesProcessed:
+              type: integer
+              minimum: 0
+              maximum: 9007199254740991
+            runToken:
+              type: string
+          required:
+            - messagesProcessed
+            - runToken
+          additionalProperties: false
+        - type: "null"
+    Script:
+      type: object
+      properties:
+        content:
+          type: string
+          maxLength: 50000
+        description:
+          type: string
+          maxLength: 500
+        enabled:
+          default: true
+          type: boolean
+        injectionPoint:
+          type: string
+          enum:
+            - head
+            - body-start
+            - body-end
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+        - content
+        - enabled
+        - injectionPoint
+        - name
+      additionalProperties: false
     Source:
       type: string
       minLength: 1
       maxLength: 100
       pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
       description: Stored activity source
+    ThemeColor:
+      type: string
+      pattern: ^#[0-9A-Fa-f]{6}$
+    TwitterSite:
+      type: string
+      pattern: ^@[A-Za-z0-9_]{1,15}$
     Type:
       default: webhook
       description: Kebab-case person activity type. Defaults to 'webhook' when omitted (e.g. 'contact-update')
@@ -924,6 +2721,140 @@ components:
           description: New account name
       required:
         - name
+      additionalProperties: false
+    UpdateAudienceRequest:
+      type: object
+      properties:
+        actionFormIdOverride:
+          anyOf:
+            - type: string
+            - type: "null"
+        actionFormInstructionsOverride:
+          anyOf:
+            - type: string
+            - type: "null"
+        actionUrlOverride:
+          anyOf:
+            - $ref: "#/components/schemas/Url"
+            - type: "null"
+        customName:
+          anyOf:
+            - type: string
+              minLength: 1
+            - type: "null"
+        metadataOverride:
+          $ref: "#/components/schemas/Metadata1"
+        supplementaryContext:
+          anyOf:
+            - type: string
+              minLength: 1
+            - type: "null"
+      additionalProperties: false
+    UpdatePageLinkRequest:
+      type: object
+      properties:
+        tenantDomainId:
+          anyOf:
+            - type: string
+            - type: "null"
+        path:
+          type: string
+          minLength: 1
+        target:
+          anyOf:
+            - $ref: "#/components/schemas/AudienceIdTargetTypeSchema"
+            - type: object
+              properties:
+                targetType:
+                  type: string
+                  const: page
+                pageId:
+                  type: string
+                routingTable:
+                  anyOf:
+                    - type: array
+                      items:
+                        anyOf:
+                          - $ref: "#/components/schemas/AudienceIdWeightSchema"
+                          - $ref: "#/components/schemas/PreserveQueryParamsTargetUrlWeightSchema"
+                    - type: "null"
+              required:
+                - targetType
+                - pageId
+              additionalProperties: false
+      additionalProperties: false
+    UpdatePageRequest:
+      type: object
+      properties:
+        actions:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/ActionIdActionTypeButtonTitlePurposeUrlSchema"
+              - $ref: "#/components/schemas/ActionIdActionTypeButtonTitleFormIdFormInstructionsPurposeSchema"
+              - $ref: "#/components/schemas/ActionIdActionTypeButtonTitleCopyTextPurposeSchema"
+        actionCardWidgets:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/LogosTitleTypeSchema"
+              - $ref: "#/components/schemas/TypeVideoSchema"
+        brandId:
+          type: string
+        footerLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/FooterLink"
+        headerActionId:
+          anyOf:
+            - type: string
+            - type: "null"
+        metadata:
+          $ref: "#/components/schemas/Metadata1"
+        name:
+          type: string
+          minLength: 1
+        pageContext:
+          type: string
+          minLength: 1
+        pageType:
+          type: string
+          enum:
+            - inbound
+            - outbound
+            - call_followup
+            - sales_deck
+            - custom
+        scripts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Script"
+      additionalProperties: false
+    UpdatePersonRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        email:
+          anyOf:
+            - type: string
+            - type: "null"
+        domain:
+          anyOf:
+            - type: string
+              minLength: 1
+            - type: "null"
+        phoneNumber:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        linkedinProfileUrl:
+          anyOf:
+            - type: string
+              minLength: 1
+            - type: "null"
       additionalProperties: false
     UpdateWebhookSubscriptionRequest:
       type: object
@@ -947,7 +2878,42 @@ components:
     Url:
       type: string
       format: uri
-      description: The webhook endpoint URL
+      description: URL to open when action is triggered
+    Video:
+      type: object
+      properties:
+        title:
+          default: null
+          anyOf:
+            - type: string
+            - type: "null"
+        youtubeUrl:
+          default: null
+          anyOf:
+            - type: string
+            - type: "null"
+        autoplay:
+          default: false
+          type: boolean
+        loop:
+          default: false
+          type: boolean
+        controls:
+          default: true
+          type: boolean
+        muted:
+          default: null
+          anyOf:
+            - type: boolean
+            - type: "null"
+      required:
+        - title
+        - youtubeUrl
+        - autoplay
+        - loop
+        - controls
+        - muted
+      additionalProperties: false
   securitySchemes:
     apiKey:
       description: API key authentication for the External Actor Gateway
@@ -975,13 +2941,57 @@ paths:
             schema:
               $ref: "#/components/schemas/CreateAccountLogRequest"
         required: true
+  /v0/accounts:
+    get:
+      description: List accounts.
+      operationId: listAccounts
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAccountResponse"
+      summary: List accounts
+      tags:
+        - Accounts
+      parameters:
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/IncludeEmptyOnlyQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+    post:
+      description: Create or return an account for a domain.
+      operationId: createAccount
+      responses:
+        "200":
+          $ref: "#/components/responses/PostAccountResponse"
+      summary: Create account
+      tags:
+        - Accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAccountRequest"
+        required: true
+  /v0/accounts/search:
+    get:
+      description: Search accounts by name or domain.
+      operationId: searchAccounts
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAccountResponse"
+      summary: Search accounts
+      tags:
+        - Accounts
+      parameters:
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/IncludeEmptyOnlyQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/QueryQuery"
   /v0/accounts/{account_id}:
     get:
       description: Retrieve a specific account by ID.
       operationId: getAccount
       responses:
         "200":
-          $ref: "#/components/responses/GetAccountResponseResponse"
+          $ref: "#/components/responses/PostAccountResponse"
       summary: Get account by ID
       tags:
         - Accounts
@@ -992,7 +3002,7 @@ paths:
       operationId: updateAccount
       responses:
         "200":
-          $ref: "#/components/responses/GetAccountResponseResponse"
+          $ref: "#/components/responses/PostAccountResponse"
       summary: Update account by ID
       tags:
         - Accounts
@@ -1006,7 +3016,7 @@ paths:
         required: true
   /v0/accounts/{account_id}/activity:
     get:
-      description: Retrieve merged account activity, optionally including linked prospect activity
+      description: Retrieve merged account activity, optionally including linked person activity
       operationId: listAccountActivity
       responses:
         "200":
@@ -1020,8 +3030,8 @@ paths:
         - Account Activity
       parameters:
         - in: query
-          name: includeProspectActivity
-          description: includeProspectActivity parameter
+          name: includePersonActivity
+          description: includePersonActivity parameter
           required: false
           schema:
             type: string
@@ -1039,9 +3049,132 @@ paths:
           schema:
             type: number
         - $ref: "#/components/parameters/AccountIdPath"
+  /v0/audience_sessions/{audience_session_id}/interactions:
+    get:
+      description: Get interaction history for an audience session.
+      operationId: getAudienceSessionInteractions
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetInteraction"
+      summary: Get audience session interactions
+      tags:
+        - Analytics
+      parameters:
+        - in: path
+          name: audience_session_id
+          description: audience_session_id parameter
+          required: true
+          schema:
+            type: string
+  /v0/audiences/search:
+    get:
+      description: Search audiences by name.
+      operationId: searchAudiences
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetSearch_0"
+      summary: Search audiences
+      tags:
+        - Audiences
+      parameters:
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/QueryQuery"
+  /v0/page_links:
+    get:
+      description: List page links.
+      operationId: listPageLinks
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetPageLink"
+      summary: List page links
+      tags:
+        - Page Links
+      parameters:
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - in: query
+          name: pageId
+          description: pageId parameter
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: path
+          description: path parameter
+          required: false
+          schema:
+            type: string
+        - $ref: "#/components/parameters/TenantDomainIdQuery"
+    post:
+      description: Create a page link.
+      operationId: createPageLink
+      responses:
+        "200":
+          $ref: "#/components/responses/PostPageLinkResponse"
+      summary: Create page link
+      tags:
+        - Page Links
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePageLinkRequest"
+        required: true
+  /v0/page_links/{page_link_id}:
+    get:
+      description: Retrieve a specific page link by ID.
+      operationId: getPageLink
+      responses:
+        "200":
+          $ref: "#/components/responses/PostPageLinkResponse"
+      summary: Get page link by ID
+      tags:
+        - Page Links
+      parameters:
+        - $ref: "#/components/parameters/PageLinkIdPath"
+    patch:
+      description: Update a page link by ID.
+      operationId: updatePageLink
+      responses:
+        "200":
+          $ref: "#/components/responses/PostPageLinkResponse"
+      summary: Update page link
+      tags:
+        - Page Links
+      parameters:
+        - $ref: "#/components/parameters/PageLinkIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePageLinkRequest"
+        required: true
+    delete:
+      description: Delete a page link by ID.
+      operationId: deletePageLink
+      responses:
+        "200":
+          $ref: "#/components/responses/PostInterruptResponse"
+      summary: Delete page link
+      tags:
+        - Page Links
+      parameters:
+        - $ref: "#/components/parameters/PageLinkIdPath"
   /v0/pages:
     get:
-      description: Retrieve a list of pages for the authenticated tenant with optional filtering and pagination
+      description: List pages for the authenticated tenant.
       operationId: listPages
       responses:
         "200":
@@ -1056,36 +3189,86 @@ paths:
       parameters:
         - $ref: "#/components/parameters/CursorQuery"
         - $ref: "#/components/parameters/LimitQuery"
-        - in: query
-          name: status
-          description: status parameter
-          required: false
-          schema:
-            type: string
-            enum:
-              - archived
-              - draft
-              - published
-  /v0/pages/{page_id}:
+    post:
+      description: Create a page.
+      operationId: createPage
+      responses:
+        "201":
+          $ref: "#/components/responses/PostPageResponse"
+      summary: Create page
+      tags:
+        - Pages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePageRequest"
+        required: true
+  /v0/pages/search:
     get:
-      description: Retrieve a specific page by ID.
-      operationId: getPage
+      description: Search pages by name.
+      operationId: searchPages
       responses:
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetPageResponse"
-      summary: Get page by ID
+                $ref: "#/components/schemas/GetSearch"
+      summary: Search pages
+      tags:
+        - Pages
+      parameters:
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/QueryQuery"
+  /v0/pages/{page_id}:
+    get:
+      description: Get a page by ID.
+      operationId: getPage
+      responses:
+        "200":
+          $ref: "#/components/responses/PostPageResponse"
+      summary: Get page
       tags:
         - Pages
       parameters:
         - $ref: "#/components/parameters/PageIdPath"
-  /v0/pages/{page_id}/audiences:
+    patch:
+      description: Update a page.
+      operationId: updatePage
+      responses:
+        "200":
+          $ref: "#/components/responses/PostPageResponse"
+      summary: Update page
+      tags:
+        - Pages
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePageRequest"
+        required: true
+    delete:
+      description: Delete a page.
+      operationId: deletePage
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletePageResponse"
+      summary: Delete page
+      tags:
+        - Pages
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+  /v0/pages/{page_id}/analytics/audiences:
     get:
-      description: Retrieve a paginated list of audiences within the specified page
-      operationId: listAudiences
+      description: Get analytics totals grouped by audience for a page.
+      operationId: listAudienceAnalytics
       responses:
         "200":
           description: Successful operation
@@ -1093,7 +3276,77 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetAudience"
-      summary: List audiences in a page
+      summary: List audience analytics
+      tags:
+        - Analytics
+      parameters:
+        - $ref: "#/components/parameters/EndDateQuery"
+        - $ref: "#/components/parameters/StartDateQuery"
+        - $ref: "#/components/parameters/PageIdPath"
+  /v0/pages/{page_id}/analytics/summary:
+    get:
+      description: Get basic analytics totals for a page.
+      operationId: getPageAnalyticsSummary
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetSummary"
+      summary: Get page analytics summary
+      tags:
+        - Analytics
+      parameters:
+        - $ref: "#/components/parameters/EndDateQuery"
+        - $ref: "#/components/parameters/StartDateQuery"
+        - $ref: "#/components/parameters/PageIdPath"
+  /v0/pages/{page_id}/archive:
+    post:
+      description: Archive a page.
+      operationId: archivePage
+      responses:
+        "200":
+          $ref: "#/components/responses/PostPageResponse"
+      summary: Archive page
+      tags:
+        - Pages
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+      requestBody:
+        $ref: "#/components/requestBodies/ArchiveBody"
+  /v0/pages/{page_id}/audience_sessions:
+    get:
+      description: List audience sessions for a page.
+      operationId: listAudienceSessions
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAudienceSession"
+      summary: List audience sessions
+      tags:
+        - Analytics
+      parameters:
+        - $ref: "#/components/parameters/EndDateQuery"
+        - $ref: "#/components/parameters/StartDateQuery"
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/PageIdPath"
+  /v0/pages/{page_id}/audiences:
+    get:
+      description: List audiences for a page.
+      operationId: listAudiences
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAudience_0"
+      summary: List audiences
       tags:
         - Audiences
       parameters:
@@ -1101,16 +3354,12 @@ paths:
         - $ref: "#/components/parameters/LimitQuery"
         - $ref: "#/components/parameters/PageIdPath"
     post:
-      description: Create a new audience in the page and trigger version creation/publishing
+      description: Create an audience in a page.
       operationId: createAudience
       responses:
         "201":
-          description: Audience created successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PostAudience"
-      summary: Create audience with version
+          $ref: "#/components/responses/PostAudienceResponse"
+      summary: Create audience
       tags:
         - Audiences
       parameters:
@@ -1123,16 +3372,42 @@ paths:
         required: true
   /v0/pages/{page_id}/audiences/{audience_id}:
     get:
-      description: Retrieve audience details including published version information
+      description: Get an audience.
       operationId: getAudience
       responses:
         "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetAudienceResponse"
-      summary: Get audience with published version
+          $ref: "#/components/responses/PostAudienceResponse"
+      summary: Get audience
+      tags:
+        - Audiences
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
+    patch:
+      description: Update an audience.
+      operationId: updateAudience
+      responses:
+        "200":
+          $ref: "#/components/responses/PostAudienceResponse"
+      summary: Update audience
+      tags:
+        - Audiences
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAudienceRequest"
+        required: true
+    delete:
+      description: Archive an audience.
+      operationId: archiveAudience
+      responses:
+        "200":
+          $ref: "#/components/responses/PostAudienceResponse"
+      summary: Archive audience
       tags:
         - Audiences
       parameters:
@@ -1140,7 +3415,7 @@ paths:
         - $ref: "#/components/parameters/AudienceIdPath"
   /v0/pages/{page_id}/audiences/{audience_id}/link:
     get:
-      description: Generate a shareable link for an audience. Fails if the audience version is not yet published.
+      description: Get the generated link for an audience.
       operationId: getAudienceLink
       responses:
         "200":
@@ -1153,17 +3428,102 @@ paths:
       tags:
         - Audiences
       parameters:
-        - in: query
-          name: tenantDomainId
-          description: Optional tenant domain ID for custom domain. If not provided, uses fallback subdomain.
-          required: false
-          schema:
-            type: string
+        - $ref: "#/components/parameters/TenantDomainIdQuery"
         - $ref: "#/components/parameters/PageIdPath"
         - $ref: "#/components/parameters/AudienceIdPath"
+  /v0/pages/{page_id}/audiences/{audience_id}/messages:
+    get:
+      description: Get the message history for an audience draft conversation.
+      operationId: getAudienceMessages
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetMessage"
+      summary: Get audience messages
+      tags:
+        - Audience Messages
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
+    post:
+      description: Send a message to the audience draft editor.
+      operationId: sendAudienceMessage
+      responses:
+        "202":
+          description: Request accepted for processing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostMessage"
+      summary: Send audience message
+      tags:
+        - Audience Messages
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMessageRequest"
+        required: true
+  /v0/pages/{page_id}/audiences/{audience_id}/messages/active_run:
+    get:
+      description: Get the active audience message run.
+      operationId: getAudienceActiveRun
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schema"
+      summary: Get audience active run
+      tags:
+        - Audience Messages
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
+  /v0/pages/{page_id}/audiences/{audience_id}/messages/interrupt:
+    post:
+      description: Interrupt the active audience message run.
+      operationId: interruptAudienceMessage
+      responses:
+        "200":
+          $ref: "#/components/responses/PostInterruptResponse"
+      summary: Interrupt audience message
+      tags:
+        - Audience Messages
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInterruptRequest"
+        required: true
+  /v0/pages/{page_id}/audiences/{audience_id}/restore:
+    post:
+      description: Restore an archived audience.
+      operationId: restoreAudience
+      responses:
+        "200":
+          $ref: "#/components/responses/PostAudienceResponse"
+      summary: Restore audience
+      tags:
+        - Audiences
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
+      requestBody:
+        $ref: "#/components/requestBodies/ArchiveBody"
   /v0/pages/{page_id}/audiences/{audience_id}/versions:
     get:
-      description: Retrieve a list of versions for the specified audience
+      description: List versions for an audience.
       operationId: listAudienceVersions
       responses:
         "200":
@@ -1176,44 +3536,90 @@ paths:
       tags:
         - Audience Versions
       parameters:
+        - $ref: "#/components/parameters/CursorQuery"
         - in: query
           name: include
-          description: Comma-separated list of additional fields to include (archived)
+          description: include parameter
           required: false
           schema:
             type: string
         - $ref: "#/components/parameters/LimitQuery"
-        - in: query
-          name: page
-          description: Page number for pagination (default 1)
-          required: false
-          schema:
-            type: number
         - $ref: "#/components/parameters/PageIdPath"
         - $ref: "#/components/parameters/AudienceIdPath"
+    post:
+      description: Create a new version for an audience.
+      operationId: createAudienceVersion
+      responses:
+        "201":
+          $ref: "#/components/responses/PostVersionResponse"
+      summary: Create audience version
+      tags:
+        - Audience Versions
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
+      requestBody:
+        $ref: "#/components/requestBodies/VersionsBody"
   /v0/pages/{page_id}/audiences/{audience_id}/versions/{version_id}:
     get:
-      description: Retrieve a specific version of an audience
+      description: Get an audience version.
       operationId: getAudienceVersion
       responses:
         "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetAudienceVersionResponse"
+          $ref: "#/components/responses/PostVersionResponse"
       summary: Get audience version
       tags:
         - Audience Versions
       parameters:
         - $ref: "#/components/parameters/PageIdPath"
         - $ref: "#/components/parameters/AudienceIdPath"
-        - in: path
-          name: version_id
-          description: version_id parameter
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/VersionIdPath"
+  /v0/pages/{page_id}/audiences/{audience_id}/versions/{version_id}/cancel:
+    post:
+      description: Cancel an audience version and keep it as a draft.
+      operationId: cancelAudienceVersion
+      responses:
+        "200":
+          $ref: "#/components/responses/PostVersionResponse"
+      summary: Cancel audience version
+      tags:
+        - Audience Versions
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
+        - $ref: "#/components/parameters/VersionIdPath"
+      requestBody:
+        $ref: "#/components/requestBodies/ArchiveBody"
+  /v0/pages/{page_id}/audiences/{audience_id}/versions/{version_id}/publish:
+    post:
+      description: Publish an audience version.
+      operationId: publishAudienceVersion
+      responses:
+        "200":
+          $ref: "#/components/responses/PostVersionResponse"
+      summary: Publish audience version
+      tags:
+        - Audience Versions
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
+        - $ref: "#/components/parameters/VersionIdPath"
+      requestBody:
+        $ref: "#/components/requestBodies/VersionsBody"
+  /v0/pages/{page_id}/restore:
+    post:
+      description: Restore an archived page.
+      operationId: restorePage
+      responses:
+        "200":
+          $ref: "#/components/responses/PostPageResponse"
+      summary: Restore page
+      tags:
+        - Pages
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+      requestBody:
+        $ref: "#/components/requestBodies/ArchiveBody"
   /v0/person_logs:
     post:
       description: Create a person log entry using the authenticated API key tenant context
@@ -1234,6 +3640,100 @@ paths:
             schema:
               $ref: "#/components/schemas/CreatePersonLogRequest"
         required: true
+  /v0/persons:
+    get:
+      description: List people.
+      operationId: listPersons
+      responses:
+        "200":
+          $ref: "#/components/responses/GetPersonResponse"
+      summary: List people
+      tags:
+        - Persons
+      parameters:
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+    post:
+      description: Create a person.
+      operationId: createPerson
+      responses:
+        "201":
+          $ref: "#/components/responses/PostPersonResponse"
+      summary: Create person
+      tags:
+        - Persons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePersonRequest"
+        required: true
+  /v0/persons/search:
+    get:
+      description: Search people.
+      operationId: searchPersons
+      responses:
+        "200":
+          $ref: "#/components/responses/GetPersonResponse"
+      summary: Search people
+      tags:
+        - Persons
+      parameters:
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/QueryQuery"
+  /v0/persons/{person_id}:
+    get:
+      description: Retrieve a specific person by ID.
+      operationId: getPerson
+      responses:
+        "200":
+          $ref: "#/components/responses/PostPersonResponse"
+      summary: Get person by ID
+      tags:
+        - Persons
+      parameters:
+        - $ref: "#/components/parameters/PersonIdPath"
+    patch:
+      description: Update a person by ID.
+      operationId: updatePerson
+      responses:
+        "200":
+          $ref: "#/components/responses/PostPersonResponse"
+      summary: Update person
+      tags:
+        - Persons
+      parameters:
+        - $ref: "#/components/parameters/PersonIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePersonRequest"
+        required: true
+    delete:
+      description: Delete a person by ID.
+      operationId: deletePerson
+      responses:
+        "200":
+          $ref: "#/components/responses/PostInterruptResponse"
+      summary: Delete person
+      tags:
+        - Persons
+      parameters:
+        - $ref: "#/components/parameters/PersonIdPath"
+  /v0/persons/{person_id}/restore:
+    post:
+      description: Restore a deleted person by ID.
+      operationId: restorePerson
+      responses:
+        "200":
+          $ref: "#/components/responses/PostInterruptResponse"
+      summary: Restore person
+      tags:
+        - Persons
+      parameters:
+        - $ref: "#/components/parameters/PersonIdPath"
   /v0/webhook_subscriptions:
     get:
       description: List webhook subscriptions for the authenticated tenant
@@ -1301,11 +3801,7 @@ paths:
       operationId: deleteWebhookSubscription
       responses:
         "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DeleteWebhookSubscriptionResponse"
+          $ref: "#/components/responses/PostInterruptResponse"
       summary: Delete webhook subscription
       tags:
         - Webhook Subscriptions
@@ -1314,14 +3810,22 @@ paths:
 tags:
   - name: Pages
     description: Page management operations
+  - name: Analytics
+    description: Analytics and session read operations
   - name: Audiences
     description: Audience management operations
   - name: Audience Versions
     description: Audience version management operations
+  - name: Audience Messages
+    description: Audience message editing operations
+  - name: Page Links
+    description: Page link management operations
+  - name: Persons
+    description: Person management operations
   - name: Accounts
-    description: Account read and update operations
+    description: Account management operations
   - name: Account Activity
-    description: Merged account and linked prospect activity operations
+    description: Merged account and linked person activity operations
   - name: Person Logs
     description: Person log ingestion operations
   - name: Account Logs
