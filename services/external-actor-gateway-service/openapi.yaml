@@ -2022,6 +2022,34 @@ components:
                           properties:
                             type:
                               type: string
+                              const: artifact
+                            artifactId:
+                              type: string
+                            path:
+                              type: string
+                            title:
+                              type: string
+                            kind:
+                              type: string
+                              enum:
+                                - email
+                                - call-script
+                                - document
+                            previewText:
+                              anyOf:
+                                - type: string
+                                - type: "null"
+                          required:
+                            - type
+                            - artifactId
+                            - path
+                            - title
+                            - kind
+                          additionalProperties: false
+                        - type: object
+                          properties:
+                            type:
+                              type: string
                               const: error
                             variant:
                               type: string
