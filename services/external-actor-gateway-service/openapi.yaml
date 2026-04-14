@@ -4,7 +4,45 @@ info:
     email: api-support@tryarchitect.com
     name: Architect
     url: https://tryarchitect.com
-  description: The Customer API provides a RESTful API for external systems to integrate with the Architect platform.
+  description: |-
+    The Customer API lets you manage pages, audiences, persons, accounts, topics, page links, analytics, and webhook subscriptions.
+
+    ## Authentication
+    Send your API key in the `x-api-key` header on every request.
+
+    ## Terminology
+    - **Page**: a top-level customer experience container.
+    - **Audience**: a targeted experience that belongs to a Page.
+    - **Version**: a generated or editable Audience state, including drafts and published versions.
+    - **Person**: an individual contact record.
+
+    ## Pagination
+    Collection endpoints use `limit` and `cursor`. When another page is available, pass the returned `nextCursor` value back as `cursor`. When there are no more results, `nextCursor` is `null`.
+
+    ## Webhooks
+    Create subscriptions with `POST /v0/webhook_subscriptions`. The `signingSecret` is returned only once, when the subscription is created, so store it securely.
+
+    Webhook deliveries are sent as `POST` requests with these headers:
+    - `X-Webhook-Signature-256`: HMAC-SHA256 of the raw request body, prefixed with `sha256=`
+    - `X-Webhook-Timestamp`: Unix timestamp in milliseconds used when the signature was generated
+
+    Webhook deliveries are at-least-once. Use `eventId` for idempotency and return a `2xx` response quickly after persisting work.
+
+    Example delivery body:
+    ```json
+    {
+      "timestamp": "2024-01-15T10:30:00.000Z",
+      "eventId": "event_01j5k9m7n8p9q2r3s4t5v6w7x8",
+      "payload": {
+        "type": "page.version.created",
+        "pageId": "page_01j5k9m7n8p9q2r3s4t5v6w7x8",
+        "versionId": "<audience_version_id>",
+        "createdAt": "2024-01-15T10:30:00.000Z"
+      }
+    }
+    ```
+
+    Version webhook event names currently use the internal `page.version.*` namespace. In Customer API terms, these correspond to Audience version lifecycle events.
   title: Architect - Customer API
   version: 0.0.1
 servers:
@@ -24,6 +62,13 @@ components:
       summary: 01 example
       value:
         title: null
+    22Example:
+      description: Example values extracted from schema defaults
+      summary: 22 example
+      value:
+        metaDescription: null
+        purpose: null
+        enrichmentStatus: pending
     CreateAudienceRequestExample:
       description: Example values extracted from schema defaults
       summary: CreateAudienceRequest example
@@ -41,6 +86,11 @@ components:
       summary: CreateWebhookSubscriptionRequest example
       value:
         active: true
+    ErrorExample:
+      description: Example values extracted from schema defaults
+      summary: Error example
+      value:
+        status: 400
     ImageExample:
       description: Example values extracted from schema defaults
       summary: Image example
@@ -74,6 +124,13 @@ components:
       required: true
       schema:
         type: string
+    AccountLogIdPath:
+      in: path
+      name: account_log_id
+      description: account_log_id parameter
+      required: true
+      schema:
+        type: string
     AudienceIdPath:
       in: path
       name: audience_id
@@ -81,8 +138,15 @@ components:
       required: true
       schema:
         type: string
+    AudienceSessionIdPath:
+      in: path
+      name: audience_session_id
+      description: audience_session_id parameter
+      required: true
+      schema:
+        type: string
     Cursor:
-      description: Opaque cursor for pagination - use nextCursor from previous response
+      description: Opaque cursor for pagination - use nextCursor from a previous response.
       in: query
       name: cursor
       required: false
@@ -103,6 +167,13 @@ components:
       schema:
         type: string
         format: date-time
+    IncludeDeletedQuery:
+      in: query
+      name: includeDeleted
+      description: includeDeleted parameter
+      required: false
+      schema:
+        type: string
     IncludeEmptyOnlyQuery:
       in: query
       name: includeEmptyOnly
@@ -111,7 +182,7 @@ components:
       schema:
         type: string
     Limit:
-      description: Number of items to return (1-100, default 20)
+      description: Number of items to return (1-100, default 20).
       in: query
       name: limit
       required: false
@@ -127,11 +198,25 @@ components:
       required: false
       schema:
         type: number
+    MessageIdPath:
+      in: path
+      name: message_id
+      description: message_id parameter
+      required: true
+      schema:
+        type: string
     PageIdPath:
       in: path
       name: page_id
       description: page_id parameter
       required: true
+      schema:
+        type: string
+    PageIdQuery:
+      in: query
+      name: pageId
+      description: pageId parameter
+      required: false
       schema:
         type: string
     PageLinkIdPath:
@@ -145,6 +230,13 @@ components:
       in: path
       name: person_id
       description: person_id parameter
+      required: true
+      schema:
+        type: string
+    PersonLogIdPath:
+      in: path
+      name: person_log_id
+      description: person_log_id parameter
       required: true
       schema:
         type: string
@@ -177,6 +269,20 @@ components:
       required: false
       schema:
         type: string
+    TopicEntryIdPath:
+      in: path
+      name: topic_entry_id
+      description: topic_entry_id parameter
+      required: true
+      schema:
+        type: string
+    TopicIdPath:
+      in: path
+      name: topic_id
+      description: topic_id parameter
+      required: true
+      schema:
+        type: string
     VersionIdPath:
       in: path
       name: version_id
@@ -191,6 +297,12 @@ components:
           schema:
             $ref: "#/components/schemas/CreateArchiveRequest"
       required: true
+    LogsBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdatePersonLogRequest"
+      required: true
     VersionsBody:
       content:
         application/json:
@@ -198,42 +310,96 @@ components:
             $ref: "#/components/schemas/CreateVersionRequest"
       required: true
   responses:
-    BadRequest:
+    ConflictError:
       content:
         application/json:
+          examples:
+            default:
+              value:
+                code: CONFLICT
+                detail: Default topics cannot be deleted
+                requestId: req_01j5k9m7n8p9q2r3s4t5v6w7x8
+                status: 409
+                title: Conflict
+                type: https://api.tryarchitect.com/errors/conflict
           schema:
             $ref: "#/components/schemas/Error"
-      description: Bad request - Invalid query parameters
-    CommonErrors:
+      description: The request conflicts with current resource state, lifecycle rules, or uniqueness constraints.
+    ForbiddenError:
       content:
         application/json:
+          examples:
+            default:
+              value:
+                code: FORBIDDEN
+                detail: Multi-tenant API keys are not supported
+                requestId: req_01j5k9m7n8p9q2r3s4t5v6w7x8
+                status: 403
+                title: Forbidden
+                type: https://api.tryarchitect.com/errors/forbidden
           schema:
             $ref: "#/components/schemas/Error"
-      description: Error response - covers authentication, authorization, rate limiting, and server errors
+      description: The caller is authenticated but does not have access to the requested tenant or operation.
     GetAccountResponse:
       description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/GetAccount"
+    GetPageLinkResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetPageLink"
     GetPersonResponse:
       description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/GetPerson"
+    GetTopicResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetTopic"
     GetWebhookSubscriptionResponseResponse:
       description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/GetWebhookSubscriptionResponse"
-    NotFound:
+    InternalServerError:
       content:
         application/json:
+          examples:
+            default:
+              value:
+                code: INTERNAL
+                detail: An unexpected error occurred
+                requestId: req_01j5k9m7n8p9q2r3s4t5v6w7x8
+                status: 500
+                title: Internal Server Error
+                type: https://api.tryarchitect.com/errors/internal
           schema:
             $ref: "#/components/schemas/Error"
-      description: Resource not found
+      description: The server encountered an unexpected error while processing the request.
+    NotFoundError:
+      content:
+        application/json:
+          examples:
+            default:
+              value:
+                code: NOT_FOUND
+                detail: Audience not found
+                requestId: req_01j5k9m7n8p9q2r3s4t5v6w7x8
+                status: 404
+                title: Not Found
+                type: https://api.tryarchitect.com/errors/not_found
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: The referenced resource does not exist, is not owned by the requested parent, or is not visible to the authenticated tenant.
     PostAccountResponse:
       description: Successful operation
       content:
@@ -246,12 +412,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PostAudience"
-    PostInterruptResponse:
-      description: Successful operation
+    PostEntrieResponse:
+      description: TopicEntry created successfully
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PostInterrupt"
+            $ref: "#/components/schemas/PostEntrie"
     PostPageLinkResponse:
       description: Successful operation
       content:
@@ -270,18 +436,104 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PostPerson"
+    PostRevertResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PostRevert"
+    PostTopicResponse:
+      description: Topic created successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PostTopic"
     PostVersionResponse:
       description: AudienceVersion created successfully
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PostVersion"
+    RateLimitError:
+      content:
+        application/json:
+          examples:
+            default:
+              value:
+                code: RATE_LIMITED
+                detail: Rate limit exceeded
+                details:
+                  limit: 100
+                  remaining: 0
+                  resetTime: 1713225600000
+                  retryAfter: 60
+                requestId: req_01j5k9m7n8p9q2r3s4t5v6w7x8
+                status: 429
+                title: Too Many Requests
+                type: https://api.tryarchitect.com/errors/rate_limited
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: The authenticated caller has exceeded the current request rate limit window.
+    ServiceUnavailableError:
+      content:
+        application/json:
+          examples:
+            default:
+              value:
+                code: SERVICE_UNAVAILABLE
+                detail: The service is temporarily unavailable
+                requestId: req_01j5k9m7n8p9q2r3s4t5v6w7x8
+                status: 503
+                title: Service Unavailable
+                type: https://api.tryarchitect.com/errors/service_unavailable
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: The service is temporarily unavailable. Retry the request after a short delay.
+    UnauthorizedError:
+      content:
+        application/json:
+          examples:
+            default:
+              value:
+                code: UNAUTHORIZED
+                detail: Authentication is required
+                requestId: req_01j5k9m7n8p9q2r3s4t5v6w7x8
+                status: 401
+                title: Unauthorized
+                type: https://api.tryarchitect.com/errors/unauthorized
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: The request did not include valid authentication credentials.
+    ValidationError:
+      content:
+        application/json:
+          examples:
+            default:
+              value:
+                code: VALIDATION_ERROR
+                detail: "body - name: Name is required; email: Invalid email address"
+                details:
+                  - field: body
+                    issues:
+                      - code: validation_failed
+                        message: "name: Name is required"
+                        path:
+                          - name
+                requestId: req_01j5k9m7n8p9q2r3s4t5v6w7x8
+                status: 400
+                title: Bad Request
+                type: https://api.tryarchitect.com/errors/validation_error
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: The request could not be processed because the path, query string, or JSON body was invalid.
   schemas:
     ActionIdActionIndexActionTypeButtonTitlePurposeUrlSchema:
       type: object
       properties:
         actionId:
-          $ref: "#/components/schemas/ActionId"
+          type: string
+          minLength: 1
+          description: Opaque identifier for the action
         actionIndex:
           type: number
           description: Position in actions array
@@ -308,7 +560,9 @@ components:
       type: object
       properties:
         actionId:
-          $ref: "#/components/schemas/ActionId"
+          type: string
+          minLength: 1
+          description: Opaque identifier for the action
         actionIndex:
           type: number
           description: Position in actions array
@@ -322,7 +576,9 @@ components:
           type: string
           const: form
         formId:
-          $ref: "#/components/schemas/FormId"
+          type: string
+          minLength: 1
+          description: Opaque identifier for the form to display
         formInstructions:
           type: string
       required:
@@ -337,7 +593,9 @@ components:
       type: object
       properties:
         actionId:
-          $ref: "#/components/schemas/ActionId"
+          type: string
+          minLength: 1
+          description: Opaque identifier for the action
         actionIndex:
           type: number
           description: Position in actions array
@@ -377,7 +635,9 @@ components:
       type: object
       properties:
         actionId:
-          $ref: "#/components/schemas/ActionId"
+          type: string
+          minLength: 1
+          description: Opaque identifier for the action
         purpose:
           type: string
         buttonTitle:
@@ -386,7 +646,9 @@ components:
           type: string
           const: form
         formId:
-          $ref: "#/components/schemas/FormId1"
+          type: string
+          minLength: 1
+          description: Opaque identifier for the form to display
         formInstructions:
           type: string
       required:
@@ -430,11 +692,30 @@ components:
         - targetUrl
         - weight
       additionalProperties: false
+    AiSummaryFileIdTypeSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: file
+        fileId:
+          type: string
+        aiSummary:
+          anyOf:
+            - type: string
+            - type: "null"
+      required:
+        - type
+        - fileId
+        - aiSummary
+      additionalProperties: false
     ActionIdActionTypeButtonTitleCopyTextPurposeSchema:
       type: object
       properties:
         actionId:
-          $ref: "#/components/schemas/ActionId"
+          type: string
+          minLength: 1
+          description: Opaque identifier for the action
         purpose:
           type: string
         buttonTitle:
@@ -449,6 +730,53 @@ components:
         - buttonTitle
         - actionType
         - copyText
+      additionalProperties: false
+    AiSummaryEnrichmentStatusIconMetaDescriptionNamePurposeTypeUrlSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: url
+        url:
+          $ref: "#/components/schemas/Url"
+        name:
+          anyOf:
+            - type: string
+            - type: "null"
+        icon:
+          anyOf:
+            - $ref: "#/components/schemas/Url"
+            - type: "null"
+        metaDescription:
+          default: null
+          anyOf:
+            - type: string
+            - type: "null"
+        purpose:
+          default: null
+          anyOf:
+            - type: string
+            - type: "null"
+        aiSummary:
+          anyOf:
+            - type: string
+            - type: "null"
+        enrichmentStatus:
+          default: pending
+          type: string
+          enum:
+            - pending
+            - success
+            - failed
+      required:
+        - type
+        - url
+        - name
+        - icon
+        - metaDescription
+        - purpose
+        - aiSummary
+        - enrichmentStatus
       additionalProperties: false
     LogosTitleTypeSchema:
       type: object
@@ -472,13 +800,14 @@ components:
       additionalProperties: false
     UnnamedSchema:
       type: string
-      minLength: 1
-      pattern: ^accountlog_[a-z0-9]{26}$
+      pattern: ^\+[1-9]\d{1,14}$
     ActionIdActionTypeButtonTitlePurposeUrlSchema:
       type: object
       properties:
         actionId:
-          $ref: "#/components/schemas/ActionId"
+          type: string
+          minLength: 1
+          description: Opaque identifier for the action
         purpose:
           type: string
         buttonTitle:
@@ -519,18 +848,22 @@ components:
         - audienceId
         - weight
       additionalProperties: false
+    ContentTypeSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: text
+        content:
+          type: string
+      required:
+        - type
+        - content
+      additionalProperties: false
     AccountId:
       type: string
       minLength: 1
       pattern: ^account_[a-z0-9]{26}$
-    ActionId:
-      type: string
-      pattern: ^pagegroupaction_
-      description: TypeID identifier for the action
-    ArraySchema:
-      type: array
-      items:
-        $ref: "#/components/schemas/GetWebhookSubscriptionResponse"
     CreateAccountLogRequest:
       type: object
       properties:
@@ -605,6 +938,66 @@ components:
       required:
         - publishBehavior
       additionalProperties: false
+    CreateEntrieRequest:
+      type: object
+      properties:
+        content:
+          anyOf:
+            - $ref: "#/components/schemas/ContentTypeSchema"
+            - $ref: "#/components/schemas/AiSummaryFileIdTypeSchema"
+            - type: object
+              properties:
+                type:
+                  type: string
+                  const: url
+                url:
+                  $ref: "#/components/schemas/Url"
+                name:
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                icon:
+                  anyOf:
+                    - $ref: "#/components/schemas/Url"
+                    - type: "null"
+                metaDescription:
+                  default: null
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                purpose:
+                  default: null
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                aiSummary:
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                enrichmentStatus:
+                  default: pending
+                  type: string
+                  enum:
+                    - pending
+                    - success
+                    - failed
+              required:
+                - type
+                - url
+                - name
+                - icon
+                - metaDescription
+                - purpose
+                - aiSummary
+                - enrichmentStatus
+              additionalProperties: false
+        sortOrder:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - content
+      additionalProperties: false
     CreateInterruptRequest:
       type: object
       properties:
@@ -626,7 +1019,7 @@ components:
         selectedElement:
           type: object
           properties:
-            sectionId:
+            blockId:
               type: string
               maxLength: 200
             elementId:
@@ -635,7 +1028,7 @@ components:
             elementType:
               type: string
               maxLength: 100
-            sectionTitle:
+            blockTitle:
               anyOf:
                 - type: string
                   maxLength: 1000
@@ -660,10 +1053,10 @@ components:
                   maxLength: 500
                 - type: "null"
           required:
-            - sectionId
+            - blockId
             - elementId
             - elementType
-            - sectionTitle
+            - blockTitle
             - content
           additionalProperties: false
       required:
@@ -766,7 +1159,9 @@ components:
       type: object
       properties:
         personId:
-          $ref: "#/components/schemas/PersonId"
+          type: string
+          minLength: 1
+          description: Existing person ID to attach the log entry to
         email:
           type: string
         phoneNumber:
@@ -816,6 +1211,19 @@ components:
       required:
         - name
       additionalProperties: false
+    CreateTopicRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        sortOrder:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - title
+      additionalProperties: false
     CreateVersionRequest:
       type: object
       properties:
@@ -840,6 +1248,7 @@ components:
               - form.submitted
               - form.enriched
               - form.enrichment_failed
+            description: Supported outbound webhook event types. `page.version.*` events correspond to Audience version lifecycle changes in Customer API terminology.
         active:
           default: true
           description: Whether the subscription should be active
@@ -871,30 +1280,63 @@ components:
             - CONFLICT
             - RATE_LIMITED
             - INTERNAL
+            - SERVICE_UNAVAILABLE
           examples:
             - VALIDATION_ERROR
             - UNAUTHORIZED
             - NOT_FOUND
           type: string
-        details:
+        detail:
           examples:
-            - field: name
-              reason: Name is required
-        message:
-          examples:
-            - Validation failed
-            - Authentication required
-            - Resource not found
-            - Rate limit exceeded
+            - Authentication is required
+            - Audience not found
+            - Default topics cannot be deleted
           type: string
+        details:
+          description: Optional structured details about the error, such as validation issues or rate-limit metadata.
+          examples:
+            - - field: body
+                issues:
+                  - code: validation_failed
+                    message: "name: Name is required"
+                    path:
+                      - name
+            - limit: 100
+              remaining: 0
+              resetTime: 1713225600000
+              retryAfter: 60
+          oneOf:
+            - items:
+                additionalProperties: true
+                type: object
+              type: array
+            - additionalProperties: true
+              type: object
         requestId:
           examples:
             - req_01j5k9m7n8p9q2r3s4t5v6w7x8
           type: string
+        status:
+          example: 400
+          type: number
+        title:
+          examples:
+            - Bad Request
+            - Unauthorized
+            - Not Found
+          type: string
+        type:
+          examples:
+            - https://api.tryarchitect.com/errors/validation_error
+            - https://api.tryarchitect.com/errors/not_found
+          type: string
       required:
         - code
-        - message
+        - detail
         - requestId
+        - status
+        - title
+        - type
       type: object
     FooterLink:
       type: object
@@ -911,14 +1353,6 @@ components:
         - links
         - title
       additionalProperties: false
-    FormId:
-      type: string
-      pattern: ^form_
-      description: TypeID identifier for the form to display
-    FormId1:
-      type: string
-      minLength: 1
-      pattern: ^form_[a-z0-9]{26}$
     GetAccount:
       type: object
       properties:
@@ -931,8 +1365,6 @@ components:
             properties:
               accountId:
                 $ref: "#/components/schemas/AccountId"
-              tenantId:
-                type: string
               domain:
                 type: string
                 minLength: 1
@@ -956,7 +1388,6 @@ components:
                 maximum: 9007199254740991
             required:
               - accountId
-              - tenantId
               - domain
               - name
               - createdAt
@@ -977,6 +1408,51 @@ components:
         - items
         - nextCursor
         - totalCount
+      additionalProperties: false
+    GetAccountLogResponse:
+      type: object
+      properties:
+        accountId:
+          $ref: "#/components/schemas/AccountId"
+        accountLogId:
+          type: string
+          minLength: 1
+          description: Stable account log entry ID
+        source:
+          $ref: "#/components/schemas/Source"
+        type:
+          $ref: "#/components/schemas/Source"
+        payload:
+          type: object
+          propertyNames:
+            type: string
+          additionalProperties: {}
+        idempotencyKey:
+          anyOf:
+            - type: string
+              minLength: 1
+              maxLength: 255
+            - type: "null"
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        updatedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        deletedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+      required:
+        - accountId
+        - accountLogId
+        - source
+        - type
+        - payload
+        - idempotencyKey
+        - createdAt
+        - updatedAt
+        - deletedAt
       additionalProperties: false
     GetActivity:
       type: object
@@ -1000,15 +1476,21 @@ components:
                 $ref: "#/components/schemas/AccountId"
               accountLogId:
                 anyOf:
-                  - $ref: "#/components/schemas/UnnamedSchema"
+                  - type: string
+                    minLength: 1
+                    description: Account log ID when the activity originated from the account
                   - type: "null"
               personId:
                 anyOf:
-                  - $ref: "#/components/schemas/PersonId"
+                  - type: string
+                    minLength: 1
+                    description: Person ID when the activity originated from a linked person
                   - type: "null"
               personLogId:
                 anyOf:
-                  - $ref: "#/components/schemas/UnnamedSchema"
+                  - type: string
+                    minLength: 1
+                    description: Person log ID when the activity originated from a linked person
                   - type: "null"
               personName:
                 anyOf:
@@ -1061,17 +1543,15 @@ components:
           maximum: 9007199254740991
         hasMore:
           type: boolean
-        nextOffset:
+        nextCursor:
           anyOf:
-            - type: integer
-              minimum: 0
-              maximum: 9007199254740991
+            - type: string
             - type: "null"
       required:
         - items
         - totalCount
         - hasMore
-        - nextOffset
+        - nextCursor
       additionalProperties: false
     GetAudience:
       type: object
@@ -1137,132 +1617,7 @@ components:
         items:
           type: array
           items:
-            type: object
-            properties:
-              analyticsSessionId:
-                type: string
-              audienceId:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              audienceSessionId:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              computationStatus:
-                type: string
-                enum:
-                  - pending
-                  - completed
-                  - failed
-              formSubmissionEmail:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              formSubmissionId:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              formSubmissionIdentifier:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              formSubmissionIdentifierType:
-                anyOf:
-                  - type: string
-                    enum:
-                      - email
-                      - linkedin
-                      - tel
-                  - type: "null"
-              formSubmissionPhone:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              hasConversion:
-                type: boolean
-              hasFormSubmit:
-                type: boolean
-              isBounce:
-                type: boolean
-              maxScrollDepthPercentage:
-                anyOf:
-                  - type: number
-                  - type: "null"
-              pageId:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              pageTitle:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              pageUrl:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              questionsAskedCount:
-                type: number
-              sessionEndedAt:
-                anyOf:
-                  - $ref: "#/components/schemas/UnnamedSchema"
-                  - type: "null"
-              sessionStartedAt:
-                $ref: "#/components/schemas/UnnamedSchema"
-              timeSpentSeconds:
-                anyOf:
-                  - type: number
-                  - type: "null"
-              totalClicksCount:
-                type: number
-              utmCampaign:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              utmContent:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              utmMedium:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              utmSource:
-                anyOf:
-                  - type: string
-                  - type: "null"
-              utmTerm:
-                anyOf:
-                  - type: string
-                  - type: "null"
-            required:
-              - analyticsSessionId
-              - audienceId
-              - audienceSessionId
-              - computationStatus
-              - formSubmissionEmail
-              - formSubmissionId
-              - formSubmissionIdentifier
-              - formSubmissionIdentifierType
-              - formSubmissionPhone
-              - hasConversion
-              - hasFormSubmit
-              - isBounce
-              - maxScrollDepthPercentage
-              - pageId
-              - pageTitle
-              - pageUrl
-              - questionsAskedCount
-              - sessionEndedAt
-              - sessionStartedAt
-              - timeSpentSeconds
-              - totalClicksCount
-              - utmCampaign
-              - utmContent
-              - utmMedium
-              - utmSource
-              - utmTerm
-            additionalProperties: false
+            $ref: "#/components/schemas/GetAudienceSessionResponse"
         nextCursor:
           anyOf:
             - type: string
@@ -1277,6 +1632,133 @@ components:
         - nextCursor
         - totalCount
       additionalProperties: false
+    GetAudienceSessionResponse:
+      type: object
+      properties:
+        analyticsSessionId:
+          type: string
+        audienceId:
+          anyOf:
+            - type: string
+            - type: "null"
+        audienceSessionId:
+          anyOf:
+            - type: string
+            - type: "null"
+        computationStatus:
+          type: string
+          enum:
+            - pending
+            - completed
+            - failed
+        formSubmissionEmail:
+          anyOf:
+            - type: string
+            - type: "null"
+        formSubmissionId:
+          anyOf:
+            - type: string
+            - type: "null"
+        formSubmissionIdentifier:
+          anyOf:
+            - type: string
+            - type: "null"
+        formSubmissionIdentifierType:
+          anyOf:
+            - type: string
+              enum:
+                - email
+                - linkedin
+                - tel
+            - type: "null"
+        formSubmissionPhone:
+          anyOf:
+            - type: string
+            - type: "null"
+        hasConversion:
+          type: boolean
+        hasFormSubmit:
+          type: boolean
+        isBounce:
+          type: boolean
+        maxScrollDepthPercentage:
+          anyOf:
+            - type: number
+            - type: "null"
+        pageId:
+          anyOf:
+            - type: string
+            - type: "null"
+        pageTitle:
+          anyOf:
+            - type: string
+            - type: "null"
+        pageUrl:
+          anyOf:
+            - type: string
+            - type: "null"
+        questionsAskedCount:
+          type: number
+        sessionEndedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        sessionStartedAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        timeSpentSeconds:
+          anyOf:
+            - type: number
+            - type: "null"
+        totalClicksCount:
+          type: number
+        utmCampaign:
+          anyOf:
+            - type: string
+            - type: "null"
+        utmContent:
+          anyOf:
+            - type: string
+            - type: "null"
+        utmMedium:
+          anyOf:
+            - type: string
+            - type: "null"
+        utmSource:
+          anyOf:
+            - type: string
+            - type: "null"
+        utmTerm:
+          anyOf:
+            - type: string
+            - type: "null"
+      required:
+        - analyticsSessionId
+        - audienceId
+        - audienceSessionId
+        - computationStatus
+        - formSubmissionEmail
+        - formSubmissionId
+        - formSubmissionIdentifier
+        - formSubmissionIdentifierType
+        - formSubmissionPhone
+        - hasConversion
+        - hasFormSubmit
+        - isBounce
+        - maxScrollDepthPercentage
+        - pageId
+        - pageTitle
+        - pageUrl
+        - questionsAskedCount
+        - sessionEndedAt
+        - sessionStartedAt
+        - timeSpentSeconds
+        - totalClicksCount
+        - utmCampaign
+        - utmContent
+        - utmMedium
+        - utmSource
+        - utmTerm
+      additionalProperties: false
     GetAudience_0:
       type: object
       properties:
@@ -1287,7 +1769,9 @@ components:
           items:
             $ref: "#/components/schemas/PostAudience"
         nextCursor:
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         totalCount:
           type: integer
           minimum: 0
@@ -1295,6 +1779,30 @@ components:
       required:
         - hasMore
         - items
+        - nextCursor
+        - totalCount
+      additionalProperties: false
+    GetEntrie:
+      type: object
+      properties:
+        hasMore:
+          type: boolean
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostEntrie"
+        nextCursor:
+          anyOf:
+            - type: string
+            - type: "null"
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - hasMore
+        - items
+        - nextCursor
         - totalCount
       additionalProperties: false
     GetInteraction:
@@ -1356,6 +1864,52 @@ components:
         - url
         - domain
         - path
+      additionalProperties: false
+    GetLog:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/GetPersonLogResponse"
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        hasMore:
+          type: boolean
+        nextCursor:
+          anyOf:
+            - type: string
+            - type: "null"
+      required:
+        - items
+        - totalCount
+        - hasMore
+        - nextCursor
+      additionalProperties: false
+    GetLog_0:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/GetAccountLogResponse"
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        hasMore:
+          type: boolean
+        nextCursor:
+          anyOf:
+            - type: string
+            - type: "null"
+      required:
+        - items
+        - totalCount
+        - hasMore
+        - nextCursor
       additionalProperties: false
     GetMessage:
       type: object
@@ -1516,8 +2070,6 @@ components:
               type: string
             pageId:
               type: string
-            tenantId:
-              type: string
             currentSupplementaryContext:
               anyOf:
                 - type: string
@@ -1539,7 +2091,6 @@ components:
           required:
             - audienceId
             - pageId
-            - tenantId
             - currentSupplementaryContext
             - currentMetaTitle
             - currentMetaDescription
@@ -1566,7 +2117,9 @@ components:
           items:
             $ref: "#/components/schemas/PostPage"
         nextCursor:
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         totalCount:
           type: integer
           minimum: 0
@@ -1574,6 +2127,7 @@ components:
       required:
         - hasMore
         - items
+        - nextCursor
         - totalCount
       additionalProperties: false
     GetPageLink:
@@ -1642,7 +2196,8 @@ components:
             $ref: "#/components/schemas/PostPerson"
         nextCursor:
           anyOf:
-            - $ref: "#/components/schemas/PersonId"
+            - type: string
+              minLength: 1
             - type: "null"
         totalCount:
           anyOf:
@@ -1656,9 +2211,58 @@ components:
         - nextCursor
         - totalCount
       additionalProperties: false
+    GetPersonLogResponse:
+      type: object
+      properties:
+        personId:
+          type: string
+          minLength: 1
+          description: The person that owns the log entry
+        personLogId:
+          type: string
+          minLength: 1
+          description: Stable person log entry ID
+        source:
+          $ref: "#/components/schemas/Source"
+        type:
+          $ref: "#/components/schemas/Source"
+        payload:
+          type: object
+          propertyNames:
+            type: string
+          additionalProperties: {}
+        idempotencyKey:
+          anyOf:
+            - type: string
+              minLength: 1
+              maxLength: 255
+            - type: "null"
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        updatedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        deletedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+      required:
+        - personId
+        - personLogId
+        - source
+        - type
+        - payload
+        - idempotencyKey
+        - createdAt
+        - updatedAt
+        - deletedAt
+      additionalProperties: false
     GetSearch:
       type: object
       properties:
+        hasMore:
+          type: boolean
         items:
           type: array
           items:
@@ -1686,12 +2290,27 @@ components:
               - pageId
               - pageType
             additionalProperties: false
+        nextCursor:
+          anyOf:
+            - type: string
+            - type: "null"
+        totalCount:
+          anyOf:
+            - type: integer
+              minimum: 0
+              maximum: 9007199254740991
+            - type: "null"
       required:
+        - hasMore
         - items
+        - nextCursor
+        - totalCount
       additionalProperties: false
     GetSearch_0:
       type: object
       properties:
+        hasMore:
+          type: boolean
         items:
           type: array
           items:
@@ -1711,8 +2330,21 @@ components:
               - pageId
               - pageName
             additionalProperties: false
+        nextCursor:
+          anyOf:
+            - type: string
+            - type: "null"
+        totalCount:
+          anyOf:
+            - type: integer
+              minimum: 0
+              maximum: 9007199254740991
+            - type: "null"
       required:
+        - hasMore
         - items
+        - nextCursor
+        - totalCount
       additionalProperties: false
     GetSummary:
       type: object
@@ -1744,6 +2376,29 @@ components:
         - formSubmitRate
         - totalSessions
       additionalProperties: false
+    GetTopic:
+      type: object
+      properties:
+        hasMore:
+          type: boolean
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostTopic"
+        nextCursor:
+          anyOf:
+            - type: string
+            - type: "null"
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - hasMore
+        - items
+        - nextCursor
+        - totalCount
+      additionalProperties: false
     GetVersion:
       type: object
       properties:
@@ -1754,7 +2409,9 @@ components:
           items:
             $ref: "#/components/schemas/PostVersion"
         nextCursor:
-          type: string
+          anyOf:
+            - type: string
+            - type: "null"
         totalCount:
           type: integer
           minimum: 0
@@ -1762,6 +2419,32 @@ components:
       required:
         - hasMore
         - items
+        - nextCursor
+        - totalCount
+      additionalProperties: false
+    GetWebhookSubscription:
+      type: object
+      properties:
+        hasMore:
+          type: boolean
+          description: Whether more webhook subscriptions are available
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/GetWebhookSubscriptionResponse"
+        nextCursor:
+          anyOf:
+            - type: string
+            - type: "null"
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+          description: Total number of webhook subscriptions returned by the current query
+      required:
+        - hasMore
+        - items
+        - nextCursor
         - totalCount
       additionalProperties: false
     GetWebhookSubscriptionResponse:
@@ -1784,6 +2467,7 @@ components:
                   - form.submitted
                   - form.enriched
                   - form.enrichment_failed
+                description: Supported outbound webhook event types. `page.version.*` events correspond to Audience version lifecycle changes in Customer API terminology.
             - type: "null"
         active:
           type: boolean
@@ -2093,18 +2777,11 @@ components:
         - type
         - fileId
       additionalProperties: false
-    PersonId:
-      type: string
-      minLength: 1
-      pattern: ^prospect_[a-z0-9]{26}$
     PostAccount:
       type: object
       properties:
         accountId:
           $ref: "#/components/schemas/AccountId"
-        tenantId:
-          type: string
-          description: Tenant ID that owns the account
         domain:
           type: string
           minLength: 1
@@ -2129,10 +2806,9 @@ components:
             type: object
             properties:
               personId:
-                $ref: "#/components/schemas/PersonId"
-              tenantId:
                 type: string
-                description: Tenant ID that owns the person
+                minLength: 1
+                description: Linked person ID
               name:
                 type: string
                 minLength: 1
@@ -2166,7 +2842,6 @@ components:
                 $ref: "#/components/schemas/UnnamedSchema"
             required:
               - personId
-              - tenantId
               - name
               - email
               - domain
@@ -2178,7 +2853,6 @@ components:
             additionalProperties: false
       required:
         - accountId
-        - tenantId
         - domain
         - name
         - createdAt
@@ -2192,7 +2866,9 @@ components:
         accountId:
           $ref: "#/components/schemas/AccountId"
         accountLogId:
-          $ref: "#/components/schemas/UnnamedSchema"
+          type: string
+          minLength: 1
+          description: The created account log entry ID
         createdAt:
           $ref: "#/components/schemas/UnnamedSchema"
         source:
@@ -2249,11 +2925,11 @@ components:
           $ref: "#/components/schemas/Metadata"
         pageId:
           type: string
-        prospectId:
+        personId:
           anyOf:
             - type: string
             - type: "null"
-        prospectRouteKey:
+        personRouteKey:
           anyOf:
             - type: string
             - type: "null"
@@ -2275,8 +2951,6 @@ components:
           anyOf:
             - type: string
             - type: "null"
-        tenantId:
-          type: string
       required:
         - actionFormIdOverride
         - actionFormInstructionsOverride
@@ -2290,20 +2964,82 @@ components:
         - isNewPageAgent
         - latestVersion
         - pageId
-        - prospectId
-        - prospectRouteKey
+        - personId
+        - personRouteKey
         - publishedVersion
         - status
         - supplementaryContext
-        - tenantId
       additionalProperties: false
-    PostInterrupt:
+    PostEntrie:
       type: object
       properties:
-        success:
-          type: boolean
+        topicEntryId:
+          type: string
+        topicId:
+          type: string
+        sortOrder:
+          type: number
+        content:
+          anyOf:
+            - $ref: "#/components/schemas/ContentTypeSchema"
+            - $ref: "#/components/schemas/AiSummaryFileIdTypeSchema"
+            - type: object
+              properties:
+                type:
+                  type: string
+                  const: url
+                url:
+                  $ref: "#/components/schemas/Url"
+                name:
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                icon:
+                  anyOf:
+                    - $ref: "#/components/schemas/Url"
+                    - type: "null"
+                metaDescription:
+                  default: null
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                purpose:
+                  default: null
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                aiSummary:
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                enrichmentStatus:
+                  default: pending
+                  type: string
+                  enum:
+                    - pending
+                    - success
+                    - failed
+              required:
+                - type
+                - url
+                - name
+                - icon
+                - metaDescription
+                - purpose
+                - aiSummary
+                - enrichmentStatus
+              additionalProperties: false
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        updatedAt:
+          $ref: "#/components/schemas/UnnamedSchema"
       required:
-        - success
+        - topicEntryId
+        - topicId
+        - sortOrder
+        - content
+        - createdAt
+        - updatedAt
       additionalProperties: false
     PostMessage:
       type: object
@@ -2387,8 +3123,6 @@ components:
             - archived
             - draft
             - published
-        tenantId:
-          type: string
         title:
           type: string
         updatedAt:
@@ -2408,7 +3142,6 @@ components:
         - pageType
         - scripts
         - status
-        - tenantId
         - title
         - updatedAt
       additionalProperties: false
@@ -2468,9 +3201,8 @@ components:
       type: object
       properties:
         personId:
-          $ref: "#/components/schemas/PersonId"
-        tenantId:
           type: string
+          minLength: 1
         name:
           type: string
         email:
@@ -2499,7 +3231,6 @@ components:
           $ref: "#/components/schemas/UnnamedSchema"
       required:
         - personId
-        - tenantId
         - name
         - email
         - domain
@@ -2513,9 +3244,13 @@ components:
       type: object
       properties:
         personId:
-          $ref: "#/components/schemas/PersonId"
+          type: string
+          minLength: 1
+          description: The person that received the log entry
         personLogId:
-          $ref: "#/components/schemas/UnnamedSchema"
+          type: string
+          minLength: 1
+          description: The created person log entry ID
         createdAt:
           $ref: "#/components/schemas/UnnamedSchema"
         createdPerson:
@@ -2532,6 +3267,58 @@ components:
         - createdPerson
         - source
         - type
+      additionalProperties: false
+    PostRestore:
+      type: object
+      properties:
+        success:
+          type: boolean
+        messageId:
+          type: string
+      required:
+        - success
+        - messageId
+      additionalProperties: false
+    PostRevert:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required:
+        - success
+      additionalProperties: false
+    PostTopic:
+      type: object
+      properties:
+        topicId:
+          type: string
+        title:
+          type: string
+        purpose:
+          anyOf:
+            - type: string
+            - type: "null"
+        sortOrder:
+          type: number
+        isDefault:
+          type: boolean
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        updatedAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostEntrie"
+      required:
+        - topicId
+        - title
+        - purpose
+        - sortOrder
+        - isDefault
+        - createdAt
+        - updatedAt
+        - entries
       additionalProperties: false
     PostVersion:
       type: object
@@ -2584,8 +3371,6 @@ components:
           anyOf:
             - type: string
             - type: "null"
-        tenantId:
-          type: string
         versionId:
           type: string
         versionNumber:
@@ -2605,7 +3390,6 @@ components:
         - queuedAt
         - status
         - supplementaryContext
-        - tenantId
         - versionId
         - versionNumber
       additionalProperties: false
@@ -2629,6 +3413,7 @@ components:
                   - form.submitted
                   - form.enriched
                   - form.enrichment_failed
+                description: Supported outbound webhook event types. `page.version.*` events correspond to Audience version lifecycle changes in Customer API terminology.
             - type: "null"
         active:
           type: boolean
@@ -2639,7 +3424,7 @@ components:
           $ref: "#/components/schemas/UnnamedSchema"
         signingSecret:
           type: string
-          description: The signing secret for the subscription
+          description: Webhook signing secret. Store this value now because it is only returned when the subscription is created.
       required:
         - subscriptionId
         - url
@@ -2697,7 +3482,7 @@ components:
       minLength: 1
       maxLength: 100
       pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
-      description: Stored activity source
+      description: Stored person log source
     ThemeColor:
       type: string
       pattern: ^#[0-9A-Fa-f]{6}$
@@ -2830,6 +3615,16 @@ components:
           items:
             $ref: "#/components/schemas/Script"
       additionalProperties: false
+    UpdatePersonLogRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+          description: Replacement plain text for the user-authored person log entry
+      required:
+        - text
+      additionalProperties: false
     UpdatePersonRequest:
       type: object
       properties:
@@ -2856,6 +3651,75 @@ components:
               minLength: 1
             - type: "null"
       additionalProperties: false
+    UpdateTopicEntryRequest:
+      type: object
+      properties:
+        content:
+          anyOf:
+            - $ref: "#/components/schemas/ContentTypeSchema"
+            - $ref: "#/components/schemas/AiSummaryFileIdTypeSchema"
+            - type: object
+              properties:
+                type:
+                  type: string
+                  const: url
+                url:
+                  $ref: "#/components/schemas/Url"
+                name:
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                icon:
+                  anyOf:
+                    - $ref: "#/components/schemas/Url"
+                    - type: "null"
+                metaDescription:
+                  default: null
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                purpose:
+                  default: null
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                aiSummary:
+                  anyOf:
+                    - type: string
+                    - type: "null"
+                enrichmentStatus:
+                  default: pending
+                  type: string
+                  enum:
+                    - pending
+                    - success
+                    - failed
+              required:
+                - type
+                - url
+                - name
+                - icon
+                - metaDescription
+                - purpose
+                - aiSummary
+                - enrichmentStatus
+              additionalProperties: false
+        sortOrder:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      additionalProperties: false
+    UpdateTopicRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        sortOrder:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      additionalProperties: false
     UpdateWebhookSubscriptionRequest:
       type: object
       properties:
@@ -2872,6 +3736,7 @@ components:
               - form.submitted
               - form.enriched
               - form.enrichment_failed
+            description: Supported outbound webhook event types. `page.version.*` events correspond to Audience version lifecycle changes in Customer API terminology.
         active:
           type: boolean
       additionalProperties: false
@@ -2932,6 +3797,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PostAccountLog"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Create account log entry
       tags:
         - Account Logs
@@ -2948,6 +3827,18 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/GetAccountResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: List accounts
       tags:
         - Accounts
@@ -2961,6 +3852,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostAccountResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Create account
       tags:
         - Accounts
@@ -2977,6 +3882,18 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/GetAccountResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Search accounts
       tags:
         - Accounts
@@ -2992,6 +3909,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostAccountResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Get account by ID
       tags:
         - Accounts
@@ -3003,6 +3934,22 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostAccountResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Update account by ID
       tags:
         - Accounts
@@ -3025,30 +3972,187 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetActivity"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: List account activity
       tags:
         - Account Activity
       parameters:
+        - $ref: "#/components/parameters/CursorQuery"
         - in: query
           name: includePersonActivity
           description: includePersonActivity parameter
           required: false
           schema:
             type: string
-        - in: query
-          name: includeDeleted
-          description: includeDeleted parameter
-          required: false
-          schema:
-            type: string
+        - $ref: "#/components/parameters/IncludeDeletedQuery"
         - $ref: "#/components/parameters/LimitQuery"
-        - in: query
-          name: offset
-          description: offset parameter
-          required: false
-          schema:
-            type: number
         - $ref: "#/components/parameters/AccountIdPath"
+  /v0/accounts/{account_id}/logs:
+    get:
+      description: List log entries written directly to an account.
+      operationId: listAccountLogs
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetLog_0"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: List account logs
+      tags:
+        - Account Logs
+      parameters:
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/IncludeDeletedQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/AccountIdPath"
+  /v0/accounts/{account_id}/logs/{account_log_id}:
+    get:
+      description: Get a single account log entry by ID.
+      operationId: getAccountLog
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAccountLogResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Get account log
+      tags:
+        - Account Logs
+      parameters:
+        - $ref: "#/components/parameters/AccountIdPath"
+        - $ref: "#/components/parameters/AccountLogIdPath"
+    patch:
+      description: Update a user-authored account log entry.
+      operationId: updateAccountLog
+      responses:
+        "200":
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Update account log
+      tags:
+        - Account Logs
+      parameters:
+        - $ref: "#/components/parameters/AccountIdPath"
+        - $ref: "#/components/parameters/AccountLogIdPath"
+      requestBody:
+        $ref: "#/components/requestBodies/LogsBody"
+    delete:
+      description: Delete an account log entry.
+      operationId: deleteAccountLog
+      responses:
+        "200":
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Delete account log
+      tags:
+        - Account Logs
+      parameters:
+        - $ref: "#/components/parameters/AccountIdPath"
+        - $ref: "#/components/parameters/AccountLogIdPath"
+  /v0/accounts/{account_id}/logs/{account_log_id}/restore:
+    post:
+      description: Restore a deleted account log entry.
+      operationId: restoreAccountLog
+      responses:
+        "200":
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Restore account log
+      tags:
+        - Account Logs
+      parameters:
+        - $ref: "#/components/parameters/AccountIdPath"
+        - $ref: "#/components/parameters/AccountLogIdPath"
+      requestBody:
+        $ref: "#/components/requestBodies/ArchiveBody"
   /v0/audience_sessions/{audience_session_id}/interactions:
     get:
       description: Get interaction history for an audience session.
@@ -3060,16 +4164,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetInteraction"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Get audience session interactions
       tags:
         - Analytics
       parameters:
-        - in: path
-          name: audience_session_id
-          description: audience_session_id parameter
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/AudienceSessionIdPath"
   /v0/audiences/search:
     get:
       description: Search audiences by name.
@@ -3081,6 +4194,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetSearch_0"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Search audiences
       tags:
         - Audiences
@@ -3093,23 +4218,26 @@ paths:
       operationId: listPageLinks
       responses:
         "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetPageLink"
+          $ref: "#/components/responses/GetPageLinkResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: List page links
       tags:
         - Page Links
       parameters:
         - $ref: "#/components/parameters/CursorQuery"
         - $ref: "#/components/parameters/LimitQuery"
-        - in: query
-          name: pageId
-          description: pageId parameter
-          required: false
-          schema:
-            type: string
+        - $ref: "#/components/parameters/PageIdQuery"
         - in: query
           name: path
           description: path parameter
@@ -3123,6 +4251,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostPageLinkResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Create page link
       tags:
         - Page Links
@@ -3132,6 +4274,43 @@ paths:
             schema:
               $ref: "#/components/schemas/CreatePageLinkRequest"
         required: true
+  /v0/page_links/search:
+    get:
+      description: Search page links by path or target identifier.
+      operationId: searchPageLinks
+      responses:
+        "200":
+          $ref: "#/components/responses/GetPageLinkResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Search page links
+      tags:
+        - Page Links
+      parameters:
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/PageIdQuery"
+        - $ref: "#/components/parameters/QueryQuery"
+        - in: query
+          name: targetType
+          description: targetType parameter
+          required: false
+          schema:
+            type: string
+            enum:
+              - audience
+              - page
+        - $ref: "#/components/parameters/TenantDomainIdQuery"
   /v0/page_links/{page_link_id}:
     get:
       description: Retrieve a specific page link by ID.
@@ -3139,6 +4318,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostPageLinkResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Get page link by ID
       tags:
         - Page Links
@@ -3150,6 +4343,22 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostPageLinkResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Update page link
       tags:
         - Page Links
@@ -3166,7 +4375,23 @@ paths:
       operationId: deletePageLink
       responses:
         "200":
-          $ref: "#/components/responses/PostInterruptResponse"
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Delete page link
       tags:
         - Page Links
@@ -3183,6 +4408,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetPage"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: List pages
       tags:
         - Pages
@@ -3195,6 +4432,20 @@ paths:
       responses:
         "201":
           $ref: "#/components/responses/PostPageResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Create page
       tags:
         - Pages
@@ -3215,6 +4466,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetSearch"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Search pages
       tags:
         - Pages
@@ -3228,6 +4491,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostPageResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Get page
       tags:
         - Pages
@@ -3239,6 +4516,22 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostPageResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Update page
       tags:
         - Pages
@@ -3260,6 +4553,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DeletePageResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Delete page
       tags:
         - Pages
@@ -3276,6 +4585,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetAudience"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: List audience analytics
       tags:
         - Analytics
@@ -3294,6 +4617,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetSummary"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Get page analytics summary
       tags:
         - Analytics
@@ -3308,6 +4645,22 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostPageResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Archive page
       tags:
         - Pages
@@ -3326,15 +4679,66 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetAudienceSession"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: List audience sessions
       tags:
         - Analytics
       parameters:
         - $ref: "#/components/parameters/EndDateQuery"
         - $ref: "#/components/parameters/StartDateQuery"
+        - in: query
+          name: audienceId
+          description: audienceId parameter
+          required: false
+          schema:
+            type: string
         - $ref: "#/components/parameters/CursorQuery"
         - $ref: "#/components/parameters/LimitQuery"
         - $ref: "#/components/parameters/PageIdPath"
+  /v0/pages/{page_id}/audience_sessions/{audience_session_id}:
+    get:
+      description: Get a single audience session for a page.
+      operationId: getAudienceSession
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAudienceSessionResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Get audience session
+      tags:
+        - Analytics
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceSessionIdPath"
   /v0/pages/{page_id}/audiences:
     get:
       description: List audiences for a page.
@@ -3346,6 +4750,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetAudience_0"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: List audiences
       tags:
         - Audiences
@@ -3359,6 +4777,22 @@ paths:
       responses:
         "201":
           $ref: "#/components/responses/PostAudienceResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Create audience
       tags:
         - Audiences
@@ -3377,6 +4811,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostAudienceResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Get audience
       tags:
         - Audiences
@@ -3389,6 +4837,22 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostAudienceResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Update audience
       tags:
         - Audiences
@@ -3407,6 +4871,22 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostAudienceResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Archive audience
       tags:
         - Audiences
@@ -3424,6 +4904,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetLink"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Get audience link
       tags:
         - Audiences
@@ -3442,6 +4936,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetMessage"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Get audience messages
       tags:
         - Audience Messages
@@ -3458,6 +4966,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PostMessage"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Send audience message
       tags:
         - Audience Messages
@@ -3481,6 +5005,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Schema"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Get audience active run
       tags:
         - Audience Messages
@@ -3493,7 +5031,23 @@ paths:
       operationId: interruptAudienceMessage
       responses:
         "200":
-          $ref: "#/components/responses/PostInterruptResponse"
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Interrupt audience message
       tags:
         - Audience Messages
@@ -3506,6 +5060,80 @@ paths:
             schema:
               $ref: "#/components/schemas/CreateInterruptRequest"
         required: true
+  /v0/pages/{page_id}/audiences/{audience_id}/messages/{message_id}/changes/{change_id}/revert:
+    post:
+      description: Revert a specific change that was applied during an audience editing conversation.
+      operationId: revertAudienceMessageChange
+      responses:
+        "200":
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Revert audience message change
+      tags:
+        - Audience Messages
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
+        - $ref: "#/components/parameters/MessageIdPath"
+        - in: path
+          name: change_id
+          description: change_id parameter
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/ArchiveBody"
+  /v0/pages/{page_id}/audiences/{audience_id}/messages/{message_id}/restore:
+    post:
+      description: Restore the audience draft to the snapshot saved on a previous message.
+      operationId: restoreAudienceMessageSnapshot
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostRestore"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Restore audience message snapshot
+      tags:
+        - Audience Messages
+      parameters:
+        - $ref: "#/components/parameters/PageIdPath"
+        - $ref: "#/components/parameters/AudienceIdPath"
+        - $ref: "#/components/parameters/MessageIdPath"
+      requestBody:
+        $ref: "#/components/requestBodies/ArchiveBody"
   /v0/pages/{page_id}/audiences/{audience_id}/restore:
     post:
       description: Restore an archived audience.
@@ -3513,6 +5141,22 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostAudienceResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Restore audience
       tags:
         - Audiences
@@ -3532,6 +5176,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetVersion"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: List audience versions
       tags:
         - Audience Versions
@@ -3552,6 +5210,22 @@ paths:
       responses:
         "201":
           $ref: "#/components/responses/PostVersionResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Create audience version
       tags:
         - Audience Versions
@@ -3567,6 +5241,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostVersionResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Get audience version
       tags:
         - Audience Versions
@@ -3581,6 +5269,22 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostVersionResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Cancel audience version
       tags:
         - Audience Versions
@@ -3597,6 +5301,22 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostVersionResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Publish audience version
       tags:
         - Audience Versions
@@ -3613,6 +5333,22 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostPageResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Restore page
       tags:
         - Pages
@@ -3631,6 +5367,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PostPersonLog"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Create person log entry
       tags:
         - Person Logs
@@ -3647,6 +5397,18 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/GetPersonResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: List people
       tags:
         - Persons
@@ -3659,6 +5421,20 @@ paths:
       responses:
         "201":
           $ref: "#/components/responses/PostPersonResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Create person
       tags:
         - Persons
@@ -3675,6 +5451,18 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/GetPersonResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Search people
       tags:
         - Persons
@@ -3689,6 +5477,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostPersonResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Get person by ID
       tags:
         - Persons
@@ -3700,6 +5502,22 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostPersonResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Update person
       tags:
         - Persons
@@ -3716,27 +5534,532 @@ paths:
       operationId: deletePerson
       responses:
         "200":
-          $ref: "#/components/responses/PostInterruptResponse"
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Delete person
       tags:
         - Persons
       parameters:
         - $ref: "#/components/parameters/PersonIdPath"
+  /v0/persons/{person_id}/logs:
+    get:
+      description: List log entries for a person.
+      operationId: listPersonLogs
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetLog"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: List person logs
+      tags:
+        - Person Logs
+      parameters:
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/IncludeDeletedQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/PersonIdPath"
+  /v0/persons/{person_id}/logs/{person_log_id}:
+    get:
+      description: Get a single person log entry by ID.
+      operationId: getPersonLog
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetPersonLogResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Get person log
+      tags:
+        - Person Logs
+      parameters:
+        - $ref: "#/components/parameters/PersonIdPath"
+        - $ref: "#/components/parameters/PersonLogIdPath"
+    patch:
+      description: Update a user-authored person log entry.
+      operationId: updatePersonLog
+      responses:
+        "200":
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Update person log
+      tags:
+        - Person Logs
+      parameters:
+        - $ref: "#/components/parameters/PersonIdPath"
+        - $ref: "#/components/parameters/PersonLogIdPath"
+      requestBody:
+        $ref: "#/components/requestBodies/LogsBody"
+    delete:
+      description: Delete a person log entry.
+      operationId: deletePersonLog
+      responses:
+        "200":
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Delete person log
+      tags:
+        - Person Logs
+      parameters:
+        - $ref: "#/components/parameters/PersonIdPath"
+        - $ref: "#/components/parameters/PersonLogIdPath"
+  /v0/persons/{person_id}/logs/{person_log_id}/restore:
+    post:
+      description: Restore a deleted person log entry.
+      operationId: restorePersonLog
+      responses:
+        "200":
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Restore person log
+      tags:
+        - Person Logs
+      parameters:
+        - $ref: "#/components/parameters/PersonIdPath"
+        - $ref: "#/components/parameters/PersonLogIdPath"
+      requestBody:
+        $ref: "#/components/requestBodies/ArchiveBody"
   /v0/persons/{person_id}/restore:
     post:
       description: Restore a deleted person by ID.
       operationId: restorePerson
       responses:
         "200":
-          $ref: "#/components/responses/PostInterruptResponse"
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Restore person
       tags:
         - Persons
       parameters:
         - $ref: "#/components/parameters/PersonIdPath"
+  /v0/topics:
+    get:
+      description: List knowledge topics.
+      operationId: listTopics
+      responses:
+        "200":
+          $ref: "#/components/responses/GetTopicResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: List topics
+      tags:
+        - Topics
+      parameters:
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+    post:
+      description: Create a knowledge topic.
+      operationId: createTopic
+      responses:
+        "201":
+          $ref: "#/components/responses/PostTopicResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Create topic
+      tags:
+        - Topics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTopicRequest"
+        required: true
+  /v0/topics/search:
+    get:
+      description: Search knowledge topics by title or entry content.
+      operationId: searchTopics
+      responses:
+        "200":
+          $ref: "#/components/responses/GetTopicResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Search topics
+      tags:
+        - Topics
+      parameters:
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/QueryQuery"
+  /v0/topics/{topic_id}:
+    get:
+      description: Get a knowledge topic.
+      operationId: getTopic
+      responses:
+        "200":
+          $ref: "#/components/responses/PostTopicResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Get topic
+      tags:
+        - Topics
+      parameters:
+        - $ref: "#/components/parameters/TopicIdPath"
+    patch:
+      description: Update a knowledge topic.
+      operationId: updateTopic
+      responses:
+        "200":
+          $ref: "#/components/responses/PostTopicResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Update topic
+      tags:
+        - Topics
+      parameters:
+        - $ref: "#/components/parameters/TopicIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTopicRequest"
+        required: true
+    delete:
+      description: Delete a knowledge topic.
+      operationId: deleteTopic
+      responses:
+        "200":
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Delete topic
+      tags:
+        - Topics
+      parameters:
+        - $ref: "#/components/parameters/TopicIdPath"
+  /v0/topics/{topic_id}/entries:
+    get:
+      description: List entries for a knowledge topic.
+      operationId: listTopicEntries
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetEntrie"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: List topic entries
+      tags:
+        - Topic Entries
+      parameters:
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/TopicIdPath"
+    post:
+      description: Create an entry within a knowledge topic.
+      operationId: createTopicEntry
+      responses:
+        "201":
+          $ref: "#/components/responses/PostEntrieResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Create topic entry
+      tags:
+        - Topic Entries
+      parameters:
+        - $ref: "#/components/parameters/TopicIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEntrieRequest"
+        required: true
+  /v0/topics/{topic_id}/entries/{topic_entry_id}:
+    get:
+      description: Get a topic entry.
+      operationId: getTopicEntry
+      responses:
+        "200":
+          $ref: "#/components/responses/PostEntrieResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Get topic entry
+      tags:
+        - Topic Entries
+      parameters:
+        - $ref: "#/components/parameters/TopicIdPath"
+        - $ref: "#/components/parameters/TopicEntryIdPath"
+    patch:
+      description: Update a topic entry.
+      operationId: updateTopicEntry
+      responses:
+        "200":
+          $ref: "#/components/responses/PostEntrieResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Update topic entry
+      tags:
+        - Topic Entries
+      parameters:
+        - $ref: "#/components/parameters/TopicIdPath"
+        - $ref: "#/components/parameters/TopicEntryIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTopicEntryRequest"
+        required: true
+    delete:
+      description: Delete a topic entry.
+      operationId: deleteTopicEntry
+      responses:
+        "200":
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Delete topic entry
+      tags:
+        - Topic Entries
+      parameters:
+        - $ref: "#/components/parameters/TopicIdPath"
+        - $ref: "#/components/parameters/TopicEntryIdPath"
   /v0/webhook_subscriptions:
     get:
-      description: List webhook subscriptions for the authenticated tenant
+      description: List webhook subscriptions for the authenticated tenant. Signing secrets are intentionally omitted from list responses.
       operationId: listWebhookSubscriptions
       responses:
         "200":
@@ -3744,12 +6067,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArraySchema"
+                $ref: "#/components/schemas/GetWebhookSubscription"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: List webhook subscriptions
       tags:
         - Webhook Subscriptions
     post:
-      description: Create a webhook subscription
+      description: Create a webhook subscription. The response includes a signing secret exactly once; persist it securely because later reads omit it.
       operationId: createWebhookSubscription
       responses:
         "201":
@@ -3758,6 +6093,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PostWebhookSubscription"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Create webhook subscription
       tags:
         - Webhook Subscriptions
@@ -3769,22 +6118,52 @@ paths:
         required: true
   /v0/webhook_subscriptions/{subscription_id}:
     get:
-      description: Get a webhook subscription by ID
+      description: Get a webhook subscription by ID. Signing secrets are omitted after creation.
       operationId: getWebhookSubscription
       responses:
         "200":
           $ref: "#/components/responses/GetWebhookSubscriptionResponseResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Get webhook subscription
       tags:
         - Webhook Subscriptions
       parameters:
         - $ref: "#/components/parameters/SubscriptionIdPath"
     patch:
-      description: Update a webhook subscription by ID
+      description: Update a webhook subscription by ID. You can rotate the destination URL, replace the subscribed event set, or toggle delivery on and off.
       operationId: updateWebhookSubscription
       responses:
         "200":
           $ref: "#/components/responses/GetWebhookSubscriptionResponseResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Update webhook subscription
       tags:
         - Webhook Subscriptions
@@ -3797,11 +6176,27 @@ paths:
               $ref: "#/components/schemas/UpdateWebhookSubscriptionRequest"
         required: true
     delete:
-      description: Delete a webhook subscription by ID
+      description: Delete a webhook subscription by ID and stop future deliveries to that endpoint.
       operationId: deleteWebhookSubscription
       responses:
         "200":
-          $ref: "#/components/responses/PostInterruptResponse"
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
       summary: Delete webhook subscription
       tags:
         - Webhook Subscriptions
@@ -3822,13 +6217,17 @@ tags:
     description: Page link management operations
   - name: Persons
     description: Person management operations
+  - name: Person Logs
+    description: Person log ingestion operations
   - name: Accounts
     description: Account management operations
   - name: Account Activity
     description: Merged account and linked person activity operations
-  - name: Person Logs
-    description: Person log ingestion operations
   - name: Account Logs
     description: Account log ingestion operations
+  - name: Topics
+    description: Knowledge topic management operations
+  - name: Topic Entries
+    description: Knowledge topic entry management operations
   - name: Webhook Subscriptions
     description: Webhook subscription management operations

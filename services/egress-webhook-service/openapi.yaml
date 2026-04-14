@@ -6,9 +6,6 @@ info:
     email: support@tryarchitect.com
     name: Architect
     url: https://tryarchitect.com
-
-
-
 openapi: 3.1.0
 paths: {}
 servers: []
@@ -32,8 +29,6 @@ webhooks:
                   type: string
                   format: date-time
                   pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                tenantId:
-                  type: string
                 eventId:
                   type: string
                 payload:
@@ -60,7 +55,6 @@ webhooks:
                     - createdAt
               required:
                 - timestamp
-                - tenantId
                 - eventId
                 - payload
         description: Triggered when a new page version is created. The webhook payload contains details about the newly created page version including page ID, version ID, and creation timestamp.
@@ -84,8 +78,6 @@ webhooks:
                   type: string
                   format: date-time
                   pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                tenantId:
-                  type: string
                 eventId:
                   type: string
                 payload:
@@ -112,7 +104,6 @@ webhooks:
                     - processedAt
               required:
                 - timestamp
-                - tenantId
                 - eventId
                 - payload
         description: Triggered when a page version is processed. The webhook payload contains details about the processed page version including page ID, version ID, and processing timestamp.
@@ -136,8 +127,6 @@ webhooks:
                   type: string
                   format: date-time
                   pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                tenantId:
-                  type: string
                 eventId:
                   type: string
                 payload:
@@ -164,14 +153,13 @@ webhooks:
                     - publishedAt
               required:
                 - timestamp
-                - tenantId
                 - eventId
                 - payload
         description: Triggered when a page version is published. The webhook payload contains details about the published page version including page ID, version ID, and publishing timestamp.
         required: true
   form.submitted:
     post:
-      description: Triggered when a form is submitted. The webhook payload contains details about the submitted form including form ID, submission ID, and submission timestamp.
+      description: Triggered when a form is submitted. The webhook payload contains submission details plus UTM attribution parameters captured on the page session.
       responses:
         "200":
           description: Webhook received successfully
@@ -188,8 +176,6 @@ webhooks:
                   type: string
                   format: date-time
                   pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                tenantId:
-                  type: string
                 eventId:
                   type: string
                 payload:
@@ -212,6 +198,11 @@ webhooks:
                     input:
                       type: object
                       additionalProperties: {}
+                    utmParameters:
+                      default: {}
+                      type: object
+                      additionalProperties:
+                        type: string
                   required:
                     - type
                     - formId
@@ -220,10 +211,9 @@ webhooks:
                     - input
               required:
                 - timestamp
-                - tenantId
                 - eventId
                 - payload
-        description: Triggered when a form is submitted. The webhook payload contains details about the submitted form including form ID, submission ID, and submission timestamp.
+        description: Triggered when a form is submitted. The webhook payload contains submission details plus UTM attribution parameters captured on the page session.
         required: true
   form.enriched:
     post:
@@ -244,8 +234,6 @@ webhooks:
                   type: string
                   format: date-time
                   pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                tenantId:
-                  type: string
                 eventId:
                   type: string
                 payload:
@@ -276,7 +264,6 @@ webhooks:
                     - enrichedData
               required:
                 - timestamp
-                - tenantId
                 - eventId
                 - payload
         description: Triggered when a form submission is enriched with additional data. The webhook payload contains details about the enriched form including form ID, submission ID, and enriched data.
@@ -300,8 +287,6 @@ webhooks:
                   type: string
                   format: date-time
                   pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-                tenantId:
-                  type: string
                 eventId:
                   type: string
                 payload:
@@ -332,7 +317,6 @@ webhooks:
                     - error
               required:
                 - timestamp
-                - tenantId
                 - eventId
                 - payload
         description: Triggered when form enrichment fails. The webhook payload contains details about the failed enrichment including form ID, submission ID, failure timestamp, and error information.
