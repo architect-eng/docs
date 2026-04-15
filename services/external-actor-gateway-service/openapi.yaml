@@ -62,9 +62,9 @@ components:
       summary: 01 example
       value:
         title: null
-    22Example:
+    23Example:
       description: Example values extracted from schema defaults
-      summary: 22 example
+      summary: 23 example
       value:
         metaDescription: null
         purpose: null
@@ -346,6 +346,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/GetAccount"
+    GetLinkResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetLink"
     GetPageLinkResponse:
       description: Successful operation
       content:
@@ -657,7 +663,7 @@ components:
         - actionType
         - formId
       additionalProperties: false
-    PageIdRoutingTableTargetTypeSchema:
+    PageIdTargetTypeSchema:
       type: object
       properties:
         targetType:
@@ -665,14 +671,6 @@ components:
           const: page
         pageId:
           type: string
-        routingTable:
-          anyOf:
-            - type: array
-              items:
-                anyOf:
-                  - $ref: "#/components/schemas/AudienceIdWeightSchema"
-                  - $ref: "#/components/schemas/PreserveQueryParamsTargetUrlWeightSchema"
-            - type: "null"
       required:
         - targetType
         - pageId
@@ -730,6 +728,26 @@ components:
         - buttonTitle
         - actionType
         - copyText
+      additionalProperties: false
+    PageIdRoutingTableTargetTypeSchema:
+      type: object
+      properties:
+        targetType:
+          type: string
+          const: page_routing
+        pageId:
+          type: string
+        routingTable:
+          anyOf:
+            - type: array
+              items:
+                anyOf:
+                  - $ref: "#/components/schemas/AudienceIdWeightSchema"
+                  - $ref: "#/components/schemas/PreserveQueryParamsTargetUrlWeightSchema"
+            - type: "null"
+      required:
+        - targetType
+        - pageId
       additionalProperties: false
     AiSummaryEnrichmentStatusIconMetaDescriptionNamePurposeTypeUrlSchema:
       type: object
@@ -1075,11 +1093,12 @@ components:
         target:
           anyOf:
             - $ref: "#/components/schemas/AudienceIdTargetTypeSchema"
+            - $ref: "#/components/schemas/PageIdTargetTypeSchema"
             - type: object
               properties:
                 targetType:
                   type: string
-                  const: page
+                  const: page_routing
                 pageId:
                   type: string
                 routingTable:
@@ -2180,6 +2199,7 @@ components:
                 anyOf:
                   - anyOf:
                       - $ref: "#/components/schemas/AudienceIdTargetTypeSchema"
+                      - $ref: "#/components/schemas/PageIdTargetTypeSchema"
                       - $ref: "#/components/schemas/PageIdRoutingTableTargetTypeSchema"
                   - type: "null"
               createdAt:
@@ -3188,11 +3208,12 @@ components:
           anyOf:
             - anyOf:
                 - $ref: "#/components/schemas/AudienceIdTargetTypeSchema"
+                - $ref: "#/components/schemas/PageIdTargetTypeSchema"
                 - type: object
                   properties:
                     targetType:
                       type: string
-                      const: page
+                      const: page_routing
                     pageId:
                       type: string
                     routingTable:
@@ -3576,11 +3597,12 @@ components:
         target:
           anyOf:
             - $ref: "#/components/schemas/AudienceIdTargetTypeSchema"
+            - $ref: "#/components/schemas/PageIdTargetTypeSchema"
             - type: object
               properties:
                 targetType:
                   type: string
-                  const: page
+                  const: page_routing
                 pageId:
                   type: string
                 routingTable:
@@ -4338,6 +4360,7 @@ paths:
             enum:
               - audience
               - page
+              - page_routing
         - $ref: "#/components/parameters/TenantDomainIdQuery"
   /v0/page_links/{page_link_id}:
     get:
@@ -4927,11 +4950,7 @@ paths:
       operationId: getAudienceLink
       responses:
         "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetLink"
+          $ref: "#/components/responses/GetLinkResponse"
         "400":
           $ref: "#/components/responses/ValidationError"
         "401":
@@ -5354,6 +5373,33 @@ paths:
         - $ref: "#/components/parameters/VersionIdPath"
       requestBody:
         $ref: "#/components/requestBodies/VersionsBody"
+  /v0/pages/{page_id}/link:
+    get:
+      description: Generate a shareable link for a page group. Fails if the page-group version is not yet published.
+      operationId: getPageGroupLink
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLinkResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Get page group link
+      tags:
+        - Pages
+      parameters:
+        - $ref: "#/components/parameters/TenantDomainIdQuery"
+        - $ref: "#/components/parameters/PageIdPath"
   /v0/pages/{page_id}/restore:
     post:
       description: Restore an archived page.
