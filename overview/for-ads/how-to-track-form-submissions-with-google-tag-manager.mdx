@@ -1,0 +1,121 @@
+---
+title: "How to Track Form Submissions with Google Tag Manager"
+description: "Set up conversion tracking in Google Ads for form submissions on Architect pages using Google Tag Manager."
+---
+
+In Architect, a form submission is a CTA that opens an email capture form modal when clicked. When a visitor fills out and submits the form, their details are captured directly within Architect.
+
+When a visitor submits a form on your Architect page, a custom event called `architect_form_submitted` is fired. You can use Google Tag Manager to capture this event and send it to Google Ads as a conversion.
+
+## Prerequisites
+
+Before you start, make sure you have:
+
+- Access to your **Google Ads** platform
+- Access to your **Google Tag Manager** account
+- Access to the **Architect** platform (app.tryarchitect.com)
+- A CTA set up in Architect as a form submission on an example page so you can test
+
+## Step 1: Create a conversion action in Google Ads
+
+<Steps>
+<Step title="Open Google Ads and navigate to Goals">
+  In your Google Ads account, go to the left-hand menu and click **Goals**. Then click **+ Create conversion action**.
+</Step>
+
+<Step title="Choose the conversion category">
+  Select the most relevant category for your use case, such as **Submit Lead Form**.
+</Step>
+
+<Step title="Configure the conversion">
+  Click **Create Conversion**, select your data source, then choose **Manually with code**. Click **Done**, then **Save and Continue**.
+</Step>
+
+<Step title="Copy your conversion details">
+  You will see the option to set up your Google tag and events. Choose the tab that says **Use Google Tag Manager**.
+
+  Save the following values — you will need them in the next step:
+
+  - **Conversion ID**
+  - **Conversion Label**
+</Step>
+</Steps>
+
+## Step 2: Add the Google Tag Manager script to Architect
+
+<Steps>
+<Step title="Copy the GTM scripts">
+  In your Google Tag Manager workspace, click on your Google Tag Manager container. You will see two scripts — one for the **head** and one for the **body**.
+
+  Copy both scripts.
+</Step>
+
+<Step title="Add the scripts in Architect">
+  Go to your Architect page, then navigate to **Settings** and click **Scripts**. Add two scripts:
+
+  - One with the **head** script, placed in the head
+  - One with the **body** script, placed at body start
+
+  Click **Save** in Architect.
+</Step>
+
+<Step title="Test your website in Google Tag Manager">
+  Go back to Google Tag Manager and use the **Preview** mode to test your website. Enter your Architect page URL and make sure the GTM container loads correctly on the page.
+</Step>
+</Steps>
+
+## Step 3: Create a trigger in Google Tag Manager
+
+<Steps>
+<Step title="Open Google Tag Manager">
+  Go to your Google Tag Manager workspace.
+</Step>
+
+<Step title="Create a new trigger">
+  Navigate to **Triggers** and click **New Trigger**. Name it something clear like `Architect Form Submission Trigger`.
+</Step>
+
+<Step title="Configure the trigger">
+  Click **Trigger Configuration** and choose the trigger type **Custom Event**.
+
+  Set the **Event Name** to:
+
+  ```
+  architect_form_submitted
+  ```
+</Step>
+</Steps>
+
+## Step 4: Create a conversion tag in Google Tag Manager
+
+<Steps>
+<Step title="Create a new tag">
+  Go to **Tags** and click **New**. Choose **Google Ads** and then **Google Ads Conversion Tracking**.
+</Step>
+
+<Step title="Enter your conversion details">
+  Enter the **Conversion ID** and **Conversion Label** you saved from Step 1.
+</Step>
+
+<Step title="Set the trigger">
+  Under **Triggering**, select the `Architect Form Submission Trigger` you created in Step 3. Click **Save**.
+</Step>
+</Steps>
+
+## Step 5: Test and publish your changes in Google Tag Manager
+
+Use the **Preview** mode in Google Tag Manager to test that your tags and triggers are firing correctly on your Architect page. Once you have confirmed everything is working, click **Submit** in the top right to publish your workspace changes. Your triggers and tags will not be active until you publish.
+
+## Step 6: Add the conversion action to your campaign in Google Ads
+
+Go to Google Ads and press **Finish** on your conversion action. Then add the conversion action to the campaign you are running with Architect. You can verify the conversion action is set up correctly by going to **Goals** in Google Ads and checking that the status shows as active.
+
+## Debugging
+
+If conversions are not tracking as expected, check the following:
+
+- **Conversion linker:** Make sure you have a Conversion Linker tag set up in Google Tag Manager. This is required for Google Ads conversion tracking to work correctly.
+- **GTM published:** Make sure you have submitted and published your changes in Google Tag Manager. Unpublished changes will not fire.
+- **GTM script in Architect:** Verify that the Google Tag Manager script has been added to the Scripts section in your Architect page settings.
+- **Conversion setup time:** Conversions can take up to 24 hours to set up and start reporting in Google Ads.
+
