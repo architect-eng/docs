@@ -4,7 +4,43 @@ description: "Send Architect form submissions to HubSpot contacts using Clay as 
 sidebarTitle: "HubSpot with Clay"
 ---
 
-## Part 1: Create a HubSpot Legacy App
+## Step 1: Add HubSpot Tracking to Architect Pages
+
+Adding the HubSpot tracking script to your Architect pages allows HubSpot to drop its tracking cookie on visitors. This means when a visitor later submits a form, HubSpot can associate that submission with their full browsing activity and attribute the contact correctly.
+
+<Steps>
+  <Step title="Copy the HubSpot embed code">
+    In HubSpot, go to **Settings**, then **Tracking & Analytics**, then **Tracking Code**. Copy the **Embed Code**. It will look something like this:
+
+    ```html
+    <!-- Start of HubSpot Embed Code -->
+    <script type="text/javascript" id="hs-script-loader" async defer src="//js-eu1.hs-scripts.com/147460178.js"></script>
+    <!-- End of HubSpot Embed Code -->
+    ```
+  </Step>
+
+  <Step title="Add the script in Architect">
+    Go to your Architect page, then navigate to **Settings** and click **Scripts**. Add a new script and paste the HubSpot embed code. Click **Save**.
+
+    This ensures the HubSpot tracking cookie is loaded on your Architect pages so visitor activity is captured.
+  </Step>
+</Steps>
+
+## Step 2: Connect a HubSpot Form
+
+Choose the specific HubSpot form you want form submissions to be sent to, or create a new form in HubSpot if you don't have one yet.
+
+<Steps>
+  <Step title="Select or create a form in HubSpot">
+    In HubSpot, go to **Marketing** and then **Forms**. Either select an existing form or create a new one using the HubSpot Forms API.
+  </Step>
+
+  <Step title="Connect the form in Architect">
+    In Architect, link your CTA form submission to the HubSpot form so that leads are sent directly to HubSpot when visitors submit.
+  </Step>
+</Steps>
+
+## Step 3: Create a HubSpot Legacy App
 
 <Steps>
   <Step title="Log in to HubSpot">
@@ -23,7 +59,7 @@ sidebarTitle: "HubSpot with Clay"
   </Step>
 </Steps>
 
-## Part 2: Set Up Clay
+## Step 4: Set Up Clay
 
 <Steps>
   <Step title="Create a table and add a Webhook">
@@ -77,7 +113,7 @@ sidebarTitle: "HubSpot with Clay"
     | `Authorization` | `Bearer YOUR_ACCESS_TOKEN` |
 
     <Warning>
-    Replace `YOUR_ACCESS_TOKEN` with the token from Part 1.
+    Replace `YOUR_ACCESS_TOKEN` with the token from Step 3.
     </Warning>
   </Step>
 </Steps>
