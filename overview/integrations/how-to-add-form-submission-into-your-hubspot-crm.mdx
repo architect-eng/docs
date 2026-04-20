@@ -4,26 +4,69 @@ description: "Send Architect form submissions to HubSpot contacts using Clay as 
 sidebarTitle: "HubSpot with Clay"
 ---
 
-## Part 1: Create a HubSpot Legacy App
+## Step 1: Add HubSpot Tracking to Architect Pages
+
+Adding the HubSpot tracking script to your Architect pages allows HubSpot to drop its tracking cookie on visitors. This means when a visitor later submits a form, HubSpot can associate that submission with their full browsing activity and attribute the contact correctly.
 
 <Steps>
-  <Step title="Log in to HubSpot">
-    Go to **Development > Legacy Apps**.
+  <Step title="Copy the HubSpot embed code">
+    In HubSpot, go to **Settings**, then **Tracking & Analytics**, then **Tracking Code**. Copy the **Embed Code**. It will look something like this:
+
+    ```html
+    <!-- Start of HubSpot Embed Code -->
+    <script type="text/javascript" id="hs-script-loader" async defer src="//js-eu1.hs-scripts.com/147460178.js"></script>
+    <!-- End of HubSpot Embed Code -->
+    ```
   </Step>
 
-  <Step title="Create a Private Legacy App">
-    Name it **Architect** and add these scopes:
+  <Step title="Add the script in Architect">
+    Go to your Architect page, then navigate to **Settings** and click **Scripts**. Add a new **head** script and paste the HubSpot embed code. Click **Save**.
 
-    - `crm.objects.contacts.write`
-    - `crm.objects.contacts.read`
-  </Step>
-
-  <Step title="Copy your Access Token">
-    Open the **Auth** tab, click **Show Token**, and copy it. This is your Bearer Token.
+    This ensures the HubSpot tracking cookie is loaded on your Architect pages so visitor activity is captured.
   </Step>
 </Steps>
 
-## Part 2: Set Up Clay
+## Step 2: Create a Form in Architect
+
+<Steps>
+  <Step title="Create or select a form in Architect">
+    In Architect, go to **Forms** and then **Manage Forms**. Create a new form or select an existing one. Make sure the field IDs match the fields you have in HubSpot. For example, "First name" should be `firstname` to match HubSpot's field name.
+  </Step>
+</Steps>
+
+## Step 3: Choose or Create a Form in HubSpot
+
+You need a form in HubSpot to push submissions to via the Forms API.
+
+<Steps>
+  <Step title="Select or create a form in HubSpot">
+    In HubSpot, go to **Marketing** and then **Forms**. Either select an existing form or create a new one.
+  </Step>
+
+  <Step title="Get the form embed code">
+    Once you have your form, click **Share** and then **Embed Code**. Copy the embed code — this contains your **Portal ID** and **Form ID**, which you will need to connect the form.
+
+    The embed code will look something like this:
+
+    ```html
+    <script src="https://js-eu1.hsforms.net/forms/embed/147460178.js" defer></script>
+    <div class="hs-form-frame" data-region="eu1" data-form-id="79e0f84f-f860-41a5-a63e-ce572fcadf43" data-portal-id="147460178"></div>
+    ```
+
+    The `data-portal-id` is your Portal ID and the `data-form-id` is your Form ID.
+  </Step>
+</Steps>
+
+## Step 4: Connect HubSpot to Architect
+
+If you have Clay, you can set this up yourself using the Clay setup below. Otherwise, share the following with the Architect team and they will set it up for you:
+
+- Your **form embed code** from the HubSpot form
+- The **field names** for that form that you want mapped
+
+## Step 5: Set Up Clay (Optional)
+
+Use Clay as middleware to enrich form submissions and post them to HubSpot via the Forms API.
 
 <Steps>
   <Step title="Create a table and add a Webhook">
@@ -34,37 +77,70 @@ sidebarTitle: "HubSpot with Clay"
     In Architect, go to **Settings > Webhooks**, create a new webhook, and paste the Clay Webhook URL. Send a test to confirm it works.
   </Step>
 
+  <Step title="Add enrichments in Clay">
+    Add any enrichment columns you need in Clay to enrich the form submission data before sending it to HubSpot.
+  </Step>
+
   <Step title="Add an HTTP API column">
-    Back in Clay, add a new column: **Add Enrichment > HTTP API**. Select **HTTP API (Headers)** and create a new account.
+    Add a new column: **Add Enrichment > HTTP API**. Select **HTTP API (Headers)** and create a new account.
   </Step>
 
   <Step title="Configure the request">
     - **Method:** `POST`
-    - **Endpoint:** `https://api.hubapi.com/crm/v3/objects/contacts`
+    - **Endpoint:** Use the HubSpot Forms API submission URL, replacing the Portal ID and Form ID with the values from your form embed code in Step 3:
+
+    ```
+    https://api.hsforms.com/submissions/v3/integration/submit/{portalId}/{formId}
+    ```
+
     - **Body:**
 
     ```json
     {
-      "properties": {
-        "email": "email",
-        "firstname": "firstName",
-        "lastname": "lastName",
-        "company": "companyName",
-        "hs_google_click_id": "gclid"
+      "fields": [
+        {
+          "objectTypeId": "0-1",
+          "name": "email",
+          "value": "email"
+        },
+        {
+          "objectTypeId": "0-1",
+          "name": "firstname",
+          "value": "firstname"
+        },
+        {
+          "objectTypeId": "0-1",
+          "name": "lastname",
+          "value": "lastname"
+        },
+        {
+          "objectTypeId": "0-1",
+          "name": "hs_google_click_id",
+          "value": "gclid"
+        }
+      ],
+      "context": {
+        "hutk": "hubspotutk",
+        "pageUri": "pageUri",
+        "pageName": "pageName"
       }
     }
     ```
 
-    Map each field to the matching property from the webhook data.
+    Map each field value to the matching property from the webhook data in Clay. The `context` object passes the HubSpot tracking cookie (`hutk`), the page URL, and page name so HubSpot can attribute the submission to the visitor's browsing session.
 
     <Note>
-    If your form only captures emails:
+    If your form only captures emails, you can remove the other fields and just send:
 
     ```json
     {
-      "properties": {
-        "email": "email"
-      }
+      "fields": [
+        {
+          "objectTypeId": "0-1",
+          "name": "email",
+          "value": "email"
+        }
+      ]
     }
     ```
     </Note>
@@ -74,11 +150,6 @@ sidebarTitle: "HubSpot with Clay"
     | Header | Value |
     | --- | --- |
     | `Content-Type` | `application/json` |
-    | `Authorization` | `Bearer YOUR_ACCESS_TOKEN` |
-
-    <Warning>
-    Replace `YOUR_ACCESS_TOKEN` with the token from Part 1.
-    </Warning>
   </Step>
 </Steps>
 
