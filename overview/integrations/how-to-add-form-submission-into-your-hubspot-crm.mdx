@@ -4,6 +4,22 @@ description: "Send Architect form submissions to HubSpot contacts using Clay as 
 sidebarTitle: "HubSpot with Clay"
 ---
 
+## How it works
+
+When a visitor lands on your Architect page, the HubSpot tracking script drops a cookie (`hutk`) on the visitor. When that visitor submits a form, Architect sends the form data along with the tracking cookie to HubSpot via the [HubSpot Forms API](https://developers.hubspot.com/docs/api/marketing/forms). HubSpot then associates the submission with the visitor's browsing activity, giving you full attribution on the contact.
+
+If you use Clay as middleware, you can enrich the form submission data (e.g. company info, job title) before it reaches HubSpot.
+
+## Prerequisites
+
+Before you start, make sure you have:
+
+- Access to your **HubSpot** account
+- Access to the **Architect** platform (app.tryarchitect.com)
+- A HubSpot form created or ready to create — see [HubSpot: Create forms](https://knowledge.hubspot.com/forms/create-forms)
+- Your [HubSpot tracking code](https://knowledge.hubspot.com/reports/install-the-hubspot-tracking-code) available
+- (Optional) A **Clay** account if you want to enrich leads before sending them to HubSpot
+
 ## Step 1: Add HubSpot Tracking to Architect Pages
 
 Adding the HubSpot tracking script to your Architect pages allows HubSpot to drop its tracking cookie on visitors. This means when a visitor later submits a form, HubSpot can associate that submission with their full browsing activity and attribute the contact correctly.
@@ -112,11 +128,6 @@ Use Clay as middleware to enrich form submissions and post them to HubSpot via t
           "objectTypeId": "0-1",
           "name": "lastname",
           "value": "lastname"
-        },
-        {
-          "objectTypeId": "0-1",
-          "name": "hs_google_click_id",
-          "value": "gclid"
         }
       ],
       "context": {
@@ -128,6 +139,16 @@ Use Clay as middleware to enrich form submissions and post them to HubSpot via t
     ```
 
     Map each field value to the matching property from the webhook data in Clay. The `context` object passes the HubSpot tracking cookie (`hutk`), the page URL, and page name so HubSpot can attribute the submission to the visitor's browsing session.
+
+    If you are running Google Ads, pass the `gclid` as well by adding this field:
+
+    ```json
+    {
+      "objectTypeId": "0-1",
+      "name": "hs_google_click_id",
+      "value": "gclid"
+    }
+    ```
 
     <Note>
     If your form only captures emails, you can remove the other fields and just send:
