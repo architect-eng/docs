@@ -102,13 +102,13 @@ Before you start, make sure you have:
 </Step>
 </Steps>
 
-## Step 5: Publish your changes in Google Tag Manager
+## Step 5: Test and publish your changes in Google Tag Manager
 
-In Google Tag Manager, click **Submit** in the top right to publish your workspace changes. Your triggers and tags will not be active until you publish.
+Use the **Preview** mode in Google Tag Manager to test that your tags and triggers are firing correctly on your Architect page. Once you have confirmed everything is working, click **Submit** in the top right to publish your workspace changes. Your triggers and tags will not be active until you publish.
 
 ## Step 6: Add the conversion action to your campaign in Google Ads
 
-In Google Ads, add the conversion action you created to the campaign you are running with Architect. You can also verify the conversion action is set up correctly by going to **Goals** in Google Ads and checking that the status shows as active.
+Go to Google Ads and press **Finish** on your conversion action. Then add the conversion action to the campaign you are running with Architect. You can verify the conversion action is set up correctly by going to **Goals** in Google Ads and checking that the status shows as active.
 
 ## Debugging
 
@@ -117,4 +117,5 @@ If conversions are not tracking as expected, check the following:
 - **Conversion linker:** Make sure you have a Conversion Linker tag set up in Google Tag Manager. This is required for Google Ads conversion tracking to work correctly.
 - **GTM published:** Make sure you have submitted and published your changes in Google Tag Manager. Unpublished changes will not fire.
 - **GTM script in Architect:** Verify that the Google Tag Manager script has been added to the Scripts section in your Architect page settings.
-- **Cookie consent:** If you are running ads, confirm your tracking still respects your cookie consent settings. Third-party scripts are blocked until visitors consent. See [How does the Architect cookie consent banner work?](/overview/faq/how-does-architect-cookie-consent-banner-work) for more details.
+- **Conversion setup time:** Conversions can take up to 24 hours to set up and start reporting in Google Ads.
+
