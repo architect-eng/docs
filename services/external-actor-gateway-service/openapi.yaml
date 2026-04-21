@@ -317,7 +317,7 @@ components:
             default:
               value:
                 code: CONFLICT
-                detail: Default topics cannot be deleted
+                detail: Default topic titles cannot be updated
                 requestId: req_01j5k9m7n8p9q2r3s4t5v6w7x8
                 status: 409
                 title: Conflict
@@ -1309,7 +1309,7 @@ components:
           examples:
             - Authentication is required
             - Audience not found
-            - Default topics cannot be deleted
+            - Default topic titles cannot be updated
           type: string
         details:
           description: Optional structured details about the error, such as validation issues or rate-limit metadata.
