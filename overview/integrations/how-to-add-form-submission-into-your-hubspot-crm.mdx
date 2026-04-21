@@ -1,14 +1,8 @@
 ---
-title: "How to Integrate Leads into HubSpot with Clay"
+title: "How to Integrate Leads into HubSpot"
 description: "Send Architect form submissions to HubSpot contacts using Clay as a middleware"
-sidebarTitle: "How to add Form Submission into HubSpot (Through Clay)"
+sidebarTitle: "How to add Form Submission into HubSpot"
 ---
-
-## How it works
-
-When a visitor lands on your Architect page, the HubSpot tracking script drops a cookie (`hutk`) on the visitor. When that visitor submits a form, Architect sends the form data along with the tracking cookie to HubSpot via the [HubSpot Forms API](https://developers.hubspot.com/docs/api/marketing/forms). HubSpot then associates the submission with the visitor's browsing activity, giving you full attribution on the contact.
-
-If you use Clay as middleware, you can enrich the form submission data (e.g. company info, job title) before it reaches HubSpot.
 
 ## Prerequisites
 
@@ -18,7 +12,13 @@ Before you start, make sure you have:
 - Access to the **Architect** platform (app.tryarchitect.com)
 - A HubSpot form created or ready to create
 - Your [HubSpot tracking code](https://knowledge.hubspot.com/reports/install-the-hubspot-tracking-code) available
-- (Optional) A **Clay** account if you want to enrich leads before sending them to HubSpot
+- Complete Steps 1-3 and then share the details with the Architect team in [Step 4](#step-4-set-up-with-architect)
+
+## How it works
+
+When a visitor lands on your Architect page, the HubSpot tracking script drops a cookie (`hutk`) on the visitor. When that visitor submits a form, Architect sends the form data along with the tracking cookie to HubSpot via the [HubSpot Forms API](https://developers.hubspot.com/docs/api/marketing/forms). HubSpot then associates the submission with the visitor's browsing activity, giving you full attribution on the contact.
+
+The Architect team will handle the middleware setup to send form submissions into HubSpot on your behalf.
 
 ## Step 1: Add HubSpot Tracking to Architect Pages
 
@@ -42,21 +42,25 @@ Adding the HubSpot tracking script to your Architect pages allows HubSpot to dro
   </Step>
 </Steps>
 
-## Step 2: Create a Form in Architect
+## Step 2: Choose or Create a Form in HubSpot
 
-<Steps>
-  <Step title="Create or select a form in Architect">
-    In Architect, go to **Forms** and then **Manage Forms**. Create a new form or select an existing one. Make sure the field IDs match the fields you have in HubSpot. For example, "First name" should be `firstname` to match HubSpot's field name.
-  </Step>
-</Steps>
-
-## Step 3: Choose or Create a Form in HubSpot
-
-You need a form in HubSpot to push submissions to via the Forms API.
+You need a form in HubSpot to push submissions to via the Forms API. This is where you will see form submissions come into.
 
 <Steps>
   <Step title="Select or create a form in HubSpot">
     In HubSpot, go to **Marketing** and then **Forms**. Either select an existing form or create a new one.
+  </Step>
+
+  <Step title="Choose your fields">
+    For each field on your form, note the **Internal Name** — this is how you match the fields with Architect's form. Click on a field to see its internal name under the property settings.
+
+    Common default internal names:
+
+    | Field | Internal Name |
+    | --- | --- |
+    | Email | `email` |
+    | First Name | `firstname` |
+    | Last Name | `lastname` |
   </Step>
 
   <Step title="Get the form embed code">
@@ -65,115 +69,29 @@ You need a form in HubSpot to push submissions to via the Forms API.
     The embed code will look something like this:
 
     ```html
-    <script src="https://js-eu1.hsforms.net/forms/embed/147460178.js" defer></script>
-    <div class="hs-form-frame" data-region="eu1" data-form-id="79e0f84f-f860-41a5-a63e-ce572fcadf43" data-portal-id="147460178"></div>
+    <script src="https://js-eu1.hsforms.net/forms/embed/{{data-portal-id}}.js" defer></script>
+    <div class="hs-form-frame" data-region="eu1" data-form-id="{{data-form-id}}" data-portal-id="{{data-portal-id}}"></div>
     ```
 
     The `data-portal-id` is your Portal ID and the `data-form-id` is your Form ID.
   </Step>
 </Steps>
 
-## Step 4: Connect HubSpot to Architect
-
-If you have Clay, you can set this up yourself using the Clay setup below. Otherwise, share the following with the Architect team and they will set it up for you:
-
-- Your **form embed code** from the HubSpot form
-- The **field names** for that form that you want mapped
-
-## Step 5: Set Up Clay (Optional)
-
-Use Clay as middleware to enrich form submissions and post them to HubSpot via the Forms API.
+## Step 3: Create a Form in Architect
 
 <Steps>
-  <Step title="Create a table and add a Webhook">
-    In Clay, create a new custom table. Add a column: **Add Enrichment > Webhook**. Copy the Webhook URL.
-  </Step>
+  <Step title="Create or select a form in Architect">
+    In Architect, go to **Forms** and then **Manage Forms**. Create a new form or select an existing one. Make sure the field IDs match the fields you have in HubSpot. For example, "First name" should be `firstname` to match HubSpot's field name.
 
-  <Step title="Connect Architect">
-    In Architect, go to **Settings > Developers > Webhooks**, create a new webhook, and paste the Clay Webhook URL. Set the webhook to trigger on form submissions. Send a test to confirm it works.
-  </Step>
-
-  <Step title="Add an HTTP API column">
-    Add a new column: **Add Enrichment > HTTP API**. Select **HTTP API (Headers)** and create a new account.
-  </Step>
-
-  <Step title="Configure the request">
-    - **Method:** `POST`
-    - **Endpoint:** Use the HubSpot Forms API submission URL, replacing the Portal ID and Form ID with the values from your form embed code in Step 3:
-
-    ```
-    https://api.hsforms.com/submissions/v3/integration/submit/{portalId}/{formId}
-    ```
-
-    - **Body:**
-
-    ```json
-    {
-      "fields": [
-        {
-          "objectTypeId": "0-1",
-          "name": "email",
-          "value": "email"
-        },
-        {
-          "objectTypeId": "0-1",
-          "name": "firstname",
-          "value": "firstname"
-        },
-        {
-          "objectTypeId": "0-1",
-          "name": "lastname",
-          "value": "lastname"
-        }
-      ],
-      "context": {
-        "hutk": "hubspotutk",
-        "pageUri": "pageUri",
-        "pageName": "pageName"
-      }
-    }
-    ```
-
-    Map each field value to the matching property from the webhook data in Clay. The `context` object passes the HubSpot tracking cookie (`hutk`), the page URL, and page name so HubSpot can attribute the submission to the visitor's browsing session.
-
-    If you are running Google Ads, pass the `gclid` as well by adding this field:
-
-    ```json
-    {
-      "objectTypeId": "0-1",
-      "name": "hs_google_click_id",
-      "value": "gclid"
-    }
-    ```
-
-    <Note>
-    If your form only captures emails, you can remove the other fields and just send:
-
-    ```json
-    {
-      "fields": [
-        {
-          "objectTypeId": "0-1",
-          "name": "email",
-          "value": "email"
-        }
-      ]
-    }
-    ```
-    </Note>
-  </Step>
-
-  <Step title="Set the headers">
-    | Header | Value |
-    | --- | --- |
-    | `Content-Type` | `application/json` |
+    To find the internal name in HubSpot, go to your form and click on a specific field. You will see the property's **Internal Name** — this is the value you need to use as your field ID in Architect.
   </Step>
 </Steps>
 
-<Tip>
-Architect webhooks also pass UTM parameters (such as `utm_source`, `utm_medium`, `utm_campaign`, and `gclid`) with each form submission, so you can map these to HubSpot contact properties for full attribution tracking.
-</Tip>
+## Step 4: Set Up with Architect
 
-<Note>
-Don't have Clay? Reach out to the Architect team and we can set this up for you.
-</Note>
+Share the following with the Architect team:
+
+- Your **form embed code** from the HubSpot form (from Step 2)
+- The **field internal names** for that form — these can be found under **Connected Property** on each form field in HubSpot
+
+
