@@ -45,7 +45,7 @@
             "group": "Creating first pages",
             "pages": [
               "overview/creating-first-pages/different-use-cases",
-              "overview/creating-first-pages/different-slices-examples"
+              "overview/creating-first-pages/different-page-components"
             ]
           },
           {
@@ -69,6 +69,7 @@
           {
             "group": "Integrations",
             "pages": [
+              "overview/integrations/scripts",
               "overview/integrations/mcp-overview",
               "overview/integrations/mcp-claude-desktop",
               "overview/integrations/mcp-cursor",
@@ -120,7 +121,7 @@
     },
     {
       "source": "/overview/educational-content/different-slices-examples",
-      "destination": "/overview/creating-first-pages/different-slices-examples"
+      "destination": "/overview/creating-first-pages/different-page-components"
     },
     {
       "source": "/overview/educational-content/different-use-cases",
@@ -128,11 +129,15 @@
     },
     {
       "source": "/overview/educational-content/different-page-group-types",
-      "destination": "/overview/creating-first-pages/different-slices-examples"
+      "destination": "/overview/creating-first-pages/different-page-components"
     },
     {
       "source": "/overview/educational-content/what-is-a-page-group",
-      "destination": "/overview/creating-first-pages/different-slices-examples"
+      "destination": "/overview/creating-first-pages/different-page-components"
+    },
+    {
+      "source": "/overview/creating-first-pages/different-slices-examples",
+      "destination": "/overview/creating-first-pages/different-page-components"
     },
     {
       "source": "/overview/for-ads/How%20to%20Pull%20Digital%20Ad%20CSV%20(For%20Ads)/Google%20Ads%2026423d2e6e73806695e9e126b51455ff.md",

@@ -1,0 +1,28 @@
+---
+title: "Scripts"
+description: "Add custom scripts to your Architect pages for tracking, analytics, and third-party integrations."
+---
+
+You can add custom scripts to any Architect page through the settings tab. This allows you to load third-party tracking, analytics, and integration scripts on your pages.
+
+## How to add scripts
+
+Go to **Pages**, select your page, then click **Manage** and navigate to **Settings**. Under **Scripts**, you can add one or more custom scripts.
+
+## Script types
+
+There are three placement options for scripts:
+
+- **Head** — The script is added to the `<head>` of the page. Use this for tracking scripts that need to load before the page renders, such as the HubSpot tracking code or Google Tag Manager.
+- **Body Start** — The script is added at the start of the `<body>`. Use this for scripts that need to load early but after the page structure has started rendering, such as the Google Tag Manager `<noscript>` fallback.
+- **Body End** — The script is added at the end of the `<body>`. Use this for scripts that can load after the page content, such as chat widgets or other non-critical integrations.
+
+## Use cases
+
+- **Google Tag Manager** — Add the GTM head and body start scripts to track conversions and events. See [How to Track URL Clicks](/overview/for-ads/how-to-track-url-clicks-with-google-tag-manager) and [How to Track Form Submissions](/overview/for-ads/how-to-track-form-submissions-with-google-tag-manager).
+- **HubSpot cookie tracking** — Add the HubSpot embed code as a head script to track visitor activity. See [How to Integrate Leads into HubSpot](/overview/integrations/how-to-add-form-submission-into-your-hubspot-crm).
+- **Custom scripts** — Add any third-party integration scripts such as analytics tools, chat widgets, or remarketing pixels.
+
+## Scripts and pages
+
+Scripts apply to all audiences for a page, so you only need to add a script once and it will be active across every audience under that page. However, if you have multiple pages, you will need to add the scripts to each page individually.
