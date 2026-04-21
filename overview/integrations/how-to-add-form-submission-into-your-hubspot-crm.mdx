@@ -1,7 +1,7 @@
 ---
 title: "How to Integrate Leads into HubSpot with Clay"
 description: "Send Architect form submissions to HubSpot contacts using Clay as a middleware"
-sidebarTitle: "HubSpot with Clay"
+sidebarTitle: "How to add Form Submission into HubSpot (Through Clay)"
 ---
 
 ## How it works
@@ -16,7 +16,7 @@ Before you start, make sure you have:
 
 - Access to your **HubSpot** account
 - Access to the **Architect** platform (app.tryarchitect.com)
-- A HubSpot form created or ready to create — see [HubSpot: Create forms](https://knowledge.hubspot.com/forms/create-forms)
+- A HubSpot form created or ready to create
 - Your [HubSpot tracking code](https://knowledge.hubspot.com/reports/install-the-hubspot-tracking-code) available
 - (Optional) A **Clay** account if you want to enrich leads before sending them to HubSpot
 
@@ -90,11 +90,7 @@ Use Clay as middleware to enrich form submissions and post them to HubSpot via t
   </Step>
 
   <Step title="Connect Architect">
-    In Architect, go to **Settings > Webhooks**, create a new webhook, and paste the Clay Webhook URL. Send a test to confirm it works.
-  </Step>
-
-  <Step title="Add enrichments in Clay">
-    Add any enrichment columns you need in Clay to enrich the form submission data before sending it to HubSpot.
+    In Architect, go to **Settings > Developers > Webhooks**, create a new webhook, and paste the Clay Webhook URL. Set the webhook to trigger on form submissions. Send a test to confirm it works.
   </Step>
 
   <Step title="Add an HTTP API column">
