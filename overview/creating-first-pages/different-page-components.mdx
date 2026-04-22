@@ -5,6 +5,36 @@ description: "Examples of every component type available for Architect pages"
 
 Slices are the building blocks of an Architect page. Think of them as reusable page components (text, images, tables, testimonials, CTAs) that the agent assembles into a full page based on your page context.
 
+## **Hero**
+
+<Frame>
+<img src="/overview/images/slice-hero.png" alt="Hero component in row format showing a heading, subtitle, and CTA on the left with a large hero image on the right" />
+</Frame>
+
+**Best Used For:** Creating the **first impression of a page** with a prominent heading, subtitle, and call-to-action. The Hero is a page-level component (not a regular slice) that sits at the very top of the page and sets the tone for the entire experience. Only one Hero can exist per page.
+
+The Hero includes the following elements:
+
+- **Eyebrow** - A short label or brand tag displayed as a pill/badge above the headline
+- **Main** - The primary headline rendered as a large `h1`, supports keyword highlighting for interactive hover metadata
+- **Content** - Supporting body copy below the headline (1-3 sentences)
+- **CTA buttons** - A primary and optional secondary call-to-action button (supports `open-url`, `copy-text`, and `form` action types)
+- **Image** - An optional hero image displayed alongside the text content
+- **Background image / color** - An optional full-bleed background behind the entire Hero section
+
+### Layout formats
+
+The Hero supports two layout formats:
+
+- **Row** (default) - A side-by-side two-column layout with text content on the left and the hero image on the right. This is the recommended format when a hero image is provided.
+- **Column** - A vertically stacked layout where all content is centered on the page. The image (if present) appears below the text.
+
+<Frame>
+<img src="/overview/images/slice-hero-centered.png" alt="Hero component in column format with heading, subtitle, and CTA centered on the page" />
+</Frame>
+
+---
+
 ## **TextContainer**
 
 <Frame>
