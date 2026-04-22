@@ -62,9 +62,9 @@ components:
       summary: 01 example
       value:
         title: null
-    23Example:
+    24Example:
       description: Example values extracted from schema defaults
-      summary: 23 example
+      summary: 24 example
       value:
         metaDescription: null
         purpose: null
@@ -131,6 +131,26 @@ components:
       required: true
       schema:
         type: string
+    AssetIdPath:
+      in: path
+      name: asset_id
+      description: asset_id parameter
+      required: true
+      schema:
+        type: string
+    AssetTypeQuery:
+      in: query
+      name: assetType
+      description: assetType parameter
+      required: false
+      schema:
+        type: string
+        enum:
+          - image
+          - logo
+          - icon
+          - video
+          - custom-component
     AudienceIdPath:
       in: path
       name: audience_id
@@ -346,6 +366,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/GetAccount"
+    GetAssetResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetAsset"
     GetLinkResponse:
       description: Successful operation
       content:
@@ -412,6 +438,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PostAccount"
+    PostAssetResponse:
+      description: Asset created successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PostAsset"
     PostAudienceResponse:
       description: Audience created successfully
       content:
@@ -625,6 +657,36 @@ components:
         - actionType
         - copyText
       additionalProperties: false
+    TypeYoutubeUrlSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: video
+        youtubeUrl:
+          type: string
+      required:
+        - type
+        - youtubeUrl
+      additionalProperties: false
+    BodyPropsSchemaTypeSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: custom-component
+        body:
+          type: string
+          maxLength: 100000
+        propsSchema:
+          type: object
+          propertyNames:
+            type: string
+          additionalProperties: {}
+      required:
+        - type
+        - body
+      additionalProperties: false
     TypeVideoSchema:
       type: object
       properties:
@@ -689,6 +751,18 @@ components:
       required:
         - targetUrl
         - weight
+      additionalProperties: false
+    FileIdTypeSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: image
+        fileId:
+          type: string
+      required:
+        - type
+        - fileId
       additionalProperties: false
     AiSummaryFileIdTypeSchema:
       type: object
@@ -816,6 +890,18 @@ components:
         - title
         - logos
       additionalProperties: false
+    ContentTypeSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: text
+        content:
+          type: string
+      required:
+        - type
+        - content
+      additionalProperties: false
     UnnamedSchema:
       type: string
       pattern: ^\+[1-9]\d{1,14}$
@@ -865,18 +951,6 @@ components:
       required:
         - audienceId
         - weight
-      additionalProperties: false
-    ContentTypeSchema:
-      type: object
-      properties:
-        type:
-          type: string
-          const: text
-        content:
-          type: string
-      required:
-        - type
-        - content
       additionalProperties: false
     AccountId:
       type: string
@@ -1571,6 +1645,30 @@ components:
         - totalCount
         - hasMore
         - nextCursor
+      additionalProperties: false
+    GetAsset:
+      type: object
+      properties:
+        hasMore:
+          type: boolean
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostAsset"
+        nextCursor:
+          anyOf:
+            - type: string
+              minLength: 1
+            - type: "null"
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - hasMore
+        - items
+        - nextCursor
+        - totalCount
       additionalProperties: false
     GetAudience:
       type: object
@@ -2930,6 +3028,72 @@ components:
         - source
         - type
       additionalProperties: false
+    PostAsset:
+      type: object
+      properties:
+        assetId:
+          type: string
+        tenantId:
+          type: string
+        name:
+          type: string
+        purpose:
+          type: string
+        parentAssetId:
+          anyOf:
+            - type: string
+            - type: "null"
+        hidden:
+          type: boolean
+        data:
+          anyOf:
+            - $ref: "#/components/schemas/FileIdTypeSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
+            - $ref: "#/components/schemas/FileIdTypeSchema"
+            - $ref: "#/components/schemas/TypeYoutubeUrlSchema"
+            - $ref: "#/components/schemas/BodyPropsSchemaTypeSchema"
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        updatedAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        trashedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        deletedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        lifecycleState:
+          type: string
+          enum:
+            - active
+            - trashed
+            - deleted
+        downloadUrl:
+          anyOf:
+            - type: string
+            - type: "null"
+        previewDownloadUrl:
+          anyOf:
+            - type: string
+            - type: "null"
+      required:
+        - assetId
+        - tenantId
+        - name
+        - purpose
+        - parentAssetId
+        - hidden
+        - data
+        - createdAt
+        - updatedAt
+        - trashedAt
+        - deletedAt
+        - lifecycleState
+        - downloadUrl
+        - previewDownloadUrl
+      additionalProperties: false
     PostAudience:
       type: object
       properties:
@@ -3498,6 +3662,94 @@ components:
             - runToken
           additionalProperties: false
         - type: "null"
+    Schema_0:
+      anyOf:
+        - type: object
+          properties:
+            assetType:
+              type: string
+              const: image
+            name:
+              type: string
+            purpose:
+              default: ""
+              type: string
+            fileId:
+              type: string
+            parentAssetId:
+              type: string
+            hidden:
+              type: boolean
+          required:
+            - assetType
+            - name
+            - purpose
+            - fileId
+          additionalProperties: false
+        - type: object
+          properties:
+            assetType:
+              type: string
+              const: logo
+            name:
+              type: string
+            purpose:
+              default: ""
+              type: string
+            fileId:
+              type: string
+            parentAssetId:
+              type: string
+            hidden:
+              type: boolean
+          required:
+            - assetType
+            - name
+            - purpose
+            - fileId
+          additionalProperties: false
+        - type: object
+          properties:
+            assetType:
+              type: string
+              const: icon
+            name:
+              type: string
+            purpose:
+              default: ""
+              type: string
+            fileId:
+              type: string
+            parentAssetId:
+              type: string
+            hidden:
+              type: boolean
+          required:
+            - assetType
+            - name
+            - purpose
+            - fileId
+          additionalProperties: false
+        - type: object
+          properties:
+            assetType:
+              type: string
+              const: video
+            name:
+              type: string
+            purpose:
+              default: ""
+              type: string
+            youtubeUrl:
+              type: string
+            hidden:
+              type: boolean
+          required:
+            - assetType
+            - name
+            - purpose
+            - youtubeUrl
+          additionalProperties: false
     Script:
       type: object
       properties:
@@ -3555,6 +3807,20 @@ components:
           description: New account name
       required:
         - name
+      additionalProperties: false
+    UpdateAssetRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        purpose:
+          type: string
+        assetType:
+          type: string
+          enum:
+            - image
+            - logo
+            - icon
       additionalProperties: false
     UpdateAudienceRequest:
       type: object
@@ -4203,6 +4469,229 @@ paths:
         - $ref: "#/components/parameters/AccountLogIdPath"
       requestBody:
         $ref: "#/components/requestBodies/ArchiveBody"
+  /v0/assets:
+    get:
+      description: List assets.
+      operationId: listAssets
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAssetResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: List assets
+      tags:
+        - Assets
+      parameters:
+        - $ref: "#/components/parameters/AssetTypeQuery"
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+    post:
+      description: Create an asset.
+      operationId: createAsset
+      responses:
+        "201":
+          $ref: "#/components/responses/PostAssetResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Create asset
+      tags:
+        - Assets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Schema_0"
+        required: true
+  /v0/assets/search:
+    get:
+      description: Search assets by name or purpose.
+      operationId: searchAssets
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAssetResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Search assets
+      tags:
+        - Assets
+      parameters:
+        - $ref: "#/components/parameters/AssetTypeQuery"
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/QueryQuery"
+  /v0/assets/trash:
+    get:
+      description: List trashed assets.
+      operationId: listTrashedAssets
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAssetResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: List trashed assets
+      tags:
+        - Assets
+      parameters:
+        - $ref: "#/components/parameters/AssetTypeQuery"
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/QueryQuery"
+  /v0/assets/{asset_id}:
+    get:
+      description: Retrieve a specific asset by ID.
+      operationId: getAsset
+      responses:
+        "200":
+          $ref: "#/components/responses/PostAssetResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Get asset by ID
+      tags:
+        - Assets
+      parameters:
+        - $ref: "#/components/parameters/AssetIdPath"
+    patch:
+      description: Update an asset by ID.
+      operationId: updateAsset
+      responses:
+        "200":
+          $ref: "#/components/responses/PostAssetResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Update asset
+      tags:
+        - Assets
+      parameters:
+        - $ref: "#/components/parameters/AssetIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAssetRequest"
+        required: true
+    delete:
+      description: Move an asset to trash by ID.
+      operationId: deleteAsset
+      responses:
+        "200":
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Delete asset
+      tags:
+        - Assets
+      parameters:
+        - $ref: "#/components/parameters/AssetIdPath"
+  /v0/assets/{asset_id}/restore:
+    post:
+      description: Restore a trashed asset by ID.
+      operationId: restoreAsset
+      responses:
+        "200":
+          $ref: "#/components/responses/PostRevertResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Restore asset
+      tags:
+        - Assets
+      parameters:
+        - $ref: "#/components/parameters/AssetIdPath"
   /v0/audience_sessions/{audience_session_id}/interactions:
     get:
       description: Get interaction history for an audience session.
@@ -6289,6 +6778,8 @@ tags:
     description: Audience message editing operations
   - name: Page Links
     description: Page link management operations
+  - name: Assets
+    description: Asset management operations
   - name: Persons
     description: Person management operations
   - name: Person Logs
