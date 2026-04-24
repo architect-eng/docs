@@ -3039,6 +3039,14 @@ components:
           type: string
         purpose:
           type: string
+        tags:
+          type: array
+          items:
+            type: string
+        aiDescription:
+          anyOf:
+            - type: string
+            - type: "null"
         parentAssetId:
           anyOf:
             - type: string
@@ -3083,6 +3091,8 @@ components:
         - tenantId
         - name
         - purpose
+        - tags
+        - aiDescription
         - parentAssetId
         - hidden
         - data
