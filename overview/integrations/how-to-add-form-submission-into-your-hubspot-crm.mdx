@@ -11,48 +11,46 @@ Before you start, make sure you have:
 - Access to your **HubSpot** account
 - Access to the **Architect** platform (app.tryarchitect.com)
 - A HubSpot form created or ready to create
-- Your [HubSpot tracking code](https://knowledge.hubspot.com/reports/install-the-hubspot-tracking-code) available
-- Complete Steps 1-3 and then share the details with the Architect team in [Step 4](#step-4-set-up-with-architect)
+- Complete Steps 1-3 before setting up the HubSpot connection in [Step 4](#step-4-set-up-connection)
 
 ## How it works
 
 When a visitor lands on your Architect page, the HubSpot tracking script drops a cookie (`hutk`) on the visitor. When that visitor submits a form, Architect sends the form data along with the tracking cookie to HubSpot via the [HubSpot Forms API](https://developers.hubspot.com/docs/api/marketing/forms). HubSpot then associates the submission with the visitor's browsing activity, giving you full attribution on the contact.
 
-The Architect team will handle the middleware setup to send form submissions into HubSpot on your behalf.
+## Step 1: Find Your HubSpot Account ID
 
-## Step 1: Add HubSpot Tracking to Architect Pages
-
-Adding the HubSpot tracking script to your Architect pages allows HubSpot to drop its tracking cookie on visitors. This means when a visitor later submits a form, HubSpot can associate that submission with their full browsing activity and attribute the contact correctly.
+You need your HubSpot account ID so Architect can connect your form submissions to the correct HubSpot account. HubSpot may also refer to this as your **Hub ID** or **Portal ID**.
 
 <Steps>
-  <Step title="Copy the HubSpot embed code">
-    In HubSpot, go to **Settings**, then **Tracking & Analytics**, then **Tracking Code**. Copy the **Embed Code**. It will look something like this:
+  <Step title="Locate your account ID">
+    In HubSpot, click your account name in the upper-right corner. In the dropdown, you will see your **Hub ID**.
 
-    ```html
-    <!-- Start of HubSpot Embed Code -->
-    <script type="text/javascript" id="hs-script-loader" async defer src="//js-eu1.hs-scripts.com/147460178.js"></script>
-    <!-- End of HubSpot Embed Code -->
-    ```
-  </Step>
-
-  <Step title="Add the script in Architect">
-    Go to your Architect page, then navigate to **Settings** and click **Scripts**. Add a new **head** script and paste the HubSpot embed code. Click **Save**.
-
-    This ensures the HubSpot tracking cookie is loaded on your Architect pages so visitor activity is captured.
+    You can also find it in the HubSpot URL. For example, in `app.hubspot.com/contacts/123456789/all`, the account ID is `123456789`.
   </Step>
 </Steps>
 
-## Step 2: Choose or Create a Form in HubSpot
+## Step 2: Create or Choose an Existing Form in HubSpot
 
-You need a form in HubSpot to push submissions to via the Forms API. This is where you will see form submissions come into.
+You need a HubSpot form so you can match the Architect form with HubSpot and paste the values into the existing fields.
 
 <Steps>
-  <Step title="Select or create a form in HubSpot">
-    In HubSpot, go to **Marketing** and then **Forms**. Either select an existing form or create a new one.
+  <Step title="Get the data-form-id">
+    In HubSpot, go to **Marketing** and then **Forms**. Select your form, then click **Share** and **Embed code**.
+
+    Copy the embed code and look for the `data-form-id` value. This is your **HubSpot form ID**.
+
+    The embed code will look something like this:
+
+    ```html
+    <script src="https://js-eu1.hsforms.net/forms/embed/{{data-portal-id}}.js" defer></script>
+    <div class="hs-form-frame" data-region="eu1" data-form-id="{{data-form-id}}" data-portal-id="{{data-portal-id}}"></div>
+    ```
+
+    The `data-portal-id` is your account ID and the `data-form-id` is your form ID.
   </Step>
 
-  <Step title="Choose your fields">
-    For each field on your form, note the **Internal Name** — this is how you match the fields with Architect's form. Click on a field to see its internal name under the property settings.
+  <Step title="Find your field internal names">
+    For each field on your form, note the **Internal Name**. This is how you match the fields with Architect's form. Click a field to see its internal name under the property settings.
 
     Common default internal names:
 
@@ -62,37 +60,32 @@ You need a form in HubSpot to push submissions to via the Forms API. This is whe
     | First Name | `firstname` |
     | Last Name | `lastname` |
   </Step>
-
-  <Step title="Get the form embed code">
-    Once you have your form, click **Share** and then **Embed Code**. Copy the embed code — this contains your **Portal ID** and **Form ID**, which you will need to connect the form.
-
-    The embed code will look something like this:
-
-    ```html
-    <script src="https://js-eu1.hsforms.net/forms/embed/{{data-portal-id}}.js" defer></script>
-    <div class="hs-form-frame" data-region="eu1" data-form-id="{{data-form-id}}" data-portal-id="{{data-portal-id}}"></div>
-    ```
-
-    The `data-portal-id` is your Portal ID and the `data-form-id` is your Form ID.
-  </Step>
 </Steps>
 
 ## Step 3: Create a Form in Architect
 
 <Steps>
   <Step title="Create or select a form in Architect">
-    In Architect, go to **Forms** and then **Manage Forms**. Create a new form or select an existing one.
+    In Architect, go to the designated page, then click **Manage**, **Settings**, and **Conversion Action**. Go to **Forms** and then **Manage Forms**. Create a new form or choose an existing one.
+
+    Match this form to the same fields as your HubSpot form. Make sure the Architect ID is the same as the internal names in HubSpot, as this is how the fields are matched when the submission is sent.
+
+    <Frame>
+      <img src="/overview/images/hubspot-form-id-matching.png" alt="Architect form builder showing the field ID setting, which should match the corresponding HubSpot internal field name." />
+    </Frame>
   </Step>
 </Steps>
 
-## Step 4: Set Up with Architect
+## Step 4: Set up Connection
 
-Share the following with the Architect team:
+<Steps>
+  <Step title="Create a HubSpot connection">
+    In Architect, go to **Scripts** and then **Connections**. Create a new connection for **HubSpot**.
 
-- Your **form embed code** from the HubSpot form (from Step 2)
-- The **field internal names** for that form — these can be found under **Connected Property** on each form field in HubSpot
+    Paste your **HubSpot account ID** and **HubSpot form ID** into the connection setup and save it.
+  </Step>
+</Steps>
 
 ## Step 5: Test
 
-Once the Architect team has set this up for you, submit a test form on your Architect page to make sure everything is working. Then check your HubSpot form to see if the test submission came through.
-
+Submit a test submission on that page group in Architect, then check HubSpot to make sure the submission was passed through successfully.
