@@ -74,13 +74,6 @@ components:
       summary: CreateAudienceRequest example
       value:
         publishBehavior: publish
-    CreatePageRequestExample:
-      description: Example values extracted from schema defaults
-      summary: CreatePageRequest example
-      value:
-        actionCardWidgets: []
-        pageType: inbound
-        scripts: []
     CreateWebhookSubscriptionRequestExample:
       description: Example values extracted from schema defaults
       summary: CreateWebhookSubscriptionRequest example
@@ -890,6 +883,10 @@ components:
         - title
         - logos
       additionalProperties: false
+    UnnamedSchema:
+      type: string
+      format: date-time
+      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
     ContentTypeSchema:
       type: object
       properties:
@@ -902,9 +899,6 @@ components:
         - type
         - content
       additionalProperties: false
-    UnnamedSchema:
-      type: string
-      pattern: ^\+[1-9]\d{1,14}$
     ActionIdActionTypeButtonTitlePurposeUrlSchema:
       type: object
       properties:
@@ -926,6 +920,25 @@ components:
         - buttonTitle
         - actionType
         - url
+      additionalProperties: false
+    IdTextTypeUrlSchema:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+          minLength: 1
+        url:
+          type: string
+          minLength: 1
+        type:
+          type: string
+          const: link
+      required:
+        - text
+        - url
+        - type
       additionalProperties: false
     AudienceIdTargetTypeSchema:
       type: object
@@ -1202,10 +1215,9 @@ components:
               - $ref: "#/components/schemas/ActionIdActionTypeButtonTitleFormIdFormInstructionsPurposeSchema"
               - $ref: "#/components/schemas/ActionIdActionTypeButtonTitleCopyTextPurposeSchema"
         actionCardWidgets:
-          default: []
           type: array
           items:
-            oneOf:
+            anyOf:
               - $ref: "#/components/schemas/LogosTitleTypeSchema"
               - $ref: "#/components/schemas/TypeVideoSchema"
         brandId:
@@ -1214,8 +1226,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FooterLink"
-        headerActionId:
-          type: string
+        navLinks:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/IdTextTypeUrlSchema"
+              - $ref: "#/components/schemas/FooterLink1"
         metadata:
           $ref: "#/components/schemas/Metadata1"
         name:
@@ -1225,7 +1241,6 @@ components:
           type: string
           minLength: 1
         pageType:
-          default: inbound
           type: string
           enum:
             - inbound
@@ -1234,19 +1249,15 @@ components:
             - sales_deck
             - custom
         scripts:
-          default: []
           type: array
           items:
             $ref: "#/components/schemas/Script"
       required:
         - actions
-        - actionCardWidgets
         - brandId
         - footerLinks
         - name
         - pageContext
-        - pageType
-        - scripts
       additionalProperties: false
     CreatePersonLogRequest:
       type: object
@@ -1331,6 +1342,7 @@ components:
         url:
           $ref: "#/components/schemas/Url"
         events:
+          minItems: 1
           type: array
           items:
             type: string
@@ -1342,6 +1354,11 @@ components:
               - form.enriched
               - form.enrichment_failed
             description: Supported outbound webhook event types. `page.version.*` events correspond to Audience version lifecycle changes in Customer API terminology.
+          description: Event types to subscribe to
+          examples:
+            - - page.version.created
+              - page.version.processed
+              - page.version.published
         active:
           default: true
           description: Whether the subscription should be active
@@ -1445,6 +1462,27 @@ components:
       required:
         - links
         - title
+      additionalProperties: false
+    FooterLink1:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          minLength: 1
+        links:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/NestedObject2"
+        type:
+          type: string
+          const: group
+      required:
+        - title
+        - links
+        - type
       additionalProperties: false
     GetAccount:
       type: object
@@ -2106,7 +2144,7 @@ components:
                 anyOf:
                   - type: array
                     items:
-                      $ref: "#/components/schemas/NestedObject2"
+                      $ref: "#/components/schemas/NestedObject3"
                   - type: "null"
               contentParts:
                 anyOf:
@@ -2245,7 +2283,7 @@ components:
         pendingChanges:
           type: array
           items:
-            $ref: "#/components/schemas/NestedObject2"
+            $ref: "#/components/schemas/NestedObject3"
       required:
         - conversation
         - messages
@@ -2614,6 +2652,7 @@ components:
                   - form.enriched
                   - form.enrichment_failed
                 description: Supported outbound webhook event types. `page.version.*` events correspond to Audience version lifecycle changes in Customer API terminology.
+              description: Subscribed event types. `null` means the subscription receives every supported event.
             - type: "null"
         active:
           type: boolean
@@ -2788,6 +2827,7 @@ components:
           type: string
           maxLength: 160
         keywords:
+          maxItems: 10
           type: array
           items:
             type: string
@@ -2879,6 +2919,21 @@ components:
         - url
       additionalProperties: false
     NestedObject2:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+          minLength: 1
+        url:
+          type: string
+          minLength: 1
+      required:
+        - text
+        - url
+      additionalProperties: false
+    NestedObject3:
       type: object
       properties:
         changeId:
@@ -3637,6 +3692,7 @@ components:
                   - form.enriched
                   - form.enrichment_failed
                 description: Supported outbound webhook event types. `page.version.*` events correspond to Audience version lifecycle changes in Customer API terminology.
+              description: Subscribed event types. `null` means the subscription receives every supported event.
             - type: "null"
         active:
           type: boolean
@@ -3916,6 +3972,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FooterLink"
+        navLinks:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/IdTextTypeUrlSchema"
+              - $ref: "#/components/schemas/FooterLink1"
         headerActionId:
           anyOf:
             - type: string
@@ -4052,6 +4114,7 @@ components:
         url:
           $ref: "#/components/schemas/Url"
         events:
+          minItems: 1
           type: array
           items:
             type: string
