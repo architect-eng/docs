@@ -3688,6 +3688,10 @@ components:
               type: string
             parentAssetId:
               type: string
+            idempotencyKey:
+              type: string
+              minLength: 1
+              maxLength: 255
             hidden:
               type: boolean
           required:
@@ -3710,6 +3714,10 @@ components:
               type: string
             parentAssetId:
               type: string
+            idempotencyKey:
+              type: string
+              minLength: 1
+              maxLength: 255
             hidden:
               type: boolean
           required:
@@ -3732,6 +3740,10 @@ components:
               type: string
             parentAssetId:
               type: string
+            idempotencyKey:
+              type: string
+              minLength: 1
+              maxLength: 255
             hidden:
               type: boolean
           required:
@@ -3752,6 +3764,10 @@ components:
               type: string
             youtubeUrl:
               type: string
+            idempotencyKey:
+              type: string
+              minLength: 1
+              maxLength: 255
             hidden:
               type: boolean
           required:
