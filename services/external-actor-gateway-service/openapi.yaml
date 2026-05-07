@@ -2189,6 +2189,34 @@ components:
                             - title
                             - message
                           additionalProperties: false
+                        - type: object
+                          properties:
+                            type:
+                              type: string
+                              const: page-group-rules-updated
+                            pageGroupId:
+                              type: string
+                            rules:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  pageGroupAiRuleId:
+                                    type: string
+                                  title:
+                                    type: string
+                                  content:
+                                    type: string
+                                required:
+                                  - pageGroupAiRuleId
+                                  - title
+                                  - content
+                                additionalProperties: false
+                          required:
+                            - type
+                            - pageGroupId
+                            - rules
+                          additionalProperties: false
                   - type: "null"
               reasoning:
                 anyOf:
