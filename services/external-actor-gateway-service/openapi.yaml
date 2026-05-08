@@ -3875,6 +3875,9 @@ components:
             - image
             - logo
             - icon
+        customComponentBody:
+          type: string
+          maxLength: 100000
       additionalProperties: false
     UpdateAudienceRequest:
       type: object
