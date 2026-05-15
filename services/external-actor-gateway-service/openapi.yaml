@@ -69,6 +69,11 @@ components:
         metaDescription: null
         purpose: null
         enrichmentStatus: pending
+    4Example:
+      description: Example values extracted from schema defaults
+      summary: 4 example
+      value:
+        requires: []
     CreateAudienceRequestExample:
       description: Example values extracted from schema defaults
       summary: CreateAudienceRequest example
@@ -669,7 +674,7 @@ components:
         - type
         - youtubeUrl
       additionalProperties: false
-    BodyPropsSchemaTypeSchema:
+    BodyPropsSchemaRequiresTypeSchema:
       type: object
       properties:
         type:
@@ -678,6 +683,11 @@ components:
         body:
           type: string
           maxLength: 100000
+        requires:
+          default: []
+          type: array
+          items:
+            $ref: "#/components/schemas/NestedObject3"
         propsSchema:
           type: object
           propertyNames:
@@ -686,6 +696,7 @@ components:
       required:
         - type
         - body
+        - requires
       additionalProperties: false
     TypeVideoSchema:
       type: object
@@ -2798,6 +2809,17 @@ components:
         - newValue
         - status
       additionalProperties: false
+    NestedObject3:
+      type: object
+      properties:
+        packId:
+          $ref: "#/components/schemas/PackId"
+        packVersion:
+          $ref: "#/components/schemas/PackVersion"
+      required:
+        - packId
+        - packVersion
+      additionalProperties: false
     OgImage:
       type: object
       properties:
@@ -2810,6 +2832,16 @@ components:
         - type
         - fileId
       additionalProperties: false
+    PackId:
+      type: string
+      minLength: 1
+      maxLength: 120
+      pattern: ^[a-z0-9][a-z0-9-]*$
+    PackVersion:
+      type: string
+      minLength: 1
+      maxLength: 60
+      pattern: ^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$
     PostAccount:
       type: object
       properties:
@@ -2946,7 +2978,7 @@ components:
             - $ref: "#/components/schemas/FileIdTypeSchema"
             - $ref: "#/components/schemas/FileIdTypeSchema"
             - $ref: "#/components/schemas/TypeYoutubeUrlSchema"
-            - $ref: "#/components/schemas/BodyPropsSchemaTypeSchema"
+            - $ref: "#/components/schemas/BodyPropsSchemaRequiresTypeSchema"
         createdAt:
           $ref: "#/components/schemas/UnnamedSchema"
         updatedAt:
