@@ -3024,6 +3024,12 @@ components:
           $ref: "#/components/schemas/Metadata"
         effectiveName:
           type: string
+        flags:
+          type: array
+          items:
+            type: string
+            enum:
+              - home_page
         isNewPageAgent:
           type: boolean
         latestVersion:
@@ -3070,6 +3076,7 @@ components:
         - createdAt
         - customName
         - effectiveName
+        - flags
         - isNewPageAgent
         - latestVersion
         - pageId
@@ -3204,6 +3211,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FooterLink"
+        flags:
+          type: array
+          items:
+            type: string
+            enum:
+              - home_page
         headerActionId:
           type: string
         metadata:
@@ -3245,6 +3258,7 @@ components:
         - createdAt
         - deletedAt
         - footerLinks
+        - flags
         - name
         - pageContext
         - pageId
