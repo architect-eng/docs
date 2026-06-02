@@ -2079,10 +2079,6 @@ components:
                     items:
                       $ref: "#/components/schemas/NestedObject2"
                   - type: "null"
-              reasoning:
-                anyOf:
-                  - type: string
-                  - type: "null"
               isInterrupted:
                 type: boolean
             required:
@@ -2092,7 +2088,6 @@ components:
               - timestamp
               - hasSnapshot
               - changes
-              - reasoning
               - isInterrupted
             additionalProperties: false
         context:
