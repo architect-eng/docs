@@ -669,7 +669,7 @@ components:
         - type
         - youtubeUrl
       additionalProperties: false
-    BodyPropsSchemaTypeSchema:
+    BodyComponentIdPropsSchemaTypeVersionIdSchema:
       type: object
       properties:
         type:
@@ -677,7 +677,12 @@ components:
           const: custom-component
         body:
           type: string
+          minLength: 1
           maxLength: 100000
+        componentId:
+          type: string
+        versionId:
+          type: string
         propsSchema:
           type: object
           propertyNames:
@@ -2941,7 +2946,7 @@ components:
             - $ref: "#/components/schemas/FileIdTypeSchema"
             - $ref: "#/components/schemas/FileIdTypeSchema"
             - $ref: "#/components/schemas/TypeYoutubeUrlSchema"
-            - $ref: "#/components/schemas/BodyPropsSchemaTypeSchema"
+            - $ref: "#/components/schemas/BodyComponentIdPropsSchemaTypeVersionIdSchema"
         createdAt:
           $ref: "#/components/schemas/UnnamedSchema"
         updatedAt:
