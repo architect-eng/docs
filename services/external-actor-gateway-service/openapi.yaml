@@ -79,6 +79,7 @@ components:
       summary: CreatePageRequest example
       value:
         actionCardWidgets: []
+        navLinks: []
         pageType: inbound
         scripts: []
     CreateWebhookSubscriptionRequestExample:
@@ -890,6 +891,10 @@ components:
         - title
         - logos
       additionalProperties: false
+    UnnamedSchema:
+      type: string
+      format: date-time
+      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
     ContentTypeSchema:
       type: object
       properties:
@@ -902,9 +907,23 @@ components:
         - type
         - content
       additionalProperties: false
-    UnnamedSchema:
-      type: string
-      pattern: ^\+[1-9]\d{1,14}$
+    IdTextTypeUrlSchema:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        url:
+          type: string
+        type:
+          type: string
+          const: link
+      required:
+        - text
+        - url
+        - type
+      additionalProperties: false
     ActionIdActionTypeButtonTitlePurposeUrlSchema:
       type: object
       properties:
@@ -1221,6 +1240,13 @@ components:
         name:
           type: string
           minLength: 1
+        navLinks:
+          default: []
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/IdTextTypeUrlSchema"
+              - $ref: "#/components/schemas/FooterLink1"
         pageContext:
           type: string
           minLength: 1
@@ -1244,6 +1270,7 @@ components:
         - brandId
         - footerLinks
         - name
+        - navLinks
         - pageContext
         - pageType
         - scripts
@@ -1445,6 +1472,25 @@ components:
       required:
         - links
         - title
+      additionalProperties: false
+    FooterLink1:
+      type: object
+      properties:
+        id:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/NestedObject1"
+        title:
+          type: string
+        type:
+          type: string
+          const: group
+      required:
+        - links
+        - title
+        - type
       additionalProperties: false
     GetAccount:
       type: object
@@ -3218,6 +3264,12 @@ components:
           $ref: "#/components/schemas/Metadata"
         name:
           type: string
+        navLinks:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/IdTextTypeUrlSchema"
+              - $ref: "#/components/schemas/FooterLink1"
         pageContext:
           type: string
         pageId:
@@ -3255,6 +3307,7 @@ components:
         - footerLinks
         - flags
         - name
+        - navLinks
         - pageContext
         - pageId
         - pageType
@@ -3837,6 +3890,12 @@ components:
         name:
           type: string
           minLength: 1
+        navLinks:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/IdTextTypeUrlSchema"
+              - $ref: "#/components/schemas/FooterLink1"
         pageContext:
           type: string
           minLength: 1
