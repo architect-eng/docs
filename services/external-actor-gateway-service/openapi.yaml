@@ -336,7 +336,7 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/CreateVersionRequest"
-      required: true
+      required: false
   responses:
     ConflictError:
       content:
