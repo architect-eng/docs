@@ -79,6 +79,7 @@ components:
       summary: CreatePageRequest example
       value:
         actionCardWidgets: []
+        navLinks: []
         pageType: inbound
         scripts: []
     CreateWebhookSubscriptionRequestExample:
@@ -919,6 +920,23 @@ components:
         - type
         - content
       additionalProperties: false
+    IdTextTypeUrlSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: link
+        id:
+          type: string
+        text:
+          type: string
+        url:
+          type: string
+      required:
+        - type
+        - text
+        - url
+      additionalProperties: false
     ActionIdActionTypeButtonTitlePurposeUrlSchema:
       type: object
       properties:
@@ -939,23 +957,6 @@ components:
         - purpose
         - buttonTitle
         - actionType
-        - url
-      additionalProperties: false
-    IdTextTypeUrlSchema:
-      type: object
-      properties:
-        type:
-          type: string
-          const: link
-        id:
-          type: string
-        text:
-          type: string
-        url:
-          type: string
-      required:
-        - type
-        - text
         - url
       additionalProperties: false
     AudienceIdTargetTypeSchema:
@@ -1199,10 +1200,10 @@ components:
               items:
                 anyOf:
                   - $ref: "#/components/schemas/IdTextTypeUrlSchema"
-                  - $ref: "#/components/schemas/FooterLink1"
+                  - $ref: "#/components/schemas/FooterLink2"
             - type: array
               items:
-                $ref: "#/components/schemas/FooterLink2"
+                $ref: "#/components/schemas/FooterLink3"
         name:
           type: string
           minLength: 1
@@ -1287,6 +1288,13 @@ components:
           anyOf:
             - type: string
             - type: "null"
+        navLinks:
+          default: []
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/IdTextTypeUrlSchema"
+              - $ref: "#/components/schemas/FooterLink1"
         pageContext:
           type: string
           minLength: 1
@@ -1310,6 +1318,7 @@ components:
         - brandId
         - footerLinks
         - name
+        - navLinks
         - pageContext
         - pageType
         - scripts
@@ -1528,6 +1537,25 @@ components:
     FooterLink1:
       type: object
       properties:
+        id:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/NestedObject1"
+        title:
+          type: string
+        type:
+          type: string
+          const: group
+      required:
+        - links
+        - title
+        - type
+      additionalProperties: false
+    FooterLink2:
+      type: object
+      properties:
         type:
           type: string
           const: group
@@ -1544,7 +1572,7 @@ components:
         - title
         - links
       additionalProperties: false
-    FooterLink2:
+    FooterLink3:
       type: object
       properties:
         id:
@@ -3416,6 +3444,12 @@ components:
           anyOf:
             - type: string
             - type: "null"
+        navLinks:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/IdTextTypeUrlSchema"
+              - $ref: "#/components/schemas/FooterLink1"
         pageContext:
           type: string
         pageId:
@@ -3455,6 +3489,7 @@ components:
         - flags
         - name
         - navLinkBlockId
+        - navLinks
         - pageContext
         - pageId
         - pageType
@@ -3547,10 +3582,10 @@ components:
               items:
                 anyOf:
                   - $ref: "#/components/schemas/IdTextTypeUrlSchema"
-                  - $ref: "#/components/schemas/FooterLink1"
+                  - $ref: "#/components/schemas/FooterLink2"
             - type: array
               items:
-                $ref: "#/components/schemas/FooterLink2"
+                $ref: "#/components/schemas/FooterLink3"
         name:
           type: string
         updatedAt:
@@ -4029,10 +4064,10 @@ components:
               items:
                 anyOf:
                   - $ref: "#/components/schemas/IdTextTypeUrlSchema"
-                  - $ref: "#/components/schemas/FooterLink1"
+                  - $ref: "#/components/schemas/FooterLink2"
             - type: array
               items:
-                $ref: "#/components/schemas/FooterLink2"
+                $ref: "#/components/schemas/FooterLink3"
         name:
           type: string
           minLength: 1
@@ -4111,6 +4146,12 @@ components:
           anyOf:
             - type: string
             - type: "null"
+        navLinks:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/IdTextTypeUrlSchema"
+              - $ref: "#/components/schemas/FooterLink1"
         pageContext:
           type: string
           minLength: 1
