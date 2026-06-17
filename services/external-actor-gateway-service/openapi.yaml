@@ -239,6 +239,13 @@ components:
       required: false
       schema:
         type: string
+    PageLinkBlockIdPath:
+      in: path
+      name: page_link_block_id
+      description: page_link_block_id parameter
+      required: true
+      schema:
+        type: string
     PageLinkIdPath:
       in: path
       name: page_link_id
@@ -456,6 +463,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PostEntrie"
+    PostPageLinkBlockResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PostPageLinkBlock"
     PostPageLinkResponse:
       description: Successful operation
       content:
@@ -890,6 +903,10 @@ components:
         - title
         - logos
       additionalProperties: false
+    UnnamedSchema:
+      type: string
+      format: date-time
+      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
     ContentTypeSchema:
       type: object
       properties:
@@ -902,9 +919,6 @@ components:
         - type
         - content
       additionalProperties: false
-    UnnamedSchema:
-      type: string
-      pattern: ^\+[1-9]\d{1,14}$
     ActionIdActionTypeButtonTitlePurposeUrlSchema:
       type: object
       properties:
@@ -925,6 +939,23 @@ components:
         - purpose
         - buttonTitle
         - actionType
+        - url
+      additionalProperties: false
+    IdTextTypeUrlSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          const: link
+        id:
+          type: string
+        text:
+          type: string
+        url:
+          type: string
+      required:
+        - type
+        - text
         - url
       additionalProperties: false
     AudienceIdTargetTypeSchema:
@@ -1154,6 +1185,33 @@ components:
       required:
         - message
       additionalProperties: false
+    CreatePageLinkBlockRequest:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - footer
+            - navigation
+        links:
+          anyOf:
+            - type: array
+              items:
+                anyOf:
+                  - $ref: "#/components/schemas/IdTextTypeUrlSchema"
+                  - $ref: "#/components/schemas/FooterLink1"
+            - type: array
+              items:
+                $ref: "#/components/schemas/FooterLink2"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+      required:
+        - kind
+        - links
+        - name
+      additionalProperties: false
     CreatePageLinkRequest:
       type: object
       properties:
@@ -1210,6 +1268,10 @@ components:
               - $ref: "#/components/schemas/TypeVideoSchema"
         brandId:
           type: string
+        footerLinkBlockId:
+          anyOf:
+            - type: string
+            - type: "null"
         footerLinks:
           type: array
           items:
@@ -1221,6 +1283,10 @@ components:
         name:
           type: string
           minLength: 1
+        navLinkBlockId:
+          anyOf:
+            - type: string
+            - type: "null"
         pageContext:
           type: string
           minLength: 1
@@ -1353,6 +1419,19 @@ components:
         - events
         - active
       additionalProperties: false
+    DeletePageLinkBlockResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        updatedPageIds:
+          type: array
+          items:
+            type: string
+      required:
+        - success
+        - updatedPageIds
+      additionalProperties: false
     DeletePageResponse:
       type: object
       properties:
@@ -1445,6 +1524,40 @@ components:
       required:
         - links
         - title
+      additionalProperties: false
+    FooterLink1:
+      type: object
+      properties:
+        type:
+          type: string
+          const: group
+        id:
+          type: string
+        title:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/NestedObject1"
+      required:
+        - type
+        - title
+        - links
+      additionalProperties: false
+    FooterLink2:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/NestedObject1"
+      required:
+        - title
+        - links
       additionalProperties: false
     GetAccount:
       type: object
@@ -2212,6 +2325,16 @@ components:
         - items
         - nextCursor
         - totalCount
+      additionalProperties: false
+    GetPageLinkBlock:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostPageLinkBlock"
+      required:
+        - items
       additionalProperties: false
     GetPerson:
       type: object
@@ -3202,6 +3325,10 @@ components:
           anyOf:
             - $ref: "#/components/schemas/UnnamedSchema"
             - type: "null"
+        footerLinkBlockId:
+          anyOf:
+            - type: string
+            - type: "null"
         footerLinks:
           type: array
           items:
@@ -3218,6 +3345,10 @@ components:
           $ref: "#/components/schemas/Metadata"
         name:
           type: string
+        navLinkBlockId:
+          anyOf:
+            - type: string
+            - type: "null"
         pageContext:
           type: string
         pageId:
@@ -3252,9 +3383,11 @@ components:
         - brandId
         - createdAt
         - deletedAt
+        - footerLinkBlockId
         - footerLinks
         - flags
         - name
+        - navLinkBlockId
         - pageContext
         - pageId
         - pageType
@@ -3315,6 +3448,45 @@ components:
         - createdAt
         - updatedAt
         - deletedAt
+      additionalProperties: false
+    PostPageLinkBlock:
+      type: object
+      properties:
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        deletedAt:
+          anyOf:
+            - $ref: "#/components/schemas/UnnamedSchema"
+            - type: "null"
+        kind:
+          type: string
+          enum:
+            - footer
+            - navigation
+        linkBlockId:
+          type: string
+        links:
+          anyOf:
+            - type: array
+              items:
+                anyOf:
+                  - $ref: "#/components/schemas/IdTextTypeUrlSchema"
+                  - $ref: "#/components/schemas/FooterLink1"
+            - type: array
+              items:
+                $ref: "#/components/schemas/FooterLink2"
+        name:
+          type: string
+        updatedAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+      required:
+        - createdAt
+        - deletedAt
+        - kind
+        - linkBlockId
+        - links
+        - name
+        - updatedAt
       additionalProperties: false
     PostPerson:
       type: object
@@ -3772,6 +3944,24 @@ components:
               minLength: 1
             - type: "null"
       additionalProperties: false
+    UpdatePageLinkBlockRequest:
+      type: object
+      properties:
+        links:
+          anyOf:
+            - type: array
+              items:
+                anyOf:
+                  - $ref: "#/components/schemas/IdTextTypeUrlSchema"
+                  - $ref: "#/components/schemas/FooterLink1"
+            - type: array
+              items:
+                $ref: "#/components/schemas/FooterLink2"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+      additionalProperties: false
     UpdatePageLinkRequest:
       type: object
       properties:
@@ -3824,6 +4014,10 @@ components:
               - $ref: "#/components/schemas/TypeVideoSchema"
         brandId:
           type: string
+        footerLinkBlockId:
+          anyOf:
+            - type: string
+            - type: "null"
         footerLinks:
           type: array
           items:
@@ -3837,6 +4031,10 @@ components:
         name:
           type: string
           minLength: 1
+        navLinkBlockId:
+          anyOf:
+            - type: string
+            - type: "null"
         pageContext:
           type: string
           minLength: 1
@@ -4673,6 +4871,136 @@ paths:
       parameters:
         - $ref: "#/components/parameters/LimitQuery"
         - $ref: "#/components/parameters/QueryQuery"
+  /v0/page_link_blocks:
+    get:
+      description: List page link blocks.
+      operationId: listPageLinkBlocks
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetPageLinkBlock"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: List page link blocks
+      tags:
+        - Page Link Blocks
+      parameters:
+        - in: query
+          name: kind
+          description: kind parameter
+          required: false
+          schema:
+            type: string
+            enum:
+              - footer
+              - navigation
+    post:
+      description: Create a page link block.
+      operationId: createPageLinkBlock
+      responses:
+        "200":
+          $ref: "#/components/responses/PostPageLinkBlockResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Create page link block
+      tags:
+        - Page Link Blocks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePageLinkBlockRequest"
+        required: true
+  /v0/page_link_blocks/{page_link_block_id}:
+    patch:
+      description: Update a page link block by ID.
+      operationId: updatePageLinkBlock
+      responses:
+        "200":
+          $ref: "#/components/responses/PostPageLinkBlockResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Update page link block
+      tags:
+        - Page Link Blocks
+      parameters:
+        - $ref: "#/components/parameters/PageLinkBlockIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePageLinkBlockRequest"
+        required: true
+    delete:
+      description: Delete a page link block by ID.
+      operationId: deletePageLinkBlock
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletePageLinkBlockResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Delete page link block
+      tags:
+        - Page Link Blocks
+      parameters:
+        - $ref: "#/components/parameters/PageLinkBlockIdPath"
   /v0/page_links:
     get:
       description: List page links.
@@ -6698,6 +7026,8 @@ tags:
     description: Audience version management operations
   - name: Audience Messages
     description: Audience message editing operations
+  - name: Page Link Blocks
+    description: Shared footer and navigation link block management operations
   - name: Page Links
     description: Page link management operations
   - name: Assets
