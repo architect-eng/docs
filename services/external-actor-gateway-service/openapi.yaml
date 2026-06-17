@@ -2175,6 +2175,12 @@ components:
                   - type: "null"
               path:
                 type: string
+              url:
+                $ref: "#/components/schemas/Url"
+              domain:
+                type: string
+              hostname:
+                type: string
               target:
                 anyOf:
                   - anyOf:
@@ -2194,6 +2200,9 @@ components:
               - pageLinkId
               - tenantDomainId
               - path
+              - url
+              - domain
+              - hostname
               - target
               - createdAt
               - updatedAt
@@ -3274,6 +3283,12 @@ components:
             - type: "null"
         path:
           type: string
+        url:
+          $ref: "#/components/schemas/Url"
+        domain:
+          type: string
+        hostname:
+          type: string
         target:
           anyOf:
             - anyOf:
@@ -3311,6 +3326,9 @@ components:
         - pageLinkId
         - tenantDomainId
         - path
+        - url
+        - domain
+        - hostname
         - target
         - createdAt
         - updatedAt
