@@ -2404,6 +2404,64 @@ components:
         - formSubmitRate
         - totalSessions
       additionalProperties: false
+    GetTenantDomain:
+      type: object
+      properties:
+        hasMore:
+          type: boolean
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/GetTenantDomainResponse"
+        nextCursor:
+          anyOf:
+            - type: string
+            - type: "null"
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - hasMore
+        - items
+        - nextCursor
+        - totalCount
+      additionalProperties: false
+    GetTenantDomainResponse:
+      type: object
+      properties:
+        tenantDomainId:
+          type: string
+        domain:
+          type: string
+        verified:
+          type: boolean
+        verificationStatus:
+          type: string
+          enum:
+            - active
+            - deleting
+            - failed
+            - pending_deployment
+            - pending_issuance
+            - pending_validation
+            - pending_verification
+            - verifying
+        isDefault:
+          type: boolean
+        createdAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+        updatedAt:
+          $ref: "#/components/schemas/UnnamedSchema"
+      required:
+        - tenantDomainId
+        - domain
+        - verified
+        - verificationStatus
+        - isDefault
+        - createdAt
+        - updatedAt
+      additionalProperties: false
     GetTopic:
       type: object
       properties:
@@ -6222,6 +6280,70 @@ paths:
         - Persons
       parameters:
         - $ref: "#/components/parameters/PersonIdPath"
+  /v0/tenant_domains:
+    get:
+      description: List tenant domains.
+      operationId: listTenantDomains
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetTenantDomain"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: List tenant domains
+      tags:
+        - Tenant Domains
+      parameters:
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+  /v0/tenant_domains/{tenant_domain_id}:
+    get:
+      description: Retrieve a specific tenant domain by ID.
+      operationId: getTenantDomain
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetTenantDomainResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+      summary: Get tenant domain by ID
+      tags:
+        - Tenant Domains
+      parameters:
+        - in: path
+          name: tenant_domain_id
+          description: tenant_domain_id parameter
+          required: true
+          schema:
+            type: string
   /v0/topics:
     get:
       description: List knowledge topics.
@@ -6700,6 +6822,8 @@ tags:
     description: Audience message editing operations
   - name: Page Links
     description: Page link management operations
+  - name: Tenant Domains
+    description: Tenant domain discovery operations
   - name: Assets
     description: Asset management operations
   - name: Persons
