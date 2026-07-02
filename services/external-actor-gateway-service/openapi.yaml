@@ -483,7 +483,7 @@ components:
           schema:
             $ref: "#/components/schemas/PostPage"
     PostPersonResponse:
-      description: Person created successfully
+      description: Successful operation
       content:
         application/json:
           schema:
@@ -6346,9 +6346,11 @@ paths:
         - $ref: "#/components/parameters/CursorQuery"
         - $ref: "#/components/parameters/LimitQuery"
     post:
-      description: Create a person.
+      description: Create or update a person. If a person with the same identifier already exists, the existing person is updated.
       operationId: createPerson
       responses:
+        "200":
+          $ref: "#/components/responses/PostPersonResponse"
         "201":
           $ref: "#/components/responses/PostPersonResponse"
         "400":
@@ -6365,7 +6367,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "503":
           $ref: "#/components/responses/ServiceUnavailableError"
-      summary: Create person
+      summary: Create or update person
       tags:
         - Persons
       requestBody:
